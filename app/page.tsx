@@ -137,19 +137,28 @@ export default function Home() {
   const [selected, setSelected] = useState(7);
   const [openLevel, setOpenLevel] = useState<string>("easy");
   const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [hydrated, setHydrated] = useState(false);
+  const [embedded, setEmbedded] = useState(false);
+  const [locked, setLocked] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const fromUrl = Number(new URLSearchParams(window.location.search).get("verk"));
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = Number(params.get("verk"));
+    const isEmbedded = window.self !== window.top;
+    setEmbedded(isEmbedded);
+    setLocked(isEmbedded || params.get("locked") === "1");
     if (projects.some((project) => project.number === fromUrl)) setSelected(fromUrl);
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
+    if (!hydrated || locked) return;
     const url = new URL(window.location.href);
     url.searchParams.set("verk", String(selected));
     window.history.replaceState({}, "", url);
     setOpenLevel("easy");
-  }, [selected]);
+  }, [hydrated, locked, selected]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -204,8 +213,10 @@ export default function Home() {
   }, []);
 
   const project = useMemo(() => projects.find((item) => item.number === selected) ?? projects[0], [selected]);
-  const doneCount = project.levels.reduce((sum, level) => sum + level.steps.filter((_, index) => checked[`${project.number}-${level.key}-${index}`]).length, 0);
-  const totalCount = project.levels.reduce((sum, level) => sum + level.steps.length, 0);
+  const activeLevel = project.levels.find((level) => level.key === openLevel) ?? project.levels[0];
+  const activeLevelNumber = project.levels.findIndex((level) => level.key === activeLevel.key) + 1;
+  const doneCount = activeLevel.steps.filter((_, index) => checked[`${project.number}-${activeLevel.key}-${index}`]).length;
+  const totalCount = activeLevel.steps.length;
 
   const selectProject = (number: number) => {
     setSelected(number);
@@ -213,14 +224,15 @@ export default function Home() {
   };
 
   return (
-    <main className="site-shell">
+    <main className={`site-shell${embedded ? " embedded" : ""}${locked ? " locked" : ""}`}>
       <canvas ref={canvasRef} className="ambient" aria-hidden="true" />
+      {!hydrated ? <div className="loading-project" role="status">Hleð verkefni…</div> : <>
       <header className="topbar">
-        <div className="brand"><span>FAGU</span><i /> STAFRÆNN VERKFÆRAKASSI</div>
-        <div className="status"><b>{doneCount}</b> / {totalCount} SKREF</div>
+        <div className="brand"><span>FAGU</span><i /> {locked ? `VERK ${String(project.number).padStart(2, "0")}` : "STAFRÆNN VERKFÆRAKASSI"}</div>
+        <div className="status"><b>{doneCount}</b> / {totalCount} SKREF · HLUTI {activeLevelNumber}</div>
       </header>
 
-      <section className="hero" aria-labelledby="page-title">
+      {!locked && <section className="hero" aria-labelledby="page-title">
         <p className="eyebrow">VERKEFNABORÐ · HAUST 2026</p>
         <h1 id="page-title">Veldu hversu<br /><em>langt þú ferð.</em></h1>
         <p className="hero-copy">Byrjaðu á græna hlutanum. Bættu gulum og bláum við ef þú vilt meiri áskorun og fleiri stig.</p>
@@ -229,18 +241,19 @@ export default function Home() {
           <span><b>HÓPVERKEFNI</b> Verk 7 er kynnt sérstaklega</span>
           <span><b>6 + 2 + 2</b> Samtals 10 stig</span>
         </div>
-      </section>
+      </section>}
 
-      <nav className="project-nav" aria-label="Veldu verkefni">
+      {!locked && <nav className="project-nav" aria-label="Veldu verkefni">
         {projects.map((item) => (
           <button key={item.number} className={item.number === selected ? "active" : ""} onClick={() => selectProject(item.number)} aria-current={item.number === selected ? "page" : undefined}>
             <span>{String(item.number).padStart(2, "0")}</span>
             <b>{item.title}</b>
           </button>
         ))}
-      </nav>
+      </nav>}
 
       <article className="project" id="project" key={project.number}>
+        {locked && <p className="context-note">ÞÚ ERT Í VERK {project.number} · AÐEINS ÞETTA VERKEFNI ER SÝNT HÉR</p>}
         <div className="project-heading">
           <div className="project-index">VERK {String(project.number).padStart(2, "0")}</div>
           <div>
@@ -260,7 +273,7 @@ export default function Home() {
             const expanded = openLevel === level.key;
             return (
               <div className={`level-card ${level.key} ${expanded ? "expanded" : ""}`} key={level.key}>
-                <button className="level-trigger" onClick={() => setOpenLevel(expanded ? "" : level.key)} aria-expanded={expanded}>
+                <button className="level-trigger" onClick={() => setOpenLevel(level.key)} aria-expanded={expanded}>
                   <span className="level-number">{levelGlyph[level.key]}</span>
                   <span className="level-title"><small>{level.kicker}</small><b>{level.label}</b></span>
                   <span className="points">+{level.points} STIG</span>
@@ -296,14 +309,15 @@ export default function Home() {
             <p>Skilaðu <strong>Hluta 1 einum</strong> eða bættu við Hluta 2 og/eða Hluta 3. Settu allt í eitt Canvas-skil: eina PDF/ZIP-skrá, virkan hlekk eða texta og viðhengi. Merktu greinilega <b>Hluti 1</b>, <b>Hluti 2</b> og <b>Hluti 3</b>. Opnaðu skrár og hlekki áður en þú lýkur skilum.</p>
             {project.group && <p className="group-note">Einn nemandi skilar fyrir hópinn. Nöfn, ábyrgð og framlag allra þurfa að koma fram.</p>}
           </div>
-          <a className="canvas-link" href={`https://canvas.tskoli.is/courses/1907/assignments/${project.canvasId}`} target="_blank" rel="noreferrer">OPNA SKIL Í CANVAS <span>↗</span></a>
+          <a className="canvas-link" href={`https://canvas.tskoli.is/courses/1907/assignments/${project.canvasId}`} target={embedded ? "_top" : "_blank"} rel="noreferrer">SKILA VERK {project.number} Í CANVAS <span>↗</span></a>
         </section>
       </article>
 
-      <footer>
+      {!embedded && <footer>
         <span>FAGU · UPPLÝSINGATÆKNI</span>
         <span>LÆRÐU · PRÓFAÐU · LAGAÐU · SKILAÐU</span>
-      </footer>
+      </footer>}
+      </>}
     </main>
   );
 }
