@@ -11,3 +11,8 @@ export function getDb() {
 
   return drizzle(env.DB, { schema });
 }
+
+export function getContentDb(): D1Database {
+  if (!env.DB) throw new Error("Project database is unavailable");
+  return env.DB;
+}

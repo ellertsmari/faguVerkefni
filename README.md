@@ -1,4 +1,47 @@
-# vinext-starter
+# FAGU Project Board
+
+## Editing Before Class
+
+Open https://fagu-verkefnabord.ellertsmari.chatgpt.site/teacher in a normal browser.
+Sign in with the Site owner's ChatGPT account. Select a project and edit its text.
+"Vista drög" saves a private draft online. "Birta fyrir nemendur" publishes the
+project to the shared database. Editing and publishing make no AI requests and
+do not require a new Site deployment.
+
+Students keep using the existing Canvas embeds. Each new page load fetches the
+published projects with caching disabled. Open, visible student pages check for
+updates every 30 seconds and on window focus. Drafts are never in the public API.
+Canvas due dates, submission settings, and rubric points remain managed in Canvas.
+
+The teacher allowlist is checked server-side using the hosting platform's trusted
+identity headers; a student signing in does not grant editing access.
+The local development server must not be exposed publicly, since local requests
+can supply these headers directly for testing.
+
+## Local Verification
+
+After a build, initialize only the local database with:
+
+```sh
+WRANGLER_LOG_PATH=.wrangler/wrangler.log npx wrangler d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_bizarre_iron_man.sql
+npm run dev -- --host 127.0.0.1 --port 3011
+```
+
+In another terminal:
+
+```sh
+node --test tests/project-editor.test.mjs
+npx tsc --noEmit --incremental false
+npm run build
+```
+
+The integration test is restricted to localhost and exercises draft privacy,
+publishing, authentication, cross-origin rejection, validation, and stale edits.
+The initial migration is applied once per new database; hosting applies and tracks
+production migrations. Existing published and draft records take precedence over
+the original project text in the source, including after future Site deployments.
+
+## Starter Reference
 
 A clean full-stack starter running on
 [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
