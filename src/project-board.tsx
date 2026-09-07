@@ -1,12 +1,13 @@
-"use client";
+import { useEffect, useRef, useState } from "react";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-
-import { defaultProjects, type Project } from "./project-data";
+import { defaultProjects, type Level } from "./project-data";
 import PhotoGuide from "./photo-guide";
 
 const levelGlyph = { easy: "01", medium: "02", hard: "03" } as const;
+const levelKeys: Level["key"][] = ["easy", "medium", "hard"];
 const storageKey = "fagu-verkefnabord-state-v2";
+const canvasCourse = "https://canvas.tskoli.is/courses/1907/assignments/";
+const projects = defaultProjects;
 
 type PersistedState = {
   selected?: number;
@@ -14,76 +15,59 @@ type PersistedState = {
   checked?: Record<string, boolean>;
 };
 
-export default function ProjectBoard({ preview }: { preview?: Project }) {
-  const [projects, setProjects] = useState<Project[]>(preview ? [preview] : defaultProjects);
-  const [loadError, setLoadError] = useState(false);
-  const [loaded, setLoaded] = useState(Boolean(preview));
-  const [selected, setSelected] = useState(preview?.number ?? 7);
-  const [openLevel, setOpenLevel] = useState<string>("easy");
-  const [checked, setChecked] = useState<Record<string, boolean>>({});
-  const [hydrated, setHydrated] = useState(Boolean(preview));
-  const [embedded, setEmbedded] = useState(Boolean(preview));
-  const [locked, setLocked] = useState(Boolean(preview));
+function readPersistedState(): PersistedState {
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    const parsed: unknown = raw ? JSON.parse(raw) : null;
+    return parsed && typeof parsed === "object" ? (parsed as PersistedState) : {};
+  } catch {
+    // Canvas embeds may block browser storage. Reading assignments still works.
+    return {};
+  }
+}
+
+function isLevelKey(value: string | null | undefined): value is Level["key"] {
+  return levelKeys.includes(value as Level["key"]);
+}
+
+// Everything here runs in the browser only, so the initial state can be
+// derived synchronously from the URL and browser storage.
+function initialState() {
+  const params = new URLSearchParams(window.location.search);
+  const restored = readPersistedState();
+  const embedded = window.self !== window.top;
+  const fromAssignment = params.has("assignment")
+    ? projects.find((project) => project.canvasId === Number(params.get("assignment")))
+    : undefined;
+  const fromUrl = fromAssignment?.number ?? Number(params.get("verk"));
+  const selected = projects.some((project) => project.number === fromUrl)
+    ? fromUrl
+    : projects.some((project) => project.number === restored.selected)
+      ? (restored.selected as number)
+      : 7;
+  const levelParam = params.get("level") ?? restored.openLevel;
+  const openLevel: Level["key"] = isLevelKey(levelParam) ? levelParam : "easy";
+  const checked = restored.checked && typeof restored.checked === "object" && !Array.isArray(restored.checked)
+    ? restored.checked
+    : {};
+  return {
+    selected,
+    openLevel,
+    checked,
+    embedded,
+    locked: embedded || params.get("locked") === "1",
+  };
+}
+
+export default function ProjectBoard() {
+  const [initial] = useState(initialState);
+  const { embedded, locked } = initial;
+  const [selected, setSelected] = useState(initial.selected);
+  const [openLevel, setOpenLevel] = useState<Level["key"]>(initial.openLevel);
+  const [checked, setChecked] = useState<Record<string, boolean>>(initial.checked);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (preview) return;
-    const params = new URLSearchParams(window.location.search);
-    const fromAssignment = params.has("assignment") ? defaultProjects.find(project => project.canvasId === Number(params.get("assignment"))) : undefined;
-    const fromUrl = fromAssignment?.number ?? Number(params.get("verk"));
-    let restored: PersistedState | null = null;
-    try {
-      restored = JSON.parse(window.localStorage.getItem(storageKey) ?? "null");
-    } catch {
-      // Canvas embeds may block browser storage. Reading assignments still works.
-    }
-    // Browser-only preferences must be restored after hydration, including in Canvas.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setEmbedded(window.self !== window.top);
-    setLocked(window.self !== window.top || params.get("locked") === "1");
-    if (defaultProjects.some((project) => project.number === fromUrl)) {
-      setSelected(fromUrl);
-    } else if (defaultProjects.some((project) => project.number === restored?.selected)) {
-      setSelected(restored?.selected ?? 7);
-    }
-    const level = params.get("level") ?? restored?.openLevel;
-    if (level && ["easy", "medium", "hard"].includes(level)) setOpenLevel(level);
-    if (restored?.checked && typeof restored.checked === "object" && !Array.isArray(restored.checked)) {
-      setChecked(restored.checked);
-    }
-    setHydrated(true);
-  }, [preview]);
-
-  useEffect(() => {
-    if (preview) return;
-    const controller = new AbortController();
-    const refresh = async () => {
-      try {
-        const response = await fetch("/api/projects", { cache: "no-store", signal: controller.signal });
-        if (!response.ok) throw new Error("Could not load projects");
-        const data = await response.json() as { projects: Project[] };
-        setProjects(data.projects);
-        setLoadError(false);
-        setLoaded(true);
-      } catch {
-        if (!controller.signal.aborted) setLoadError(true);
-      }
-    };
-    void refresh();
-    const interval = window.setInterval(() => {
-      if (!document.hidden) void refresh();
-    }, 30000);
-    const onFocus = () => { void refresh(); };
-    window.addEventListener("focus", onFocus);
-    return () => {
-      controller.abort();
-      window.clearInterval(interval);
-      window.removeEventListener("focus", onFocus);
-    };
-  }, [preview]);
-
-  useEffect(() => {
-    if (!hydrated || preview) return;
     if (!locked) {
       const url = new URL(window.location.href);
       url.searchParams.delete("assignment");
@@ -96,7 +80,7 @@ export default function ProjectBoard({ preview }: { preview?: Project }) {
     } catch {
       // Only student checkmarks and navigation preferences are device-local.
     }
-  }, [hydrated, locked, selected, openLevel, checked, preview]);
+  }, [locked, selected, openLevel, checked]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -150,7 +134,7 @@ export default function ProjectBoard({ preview }: { preview?: Project }) {
     };
   }, []);
 
-  const project = useMemo(() => preview ?? projects.find((item) => item.number === selected) ?? projects[0], [preview, projects, selected]);
+  const project = projects.find((item) => item.number === selected) ?? projects[0];
   const activeLevel = project.levels.find((level) => level.key === openLevel) ?? project.levels[0];
   const activeLevelNumber = project.levels.findIndex((level) => level.key === activeLevel.key) + 1;
   const doneCount = activeLevel.steps.filter((_, index) => checked[`${project.number}-${activeLevel.key}-${index}`]).length;
@@ -162,15 +146,9 @@ export default function ProjectBoard({ preview }: { preview?: Project }) {
     document.getElementById("project")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const updateOpenLevel = (level: string) => {
-    setOpenLevel(level);
-  };
-
   return (
     <main className={`site-shell${embedded ? " embedded" : ""}${locked ? " locked" : ""}`}>
       <canvas ref={canvasRef} className="ambient" aria-hidden="true" />
-      {!hydrated || !loaded ? <div className="loading-project" role="status">{loadError ? <>Ekki tókst að sækja verkefnin. <button onClick={() => window.location.reload()}>Reyna aftur</button></> : "Hleð verkefni…"}</div> : <>
-      {loadError && <p role="alert">Ekki tókst að athuga nýjustu breytingar. Síðan reynir aftur sjálfkrafa.</p>}
       <header className="topbar">
         <div className="brand"><span>FAGU</span><i /> {locked ? `VERK ${String(project.number).padStart(2, "0")}` : "STAFRÆNN VERKFÆRAKASSI"}</div>
         <div className="status"><b>{doneCount}</b> / {totalCount} SKREF · HLUTI {activeLevelNumber}</div>
@@ -219,7 +197,7 @@ export default function ProjectBoard({ preview }: { preview?: Project }) {
             const expanded = openLevel === level.key;
             return (
               <div className={`level-card ${level.key} ${expanded ? "expanded" : ""}`} key={level.key}>
-                <button className="level-trigger" onClick={() => updateOpenLevel(level.key)} aria-expanded={expanded}>
+                <button className="level-trigger" onClick={() => setOpenLevel(level.key)} aria-expanded={expanded}>
                   <span className="level-number">{levelGlyph[level.key]}</span>
                   <span className="level-title"><small>{level.kicker}</small><b>{level.label}</b></span>
                   <span className="points">+{level.points} STIG</span>
@@ -257,16 +235,14 @@ export default function ProjectBoard({ preview }: { preview?: Project }) {
             {project.submission ? <p>{project.submission}</p> : <p>Skilaðu <strong>Hluta 1 einum</strong> eða bættu við Hluta 2 og/eða Hluta 3. Settu allt í eitt Canvas-skil: eina PDF/ZIP-skrá, virkan hlekk eða texta og viðhengi. Merktu greinilega <b>Hluti 1</b>, <b>Hluti 2</b> og <b>Hluti 3</b>. Opnaðu skrár og hlekki áður en þú lýkur skilum.</p>}
             {project.group && <p className="group-note">Einn nemandi skilar fyrir hópinn. Nöfn, ábyrgð og framlag allra þurfa að koma fram.</p>}
           </div>
-          <a className="canvas-link" href={`https://canvas.tskoli.is/courses/1907/assignments/${project.canvasId}`} target={embedded ? "_top" : "_blank"} rel="noreferrer">SKILA VERK {project.number} Í CANVAS <span>↗</span></a>
+          <a className="canvas-link" href={`${canvasCourse}${project.canvasId}`} target={embedded ? "_top" : "_blank"} rel="noreferrer">SKILA VERK {project.number} Í CANVAS <span>↗</span></a>
         </section>
       </article>
 
       {!embedded && <footer>
         <span>FAGU · UPPLÝSINGATÆKNI</span>
-        <a href="/teacher" target="_top">Kennaraaðgangur</a>
         <span>LÆRÐU · PRÓFAÐU · LAGAÐU · SKILAÐU</span>
       </footer>}
-      </>}
     </main>
   );
 }

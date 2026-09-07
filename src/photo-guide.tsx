@@ -31,8 +31,7 @@ export default function PhotoGuide() {
         {guide.key === "inna" && <p>Skjámyndirnar eru úr kennaraaðgangi. Útlit nemendaaðgangs getur verið öðruvísi. Ef Breyta mynd vantar skaltu fá kennara til að aðstoða; ekki breyta aðgangsstillingum.</p>}
         <ol>{guide.steps.map(([title, text, file]) => <li key={file}><h4>{title}</h4><p>{text}</p>
           {/* Actual interface captures; identifying pixels were permanently replaced before publication. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/guides/${guide.key}-${file}.png`} alt={`${guide.name}: ${title}. Persónuupplýsingar afmáðar; aðgerð afmörkuð með appelsínugulum ramma.`} loading="lazy" />
+          <img src={`${import.meta.env.BASE_URL}guides/${guide.key}-${file}.png`} alt={`${guide.name}: ${title}. Persónuupplýsingar afmáðar; aðgerð afmörkuð með appelsínugulum ramma.`} loading="lazy" />
         </li>)}</ol>
         {guide.key === "canvas" && <p><a href="https://community.instructure.com/en/kb/articles/662885-how-do-i-add-a-profile-picture-in-my-user-account" target="_blank" rel="noopener noreferrer">Opinberar Canvas-leiðbeiningar um prófílmynd</a></p>}
       </div>

@@ -1,143 +1,90 @@
-# FAGU Project Board
+# FAGU verkefnaborð
 
-## Editing Before Class
+Static project board for the FAGU course (Tækniskólinn, autumn 2026). Nine
+projects, each with three parts: a 6-point base part and two optional 2-point
+additions. Students open the board inside Canvas or on its own page, tick off
+steps as they go, and follow the Canvas link to submit.
 
-Open https://fagu-verkefnabord.ellertsmari.chatgpt.site/teacher in a normal browser.
-Sign in with the Site owner's ChatGPT account. Select a project and edit its text.
-"Vista drög" saves a private draft online. "Birta fyrir nemendur" publishes the
-project to the shared database. Editing and publishing make no AI requests and
-do not require a new Site deployment.
+Live site: https://ellertsmari.github.io/faguVerkefni/
 
-Students keep using the existing Canvas embeds. Each new page load fetches the
-published projects with caching disabled. Open, visible student pages check for
-updates every 30 seconds and on window focus. Drafts are never in the public API.
-Canvas due dates, submission settings, and rubric points remain managed in Canvas.
+There is no backend. All project text lives in one file in this repository,
+and every push to `main` rebuilds and redeploys the site automatically.
 
-The teacher allowlist is checked server-side using the hosting platform's trusted
-identity headers; a student signing in does not grant editing access.
-The local development server must not be exposed publicly, since local requests
-can supply these headers directly for testing.
+## Editing a project
 
-## Local Verification
+Edit `src/project-data.ts`. Each project is an object with:
 
-After a build, initialize only the local database with:
+| Field | Meaning |
+| --- | --- |
+| `number` | Verk number shown to students. Projects are sorted by this. |
+| `title`, `intro` | Heading and one-paragraph introduction. |
+| `tools`, `ai` | The "Verkfæri" and "AI-regla" boxes. |
+| `canvasId` | The Canvas assignment id. Used for the submit link and for `?assignment=` embeds. |
+| `group` | Optional. Marks a group project and adds the group submission note. |
+| `scenario` | Optional. A boxed "read this first" text, used for the customer email in Verk 8. |
+| `submission` | Optional. Replaces the default submission instructions. |
+| `photoGuide` | Optional. Shows the Inna and Canvas profile-photo guides (Verk 6). |
+| `levels` | Exactly three parts with keys `easy`, `medium`, `hard`, each with `label`, `kicker`, `points`, `task`, `steps` and `deliverable`. |
 
-```sh
-WRANGLER_LOG_PATH=.wrangler/wrangler.log npx wrangler d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_bizarre_iron_man.sql
-npm run dev -- --host 127.0.0.1 --port 3011
+Keep the points at 6, 2 and 2. The test suite checks this and the Canvas ids.
+
+You can edit the file directly on GitHub. Once the commit lands on `main`,
+the "Deploy to GitHub Pages" action runs the type check, lint and tests, then
+publishes. Allow a minute or two before reloading the site. Students on an
+already-open page see the change on their next page load.
+
+The profile-photo guide texts and screenshots are in `src/photo-guide.tsx` and
+`public/guides/`. Identifying details in the screenshots were permanently
+blurred before they were added.
+
+## Embedding in Canvas
+
+Each Canvas assignment embeds the board in an iframe. When the page detects
+that it is inside a frame it locks to a single project, hides the hero and the
+project switcher, and points the submit button at the parent window.
+
+Use one of these URL forms:
+
+```
+https://ellertsmari.github.io/faguVerkefni/?assignment=27490
+https://ellertsmari.github.io/faguVerkefni/?verk=6
+https://ellertsmari.github.io/faguVerkefni/?verk=6&locked=1
 ```
 
-In another terminal:
+`assignment` looks the project up by Canvas id, `verk` by project number, and
+`locked=1` forces single-project mode outside an iframe, which is handy for
+previewing what students will see. `level=easy|medium|hard` opens a specific
+part.
+
+Checkmarks and the last selected project are stored in the student's browser
+only. Nothing is sent anywhere.
+
+## Working locally
+
+Requires Node.js 22 or newer.
 
 ```sh
-node --test tests/project-editor.test.mjs
-npx tsc --noEmit --incremental false
-npm run build
-```
-
-The integration test is restricted to localhost and exercises draft privacy,
-publishing, authentication, cross-origin rejection, validation, and stale edits.
-The initial migration is applied once per new database; hosting applies and tracks
-production migrations. Existing published and draft records take precedence over
-the original project text in the source, including after future Site deployments.
-
-## Starter Reference
-
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
-
-## Prerequisites
-
-- Node.js `>=22.13.0`
-
-## Quick Start
-
-```bash
 npm install
-npm run dev
-npm run build
+npm run dev        # http://localhost:5173/faguVerkefni/
+npm run typecheck
+npm run lint
+npm test           # builds, then runs tests/
 ```
 
-This starter does not use `wrangler.jsonc`.
+The build is a plain folder of HTML, CSS, JS and images in `dist/`. It is
+served from the `/faguVerkefni/` sub-path on GitHub Pages. To host it at a
+domain root instead, build with `VITE_BASE=/ npm run build`.
 
-## Included Shape
+## Deployment
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+`.github/workflows/deploy.yml` builds and deploys on every push to `main`
+using GitHub Pages with the "GitHub Actions" source. The first run enables
+Pages on the repository; if it fails with a permissions error, open the repo
+Settings → Pages and set the source to "GitHub Actions", then rerun the job.
 
-## Workspace Auth Headers
+## History
 
-Signed-in visitors receive both `oai-authenticated-user-id` and `oai-authenticated-user-email`. Private Sites require every visitor to sign in; public Sites may also have anonymous visitors, for whom neither header is present.
-
-The user ID is stable for the same user on the same Site and different across Sites. Email and name are intended for display or contact purposes.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const userId = requestHeaders.get("oai-authenticated-user-id");
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
-```
-
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+The board was first built with ChatGPT on ChatGPT Sites, with a teacher
+editor and a database so that project text could be changed without touching
+code. That backend was removed when the project moved to GitHub, since the
+text is now edited directly in this repository.
