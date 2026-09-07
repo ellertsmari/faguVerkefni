@@ -16,10 +16,28 @@ export type Project = {
   ai: string;
   canvasId: number;
   group?: boolean;
+  scenario?: string;
+  submission?: string;
+  photoGuide?: boolean;
   levels: Level[];
 };
 
 export const defaultProjects: Project[] = [
+  {
+    number: 6,
+    title: "Prófílmynd í Innu og Canvas",
+    intro: "Taktu skýra mynd af þér, settu sömu mynd sem prófílmynd í Innu og Canvas og staðfestu að hún sé vistuð. Byrjaðu á Hluta 1; hinir tveir eru valfrjáls viðbót.",
+    tools: "Sími eða myndavél · Inna og Canvas í vafra · Word eða Docs til að búa til PDF",
+    ai: "AI 0: Ekki setja andlitsmyndir eða skjámyndir úr reikningum í AI. Venjulegur skurður og birtustilling eru leyfð.",
+    canvasId: 27490,
+    photoGuide: true,
+    submission: "Skilaðu einni PDF-skrá í þessu Canvas-verkefni. Hluti 1: tvær afskornar skjámyndir sem sýna nýju prófílmyndina og úr hvoru kerfi hún er. Hluti 2, ef valinn: fyrsta og bætta myndin með tveimur skýringum. Hluti 3, ef valinn: 4–6 setninga ígrundun. Merktu hlutana og opnaðu PDF-skrána áður en þú skilar. Ekki birta kennitölu, netfang, einkunnir eða upplýsingar um annað fólk. Skilin fara til kennara, ekki á opinberan vef.",
+    levels: [
+      { key: "easy", label: "Grunnur", kicker: "Byrjaðu hér", points: 6, task: "Taktu eigin prófílmynd og vistaðu hana í báðum kerfum.", steps: ["Þurrkaðu linsuna. Stattu við einfaldan bakgrunn, með mjúka birtu framan á andlitið og vélina í augnhæð.", "Taktu skýra höfuð- og herðamynd af þér. Skildu eftir pláss fyrir hringlaga skurð. Vistaðu sem JPEG eða PNG.", "Settu sömu mynd í Innu og Canvas. Opnaðu myndaleiðbeiningarnar hér fyrir neðan ef þú þarft hjálp.", "Endurhladdu báðum síðum og athugaðu að myndin haldist. Settu tvær afskornar skjámyndir sem sönnun í eitt PDF-skjal."], deliverable: "Sama þekkjanlega mynd vistuð í báðum kerfum og tvær öruggar skjámyndir. Metið er hvort verkefnið sé leyst, ekki útlit þitt eða verð myndavélar." },
+      { key: "medium", label: "Viðbót", kicker: "Bættu myndina", points: 2, task: "Bættu fyrstu myndina með tveimur meðvituðum breytingum.", steps: ["Berðu saman fyrstu tilraun og nýja mynd. Breyttu t.d. lýsingu, bakgrunni eða sjónarhorni.", "Sýndu báðar myndir og útskýrðu tvær breytingar, eina setningu um hvora.", "Notaðu bættu myndina í báðum kerfum og uppfærðu skjámyndirnar í Hluta 1."], deliverable: "Fyrsta og bætta myndin ásamt tveimur skýringum. Engar fegrunarsíur eða AI-breytingar á andliti." },
+      { key: "hard", label: "Viðbót", kicker: "Andlit og traust", points: 2, task: "Skrifaðu 4–6 setningar um manneskjuna á bak við verkið.", steps: ["Útskýrðu hvernig prófílmynd getur hjálpað viðskiptavini að þekkja hver sinnir verkinu.", "Gefðu dæmi úr iðngrein: hvað breytist þegar viðskiptavinur sér bæði verkið og hver vann það?", "Útskýrðu hvers vegna mynd ein og sér sannar ekki hæfni eða heiðarleika. Tengdu traust líka við gæði, ábyrgð og skýr samskipti."], deliverable: "Stutt ígrundun með raunhæfu dæmi og skýrum fyrirvara um takmarkanir prófílmyndar." },
+    ],
+  },
   {
     number: 5,
     title: "Myndaskýrsla og PDF",
@@ -34,15 +52,17 @@ export const defaultProjects: Project[] = [
     ],
   },
   {
-    number: 6,
+    number: 8,
     title: "Fagleg samskipti",
     intro: "Viðskiptavinur sendir óskýra beiðni. Svaraðu kurteislega, fáðu upplýsingarnar sem vantar og forðastu óraunhæf loforð.",
     tools: "Canvas textaskil eða tölvupóstsdrög · PDF eða annað tilbúið viðhengi",
     ai: "AI 1 — AI má hjálpa við málfar, en ekki setja inn nöfn, netföng eða persónuupplýsingar.",
     canvasId: 24136,
+    scenario: "Þetta er tilbúin æfing. Þú ert nemi hjá þjónustufyrirtæki og átt að semja svar, ekki senda raunverulegan tölvupóst. Jón skrifar: „Sæl/l. Getið þið sett upp hillur hjá mér? Ég er með eitthvað efni og þarf þetta fljótt. Hvað kostar þetta og getið þið komið í vikunni? Kveðja, Jón.“ Þú veist ekki fjölda, mál, efni, aðstæður eða staðsetningu. Ekki búa til verð eða lofa komu áður en þetta liggur fyrir.",
+    submission: "Skilaðu einni PDF-skrá: Hluti 1 er tölvupóstsdrögin. Ef þú gerir Hluta 2 skaltu bæta gátlistanum við sem næstu síðu. Hluti 3 er lokaútgáfa svarsins og tvær línur um endurgjöf og breytingu. Merktu hlutana skýrt. Ekki senda póst til raunverulegs viðskiptavinar.",
     levels: [
-      { key: "easy", label: "Auðvelt", kicker: "Örugg byrjun", points: 6, task: "Skrifaðu svar við óskýru erindi Jóns.", steps: ["Settu skýra efnislínu.", "Notaðu ávarp og staðfestu hvað þú skilur úr erindinu.", "Spyrðu 2–3 skýrra spurninga um verð, umfang eða tímasetningu.", "Ljúktu með næsta skrefi og kveðju."], deliverable: "Texti tölvupósts með efnislínu, ávarpi, meginmáli og kveðju." },
-      { key: "medium", label: "Miðlungs", kicker: "Betri afhending", points: 2, task: "Veldu rétt fylgigagn og hafðu það auðþekkjanlegt.", steps: ["Veldu skrá sem styður erindið eða búðu til tilbúið sýnishorn.", "Gefðu skránni lýsandi heiti.", "Nefndu viðhengið í tölvupóstinum og segðu hvað það inniheldur."], deliverable: "Tölvupóstsdrögin og rétt nefnt viðhengi eða skjámynd af því." },
+      { key: "easy", label: "Grunnur", kicker: "Byrjaðu hér", points: 6, task: "Lestu erindi Jóns hér að ofan og skrifaðu faglegt svar, um 80–150 orð.", steps: ["Settu skýra efnislínu um hillurnar.", "Notaðu ávarp og staðfestu hvað þú skilur úr erindinu.", "Spyrðu 2–3 afmarkaðra spurninga sem hjálpa þér að áætla verkið, t.d. um mál, efni og staðsetningu.", "Útskýrðu næsta skref eftir að Jón svarar. Ekki lofa verði eða tíma. Ljúktu með kveðju."], deliverable: "Tölvupóstsdrög með efnislínu, ávarpi, skýrum spurningum, næsta skrefi og kveðju." },
+      { key: "medium", label: "Viðbót", kicker: "Gagnlegt viðhengi", points: 2, task: "Búðu til einnar síðu gátlista fyrir vettvangsskoðun.", steps: ["Skráðu 3–5 atriði sem þarf að mæla eða staðfesta áður en hægt er að gera tilboð.", "Notaðu lýsandi heiti, t.d. Gatlisti_hillur.pdf. Ekki búa til tilboðsverð.", "Nefndu gátlistann í tölvupóstinum og útskýrðu hvernig Jón getur notað hann."], deliverable: "Tölvupóstsdrögin og gátlistinn á næstu síðu í sama PDF-skjali." },
       { key: "hard", label: "Erfitt", kicker: "Viðskiptavinapróf", points: 2, task: "Prófaðu hvort annar aðili geti brugðist rétt við.", steps: ["Fáðu jafningja til að lesa svarið sem viðskiptavinur.", "Skráðu eitt sem var óskýrt eða vantaði.", "Bættu svarið án þess að lofa verði eða tíma sem þú getur ekki staðið við."], deliverable: "Lokaútgáfa og tvær stuttar línur: hvað var óskýrt og hvað breyttist." },
     ],
   },
@@ -61,7 +81,7 @@ export const defaultProjects: Project[] = [
     ],
   },
   {
-    number: 8,
+    number: 9,
     title: "AI-notkun og sannprófun",
     intro: "AI svarar hratt en getur haft rangt fyrir sér. Prófaðu svar, finndu veikleika og taktu sjálfstæða afstöðu.",
     tools: "Microsoft Copilot með skólareikningi · reiknivél · opinber eða traust heimild",
@@ -74,7 +94,7 @@ export const defaultProjects: Project[] = [
     ],
   },
   {
-    number: 9,
+    number: 10,
     title: "Vefveiðar og stafrænt öryggi",
     intro: "Greindu tilbúin svikaskilaboð án þess að opna grunsamlega hlekki og settu upp öruggt viðbragðsferli.",
     tools: "Sýnidæmin í Canvas · vafri án þess að opna grunsamlegar slóðir",
@@ -87,7 +107,7 @@ export const defaultProjects: Project[] = [
     ],
   },
   {
-    number: 10,
+    number: 11,
     title: "Tilboð, tímaskrá og PDF",
     intro: "Búðu til skriflegt tilboð þar sem efni, vinna, forsendur, VSK og heildarverð stemma.",
     tools: "Excel eða Sheets · tilboðssniðmát · PDF · tímaskrá",
@@ -100,7 +120,7 @@ export const defaultProjects: Project[] = [
     ],
   },
   {
-    number: 11,
+    number: 12,
     title: "Einföld 3D-hönnun",
     intro: "Hannaðu festihlut, merkiplötu eða millistykki sem leysir eitt mælanlegt vandamál í verkstæði.",
     tools: "Tinkercad 3D, Onshape Education eða annað samþykkt CAD-verkfæri",
@@ -113,7 +133,7 @@ export const defaultProjects: Project[] = [
     ],
   },
   {
-    number: 12,
+    number: 13,
     title: "Ferilskrá og stafrænn vinnumappi",
     intro: "Sýndu á einni síðu hver þú ert sem nemi og veldu sönnunargögn sem sýna hvað þú getur.",
     tools: "Word, Google Docs eða Canva · PDF · verkefnamappa",
@@ -125,4 +145,4 @@ export const defaultProjects: Project[] = [
       { key: "hard", label: "Erfitt", kicker: "Sækja um", points: 2, task: "Tengdu gögnin við raunhæft tækifæri.", steps: ["Skrifaðu stutt umsóknarskilaboð fyrir tilbúið nema- eða sumarstarf.", "Fáðu jafningja til að lesa ferilskrána sem atvinnurekandi.", "Skráðu og framkvæmdu 2 breytingar eftir yfirferðina."], deliverable: "Umsóknarskilaboð, loka-PDF og tvær línur um breytingarnar sem þú gerðir." },
     ],
   },
-];
+].sort((a, b) => a.number - b.number) as Project[];

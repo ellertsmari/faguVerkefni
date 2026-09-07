@@ -23,11 +23,18 @@ async function rows() {
   return new Map(result.results.map((row) => [row.number, row]));
 }
 
+function currentContent(json: string | null | undefined, original: Project): Project {
+  if (!json) return original;
+  const saved = JSON.parse(json) as Project;
+  // A number can be reused after a timetable change; assignment identity cannot.
+  return saved.canvasId === original.canvasId ? { ...saved, number: original.number } : original;
+}
+
 export async function publishedProjects(): Promise<Project[]> {
   const content = await rows();
   return defaultProjects.map((original) => {
     const row = content.get(original.number);
-    return row?.published_json ? JSON.parse(row.published_json) : original;
+    return currentContent(row?.published_json, original);
   });
 }
 
@@ -37,7 +44,7 @@ export async function editorProjects(): Promise<EditorRecord[]> {
     const row = content.get(original.number);
     const json = row?.draft_json ?? row?.published_json;
     return {
-      project: json ? JSON.parse(json) : original,
+      project: currentContent(json, original),
       revision: row?.revision ?? 0,
       hasDraft: Boolean(row?.draft_json),
       publishedAt: row?.published_at ?? null,

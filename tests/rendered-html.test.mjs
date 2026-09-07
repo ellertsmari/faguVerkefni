@@ -36,7 +36,7 @@ test("server renders the FAGU shell", async () => {
 });
 
 test("locks an embedded assignment to its requested project", async () => {
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const page = await readFile(new URL("../app/project-board.tsx", import.meta.url), "utf8");
   assert.match(page, /window\.self !== window\.top/);
   assert.match(page, /params\.get\("locked"\) === "1"/);
   assert.match(page, /\{!locked && <nav className="project-nav"/);
@@ -45,9 +45,10 @@ test("locks an embedded assignment to its requested project", async () => {
 });
 
 test("keeps every redesigned project mapped to its Canvas assignment", async () => {
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
-  for (const [number, canvasId] of [[5, 24135], [6, 24136], [7, 24134], [8, 24137], [9, 24138], [10, 24139], [11, 24140], [12, 24142]]) {
-    assert.match(page, new RegExp(`number: ${number},[\\s\\S]*?canvasId: ${canvasId},`));
+  const page = await readFile(new URL("../app/project-board.tsx", import.meta.url), "utf8");
+  const data = await readFile(new URL("../app/project-data.ts", import.meta.url), "utf8");
+  for (const [number, canvasId] of [[5, 24135], [6, 27490], [7, 24134], [8, 24136], [9, 24137], [10, 24138], [11, 24139], [12, 24140], [13, 24142]]) {
+    assert.match(data, new RegExp(`number: ${number},[\\s\\S]*?canvasId: ${canvasId},`));
   }
   assert.equal((page.match(/AFHENDING ÚR ÞESSUM HLUTA/g) ?? []).length, 1);
   assert.match(page, /Einn hluti eða allir þrír/);

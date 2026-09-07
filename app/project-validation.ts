@@ -12,6 +12,7 @@ export function validateProject(value: unknown): Project {
   const data = value as Record<string, unknown>;
   const original = defaultProjects.find((project) => project.number === data.number);
   if (!original) throw new Error("Óþekkt verkefni.");
+  if (data.canvasId !== original.canvasId) throw new Error("Verkefnaröð hefur breyst. Endurhlaðið ritlinum.");
   if (!Array.isArray(data.levels) || data.levels.length !== 3) {
     throw new Error("Verkefnið þarf að hafa þrjá hluta.");
   }
@@ -21,6 +22,8 @@ export function validateProject(value: unknown): Project {
     intro: requiredText(data.intro, 12000),
     tools: requiredText(data.tools, 4000),
     ai: requiredText(data.ai, 4000),
+    scenario: typeof data.scenario === "string" && data.scenario.trim() ? requiredText(data.scenario, 12000) : undefined,
+    submission: typeof data.submission === "string" && data.submission.trim() ? requiredText(data.submission, 12000) : undefined,
     levels: original.levels.map((originalLevel, index) => {
       const level = (data.levels as Record<string, unknown>[])[index];
       if (!level || level.key !== originalLevel.key || !Array.isArray(level.steps) ||

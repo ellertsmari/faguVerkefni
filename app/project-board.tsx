@@ -3,9 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { defaultProjects, type Project } from "./project-data";
+import PhotoGuide from "./photo-guide";
 
 const levelGlyph = { easy: "01", medium: "02", hard: "03" } as const;
-const storageKey = "fagu-verkefnabord-state";
+const storageKey = "fagu-verkefnabord-state-v2";
 
 type PersistedState = {
   selected?: number;
@@ -28,7 +29,8 @@ export default function ProjectBoard({ preview }: { preview?: Project }) {
   useEffect(() => {
     if (preview) return;
     const params = new URLSearchParams(window.location.search);
-    const fromUrl = Number(params.get("verk"));
+    const fromAssignment = params.has("assignment") ? defaultProjects.find(project => project.canvasId === Number(params.get("assignment"))) : undefined;
+    const fromUrl = fromAssignment?.number ?? Number(params.get("verk"));
     let restored: PersistedState | null = null;
     try {
       restored = JSON.parse(window.localStorage.getItem(storageKey) ?? "null");
@@ -84,6 +86,7 @@ export default function ProjectBoard({ preview }: { preview?: Project }) {
     if (!hydrated || preview) return;
     if (!locked) {
       const url = new URL(window.location.href);
+      url.searchParams.delete("assignment");
       url.searchParams.set("verk", String(selected));
       url.searchParams.set("level", openLevel);
       window.history.replaceState({}, "", url);
@@ -178,7 +181,7 @@ export default function ProjectBoard({ preview }: { preview?: Project }) {
         <h1 id="page-title">Veldu hversu<br /><em>langt þú ferð.</em></h1>
         <p className="hero-copy">Byrjaðu á græna hlutanum. Bættu gulum og bláum við ef þú vilt meiri áskorun og fleiri stig.</p>
         <div className="rule-strip">
-          <span><b>1 DAGUR</b> Verk 5, 6 og 8–12</span>
+          <span><b>1 DAGUR</b> Verk 5, 6 og 8–13</span>
           <span><b>HÓPVERKEFNI</b> Verk 7 er kynnt sérstaklega</span>
           <span><b>6 + 2 + 2</b> Samtals 10 stig</span>
         </div>
@@ -210,6 +213,8 @@ export default function ProjectBoard({ preview }: { preview?: Project }) {
         </div>
 
         <section className="levels" aria-label="Verkefnahlutar">
+          <p>Byrjaðu á Hluta 1 (6 stig). Hlutar 2 og 3 eru valfrjáls viðbót, 2 stig hvor. Samtals 10 stig.</p>
+          {project.scenario && <aside className="scenario"><h3>Aðstæður: lestu þetta fyrst</h3><p>{project.scenario}</p></aside>}
           {project.levels.map((level) => {
             const expanded = openLevel === level.key;
             return (
@@ -242,12 +247,14 @@ export default function ProjectBoard({ preview }: { preview?: Project }) {
           })}
         </section>
 
+        {project.photoGuide && <PhotoGuide />}
+
         <section className="submission" aria-labelledby="submission-title">
           <div className="submission-mark" aria-hidden="true">↗</div>
           <div>
             <p className="eyebrow">SKILAÐU Í CANVAS</p>
             <h3 id="submission-title">Einn hluti eða allir þrír</h3>
-            <p>Skilaðu <strong>Hluta 1 einum</strong> eða bættu við Hluta 2 og/eða Hluta 3. Settu allt í eitt Canvas-skil: eina PDF/ZIP-skrá, virkan hlekk eða texta og viðhengi. Merktu greinilega <b>Hluti 1</b>, <b>Hluti 2</b> og <b>Hluti 3</b>. Opnaðu skrár og hlekki áður en þú lýkur skilum.</p>
+            {project.submission ? <p>{project.submission}</p> : <p>Skilaðu <strong>Hluta 1 einum</strong> eða bættu við Hluta 2 og/eða Hluta 3. Settu allt í eitt Canvas-skil: eina PDF/ZIP-skrá, virkan hlekk eða texta og viðhengi. Merktu greinilega <b>Hluti 1</b>, <b>Hluti 2</b> og <b>Hluti 3</b>. Opnaðu skrár og hlekki áður en þú lýkur skilum.</p>}
             {project.group && <p className="group-note">Einn nemandi skilar fyrir hópinn. Nöfn, ábyrgð og framlag allra þurfa að koma fram.</p>}
           </div>
           <a className="canvas-link" href={`https://canvas.tskoli.is/courses/1907/assignments/${project.canvasId}`} target={embedded ? "_top" : "_blank"} rel="noreferrer">SKILA VERK {project.number} Í CANVAS <span>↗</span></a>

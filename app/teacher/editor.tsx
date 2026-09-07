@@ -58,7 +58,7 @@ export default function Editor() {
     setError("");
   }
 
-  function change(field: "title" | "intro" | "tools" | "ai", value: string) {
+  function change(field: "title" | "intro" | "tools" | "ai" | "scenario" | "submission", value: string) {
     setProject((current) => current ? { ...current, [field]: value } : current);
     setMessage("");
   }
@@ -149,6 +149,8 @@ export default function Editor() {
             <legend>Verk {selected} · Verkefnalýsing</legend>
             <label>Heiti verkefnis<input value={project.title} onChange={(e) => change("title", e.target.value)} required maxLength={200} /></label>
             <label>Inngangur<textarea value={project.intro} onChange={(e) => change("intro", e.target.value)} required maxLength={12000} rows={4} /></label>
+            <label>Aðstæður eða erindi (valfrjálst)<textarea value={project.scenario ?? ""} onChange={(e) => change("scenario", e.target.value)} maxLength={12000} rows={4} /></label>
+            <label>Nákvæm skil (valfrjálst)<textarea value={project.submission ?? ""} onChange={(e) => change("submission", e.target.value)} maxLength={12000} rows={4} /></label>
             <label>Verkfæri<textarea value={project.tools} onChange={(e) => change("tools", e.target.value)} required maxLength={4000} rows={2} /></label>
             <label>AI-regla<textarea value={project.ai} onChange={(e) => change("ai", e.target.value)} required maxLength={4000} rows={2} /></label>
           </fieldset>

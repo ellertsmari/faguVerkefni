@@ -37,8 +37,9 @@ test("teacher drafts and publishing are shared, private, and concurrency-safe", 
   let current = (await readEditor()).find((record) => record.project.number === 6);
   const edited = structuredClone(original);
   edited.intro += " [Local editor integration test]";
-  await t.test("anonymous readers see all eight projects without teacher data", async () => {
-    assert.equal((await readPublished()).length, 8);
+  await t.test("anonymous readers see all nine projects without teacher data", async () => {
+    assert.equal((await readPublished()).length, 9);
+    assert.deepEqual((await readPublished()).map(p => p.number), [5,6,7,8,9,10,11,12,13]);
     const response = await fetch(base + "/api/teacher/projects");
     assert.equal(response.status, 403);
     assert.equal((await fetch(base + "/api/teacher/projects", { headers: student })).status, 403);
@@ -51,6 +52,7 @@ test("teacher drafts and publishing are shared, private, and concurrency-safe", 
     assert.equal((await save(edited, current.revision, "publish", teacher, "https://example.invalid")).status, 403);
   });
   await t.test("invalid content is rejected before saving", async () => {
+    assert.equal((await save({ ...edited, canvasId: 24136 }, current.revision, "publish")).status, 400);
     assert.equal((await save({ ...edited, title: "" }, current.revision, "publish")).status, 400);
     assert.equal((await save(edited, -1, "publish")).status, 400);
   });
