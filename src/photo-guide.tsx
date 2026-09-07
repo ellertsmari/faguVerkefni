@@ -18,11 +18,11 @@ const guides = [
 export default function PhotoGuide() {
   return <section className="photo-guides" aria-label="Myndaleiðbeiningar">
     <h3>Hjálp þegar þú þarft hana</h3>
-    <details><summary>Góð prófílmynd og manneskjan á bak við verkið</summary>
+    <details><summary>Góð selfie og manneskjan á bak við verkið</summary>
       <div className="guide-content">
-        <p>Notaðu mjúka dagsbirtu framan á andlitið, ekki bjartan glugga fyrir aftan þig. Hafðu vélina í augnhæð og einfaldan bakgrunn. Horfðu í linsuna, hafðu eðlilegan svip og sýndu höfuð og herðar. Prófaðu myndina litla og hringlaga: sést andlitið enn skýrt?</p>
-        <p>Góð prófílmynd þarf ekki dýra vél, sérstök föt eða fegrunarsíu. Hún á að sýna þig eins og þú ert. Forðastu annað fólk í myndinni og persónulegar upplýsingar í bakgrunni.</p>
-        <p>Viðskiptavinur sem sér andlitið á bak við vöru eða þjónustu getur átt auðveldara með að þekkja þann sem vinnur verkið og vita við hvern á að tala. Það getur aukið persónuleg tengsl og traust. Mynd sannar þó hvorki hæfni né heiðarleika: vönduð vinna, skýrar upplýsingar og efnd loforð þurfa að standa á bak við hana.</p>
+        <p>Þú þarft bara símann þinn. Snúðu þér að glugga eða ljósi svo birtan lendi á andlitinu, ekki fyrir aftan þig. Haltu símanum í augnhæð eða fáðu vin til að taka myndina. Hafðu einfaldan bakgrunn, horfðu í myndavélina, hafðu eðlilegan svip og láttu höfuð og herðar sjást. Prófaðu að minnka myndina í hring í huganum: sést andlitið enn skýrt?</p>
+        <p>Góð prófílmynd þarf ekki sérstök föt, betri síma eða síu. Hún á að sýna þig eins og þú ert dags daglega. Forðastu annað fólk á myndinni og persónulegar upplýsingar í bakgrunni.</p>
+        <p>Viðskiptavinur sem sér andlitið á bak við vöru eða þjónustu veit við hvern hann er að tala og á auðveldara með að treysta verkinu. Mynd sannar þó hvorki hæfni né heiðarleika: vönduð vinna, skýr svör og efnd loforð þurfa að standa á bak við hana.</p>
       </div>
     </details>
     {guides.map(guide => <details key={guide.key}>
