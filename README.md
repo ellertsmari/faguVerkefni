@@ -77,10 +77,11 @@ domain root instead, build with `VITE_BASE=/ npm run build`.
 
 ## Deployment
 
-`.github/workflows/deploy.yml` builds and deploys on every push to `main`
-using GitHub Pages with the "GitHub Actions" source. The first run enables
-Pages on the repository; if it fails with a permissions error, open the repo
-Settings → Pages and set the source to "GitHub Actions", then rerun the job.
+`.github/workflows/deploy.yml` builds and deploys on every push to `main`.
+Pages must be enabled once on the repository: open Settings → Pages and set
+"Build and deployment → Source" to "GitHub Actions". Until that is done the
+`configure-pages` step fails. After enabling it, rerun the failed workflow
+from the Actions tab or push any commit.
 
 ## History
 
