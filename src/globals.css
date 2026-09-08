@@ -73,6 +73,7 @@ h1 em { color: var(--yellow); font-style: normal; }
 .points { color: var(--accent); font-family: "Courier New", monospace; font-size: 12px; font-weight: 700; letter-spacing: .12em; }
 .toggle { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); font-size: 22px; color: var(--accent); }
 .level-body { display: grid; grid-template-columns: minmax(220px,.68fr) 1.32fr; gap: 34px; padding: 4px 32px 32px 112px; animation: reveal .35s ease both; }
+.level-body[hidden] { display: none; }
 .task { margin: 12px 0 0; font-size: 19px; line-height: 1.5; color: var(--paper); }
 .level-body ol { list-style: none; counter-reset: steps; margin: 0; padding: 0; }
 .level-body li { counter-increment: steps; border-top: 1px solid var(--line); }

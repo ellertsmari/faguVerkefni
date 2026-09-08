@@ -5,6 +5,11 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
 
+test("collapsed project parts stay hidden despite grid layout", async () => {
+  const css = await read("src/globals.css");
+  assert.match(css, /\.level-body\[hidden\]\s*\{\s*display:\s*none;/);
+});
+
 test("static build contains the FAGU shell and its assets", async () => {
   const html = await read("dist/index.html");
   assert.match(html, /<title>FAGU · Stafrænn verkfærakassi<\/title>/);
