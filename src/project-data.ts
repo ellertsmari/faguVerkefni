@@ -1,10 +1,19 @@
+export type Step = string | {
+  text: string;
+  /** Shown when the student presses the "?" next to the step. */
+  hint: string;
+  link?: { label: string; url: string };
+};
+
+export const stepText = (step: Step): string => (typeof step === "string" ? step : step.text);
+
 export type Level = {
   key: "easy" | "medium" | "hard";
   label: string;
   kicker: string;
   points: number;
   task: string;
-  steps: string[];
+  steps: Step[];
   deliverable: string;
 };
 
@@ -19,6 +28,8 @@ export type Project = {
   scenario?: string;
   submission?: string;
   photoGuide?: boolean;
+  /** Shows the peer and self evaluation link after the project. */
+  peerEval?: boolean;
   levels: Level[];
 };
 
@@ -69,15 +80,34 @@ export const defaultProjects: Project[] = [
   {
     number: 7,
     title: "Hannaðu snjallt vinnurými",
-    intro: "Hópurinn breytir auðu rými í nothæft verkstæði með grunnmynd, kostnaðaráætlun og prófaðri LED-merkiljósarás.",
-    tools: "Stafrænt teikniforrit · töflureiknir · Falstad · sameiginlegt skjal",
-    ai: "AI 1 — AI má hjálpa með eina spurningu; hópurinn þarf að sannreyna svarið í herminum.",
+    intro: "Hópverkefni sem dregur saman allt úr Verk 3–6: grunnmynd, rafrás, myndaskýrsla og prófílmynd. Hópurinn velur rými, hannar það sem verkstæði fyrir sína iðngrein, verðleggur búnaðinn á netinu og kynnir lausnina mánudaginn 21. september.",
+    tools: "Teikniforritið úr Verk 3 eða rúðustrikað blað · Excel eða Google Sheets · Falstad (falstad.com/circuit) · Word eða Google Docs fyrir PDF · vefverslanir: byko.is, husa.is, bauhaus.is, elko.is, ikea.is",
+    ai: "AI 1 — AI má hjálpa við orðalag og eina afmarkaða spurningu um rásina í Hluta 3. Tölur, verð og rásin sjálf þurfa að vera ykkar eigin og sannreynd.",
     canvasId: 24134,
     group: true,
+    peerEval: true,
+    scenario: "Hópurinn fær autt rými og á að gera það að nothæfu verkstæði fyrir ykkar iðngrein: pípulagnir, húsasmíði eða rafvirkjun. Veljið eitt rými:\nA · Lítil stofa, 4 × 5 m, ein hurð og einn gluggi. Hentar fyrir viðgerðarborð og lager.\nB · Bílskúr, 6 × 8 m, bílskúrshurð og ein gönguhurð, enginn gluggi. Pláss fyrir stóra vél eða bíl.\nC · Langt herbergi, 3 × 9 m, hurð á enda og tveir gluggar á langvegg. Gott fyrir vinnulínu með mörgum stöðvum.\nTímalína: verkefnið opnar mánudaginn 14. september. Þriðjudaginn 15. september fara allir hópar til Halla í stofu 312 í myndatöku. Skil og kynning eru mánudaginn 21. september og eftir kynninguna fyllir hver og einn út jafningjamat.",
+    submission: "Einn úr hópnum skilar einni PDF-skrá, uppsettri eins og myndaskýrslan í Verk 5: forsíða með hópmynd og nöfnum, ábyrgðartafla, grunnmynd, innkaupalisti með samtölum og skjámynd af rásinni, með myndatexta við hverja mynd. Setjið hlekk á reiknisskjalið, opið fyrir alla með hlekk, í athugasemd við skilin. Hlutar 2 og 3 bætast við sem síður í sömu PDF. Skilið fyrir kynninguna 21. september. Jafningjamatinu skilar hver og einn sérstaklega í Canvas-verkefnið „Jafningjamat Verk 7“.",
     levels: [
-      { key: "easy", label: "Auðvelt", kicker: "Sameiginleg grunnlausn", points: 6, task: "Setjið saman eina lausn sem sýnir rými, kostnað og rafrás.", steps: ["Skráið nöfn og ábyrgð allra í hópnum.", "Teiknið læsilega grunnmynd með málum, hurð, glugga, borði, hillu og gönguleið.", "Reiknið flatarmál og heildarkostnað með 10% viðbót.", "Smíðið LED-rás í Falstad og takið skjámynd þar sem ljósið logar."], deliverable: "Eitt hópskjal með ábyrgðarskrá, grunnmynd, sýndum reikningum og skjámynd af virkri LED-rás." },
-      { key: "medium", label: "Miðlungs", kicker: "Prófið lausnina", points: 2, task: "Sýnið að niðurstöðurnar þoli breytingar og yfirferð.", steps: ["Notið formúlur þannig að kostnaður uppfærist þegar ein tala breytist.", "Merkið spennugjafa, LED og viðnám á rásarmyndinni.", "Skráið eina villu eða breytingu sem hópurinn fann við prófun."], deliverable: "Uppfært hópskjal með formúlusönnun, merktri rás og einni skráðri lagfæringu." },
-      { key: "hard", label: "Erfitt", kicker: "Verkstjórnaráskorun", points: 2, task: "Rökstyðjið lausnina og sýnið sannanlegt framlag allra.", steps: ["Spyrjið AI eina afmarkaða spurningu um rás eða viðnám.", "Sannreynið svarið í Falstad og skráið hvað stóðst eða breyttist.", "Kynnið lausnina á 3–4 mínútum; allir tala og geta svarað spurningu."], deliverable: "Skjámynd af AI-spurningu og svari, 2 setninga sannprófun og stutt framlagsskrá hópsins." },
+      { key: "easy", label: "Grunnur", kicker: "Byrjaðu hér", points: 6, task: "Setjið saman eina lausn sem sýnir hópinn, rýmið, kostnaðinn og rafrásina.", steps: [
+        { text: "Skráið nöfn allra í hópnum og hver ber ábyrgð á hverju: grunnmynd, innkaupalisti, rás, skýrsla og kynning.", hint: "Einföld tafla með tveimur dálkum, nafn og ábyrgð, dugar. Allir mega vinna í öllu, en einn ber ábyrgð á að hver hluti klárist." },
+        { text: "Veljið rými A, B eða C og teiknið grunnmynd með málum, hurð, glugga, vinnuborði, hillu og gönguleið.", hint: "Sama aðferð og í Verk 3. Notið sama forrit og þá, eða teiknið á rúðustrikað blað og takið mynd. Setjið mál á alla veggi og að minnsta kosti tvo hluti. Gönguleið þarf að vera minnst 1 m breið.", link: { label: "Verk 3 · Stafræn grunnmynd í Canvas", url: "https://canvas.tskoli.is/courses/1907/assignments/24132" } },
+        { text: "Finnið verð á netinu á öllum átta hlutunum í innkaupalistanum og skráið í reiknisskjal: hlutur, verslun, hlekkur, verð, fjöldi og samtala.", hint: "Innkaupalistinn: vinnuborð, hillueining, LED-vinnuljós, fjöltengi eða framlengingarkefli, verkfæratafla með krókum, slökkvitæki, sjúkrakassi og vinnustóll. Leitið á byko.is, husa.is, bauhaus.is, elko.is eða ikea.is. Afritið hlekkinn á vöruna svo kennari geti sannreynt verðið." },
+        { text: "Reiknið flatarmál rýmisins og heildarkostnað með 10% viðbót fyrir ófyrirséð.", hint: "Flatarmál = lengd × breidd. Samtala = SUM af verðdálkinum. Viðbót = samtala × 0,1. Heild = samtala + viðbót. Sýnið allar þrjár tölurnar í skýrslunni." },
+        { text: "Smíðið merkiljósarás í Falstad: 9 V rafhlaða, rofi, viðnám og LED sem logar þegar rofinn er á. Takið skjámynd þar sem ljósið logar.", hint: "Þetta er ljósið við hurðina sem sýnir að vél sé í gangi eða verkstæðið upptekið. Sama rás og í Verk 4. Byrjið með 470 Ω viðnám; ef LED-ið brennur yfir í herminum er viðnámið of lítið.", link: { label: "Verk 4 · Stafræn rafrás í Canvas", url: "https://canvas.tskoli.is/courses/1907/assignments/24133" } },
+        { text: "Farið öll til Halla í stofu 312 þriðjudaginn 15. september í myndatöku. Hver og einn setur sína mynd sem prófílmynd í Innu og hópmyndin fer á forsíðu skýrslunnar.", hint: "Leiðbeiningarnar með skjámyndum úr Verk 6 gilda enn: Stillingar → Breyta mynd í Innu. Nýja myndin kemur í stað selfie-myndarinnar.", link: { label: "Verk 6 · Prófílmynd, leiðbeiningar með skjámyndum", url: "https://ellertsmari.github.io/faguVerkefni/?verk=6" } },
+        { text: "Setjið allt í eina PDF-skrá með myndatexta við hverja mynd, eins og í Verk 5.", hint: "Röð: forsíða með hópmynd og nöfnum, ábyrgðartafla, grunnmynd, innkaupalisti með samtölum, skjámynd af rásinni. Ein til tvær setningar undir hverri mynd. Opnið PDF-skrána áður en þið skilið.", link: { label: "Verk 5 · Myndaskýrsla og PDF", url: "https://ellertsmari.github.io/faguVerkefni/?verk=5" } },
+      ], deliverable: "Ein PDF með hópmynd, ábyrgðartöflu, grunnmynd með málum, innkaupalista með átta verðum og heild með 10% viðbót, og skjámynd af logandi LED-rás. Hlekkur á reiknisskjalið í athugasemd. Allir með nýja prófílmynd í Innu." },
+      { key: "medium", label: "Viðbót", kicker: "Prófið lausnina", points: 2, task: "Sýnið að tölurnar og rásin þoli breytingar og yfirferð.", steps: [
+        { text: "Notið formúlur í reiknisskjalinu þannig að samtala, viðbót og heild uppfærist sjálfkrafa þegar eitt verð eða einn fjöldi breytist.", hint: "Prófið: breytið verði á einum hlut og takið skjámynd fyrir og eftir. Ef þið þurfið að reikna í höndunum vantar formúlu." },
+        { text: "Merkið spennugjafa, rofa, viðnám og LED á rásarmyndinni og skráið gildin.", hint: "Í Falstad má hægrismella á íhlut og velja Edit til að sjá gildi. Skrifið þau á myndina eða undir henni." },
+        { text: "Skráið eina villu eða breytingu sem hópurinn fann við prófun og hvað var gert við hana.", hint: "Dæmi: gönguleiðin var of þröng, verð breyttist milli daga, LED-ið logaði ekki því rofinn var opinn. Tvær til þrjár setningar duga." },
+      ], deliverable: "Skjámyndir fyrir og eftir verðbreytingu, merkt rásarmynd með gildum og ein skráð lagfæring, sem viðbótarsíður í sömu PDF." },
+      { key: "hard", label: "Viðbót", kicker: "Kynning og framlag", points: 2, task: "Rökstyðjið lausnina, sannreynið AI-svar og sýnið framlag allra.", steps: [
+        { text: "Spyrjið AI eina afmarkaða spurningu um rásina, t.d. hvaða viðnám hentar tilteknu LED-i við 9 V, og vistið spurningu og svar.", hint: "Notið Copilot með skólareikningi. Engin nöfn eða persónuupplýsingar í spurningunni. Skjámynd af spurningu og svari fer í skýrsluna." },
+        { text: "Sannreynið svarið í Falstad og skrifið tvær setningar um hvað stóðst og hvað ekki.", hint: "Setjið gildið sem AI gaf í herminn. Logar ljósið? Er straumurinn eðlilegur, um 10–20 mA? Skrifið niðurstöðuna, líka ef AI hafði rétt fyrir sér." },
+        { text: "Kynnið lausnina á 3–4 mínútum mánudaginn 21. september. Allir tala og geta svarað spurningu. Setjið framlagstöflu í skýrsluna: nafn og hvað hver gerði.", hint: "Æfið einu sinni með tíma. Skiptið kynningunni í: rýmið, kostnaðurinn, rásin, hvað við lærðum. Framlagstaflan er grunnurinn að jafningjamatinu eftir kynninguna." },
+      ], deliverable: "Skjámynd af AI-spurningu og svari, tveggja setninga sannprófun og framlagstafla í PDF. Kynningin er metin í tíma." },
     ],
   },
   {

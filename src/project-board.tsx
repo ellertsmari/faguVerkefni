@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
-import { defaultProjects, type Level } from "./project-data";
+import { defaultProjects, stepText, type Level } from "./project-data";
 import PhotoGuide from "./photo-guide";
+
+export const peerEvalPath = (number: number) => `${import.meta.env.BASE_URL}?view=jafningjamat&verk=${number}`;
 
 const levelGlyph = { easy: "01", medium: "02", hard: "03" } as const;
 const levelKeys: Level["key"][] = ["easy", "medium", "hard"];
@@ -65,6 +67,7 @@ export default function ProjectBoard() {
   const [selected, setSelected] = useState(initial.selected);
   const [openLevel, setOpenLevel] = useState<Level["key"]>(initial.openLevel);
   const [checked, setChecked] = useState<Record<string, boolean>>(initial.checked);
+  const [openHints, setOpenHints] = useState<Record<string, boolean>>({});
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -208,12 +211,21 @@ export default function ProjectBoard() {
                   <ol>
                     {level.steps.map((step, index) => {
                       const key = `${project.number}-${level.key}-${index}`;
+                      const hint = typeof step === "string" ? null : step;
+                      const hintOpen = Boolean(openHints[key]);
                       return (
                         <li key={key}>
-                          <label>
-                            <input type="checkbox" checked={Boolean(checked[key])} onChange={(event) => setChecked((state) => ({ ...state, [key]: event.target.checked }))} />
-                            <span>{step}</span>
-                          </label>
+                          <div className="step-row">
+                            <label>
+                              <input type="checkbox" checked={Boolean(checked[key])} onChange={(event) => setChecked((state) => ({ ...state, [key]: event.target.checked }))} />
+                              <span>{stepText(step)}</span>
+                            </label>
+                            {hint && <button type="button" className="hint-toggle" aria-expanded={hintOpen} aria-controls={`hint-${key}`} aria-label={hintOpen ? "Fela vísbendingu" : "Sýna vísbendingu"} onClick={() => setOpenHints((state) => ({ ...state, [key]: !hintOpen }))}>?</button>}
+                          </div>
+                          {hint && <div className="hint" id={`hint-${key}`} hidden={!hintOpen}>
+                            <p>{hint.hint}</p>
+                            {hint.link && <a href={hint.link.url} target="_blank" rel="noreferrer">{hint.link.label} ↗</a>}
+                          </div>}
                         </li>
                       );
                     })}
@@ -226,6 +238,13 @@ export default function ProjectBoard() {
         </section>
 
         {project.photoGuide && <PhotoGuide />}
+
+        {project.peerEval && <section className="peer-eval-note" aria-labelledby="peer-eval-title">
+          <p className="eyebrow">EFTIR KYNNINGUNA</p>
+          <h3 id="peer-eval-title">Jafningjamat og sjálfsmat</h3>
+          <p>Hver og einn metur sjálfan sig og alla í hópnum: framlag og samvinnu, með stuttum rökstuðningi. Matið býr til texta sem þú límir í Canvas-verkefnið „Jafningjamat Verk {project.number}“. Aðeins kennari sér svörin og notar þau til að stilla einkunn hvers og eins út frá hópeinkunninni.</p>
+          <a className="canvas-link" href={peerEvalPath(project.number)} target="_blank" rel="noreferrer">OPNA JAFNINGJAMAT <span>↗</span></a>
+        </section>}
 
         <section className="submission" aria-labelledby="submission-title">
           <div className="submission-mark" aria-hidden="true">↗</div>

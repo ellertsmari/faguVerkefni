@@ -53,6 +53,7 @@ test("every project has three levels worth 6 + 2 + 2 points", async () => {
   assert.equal(projectBlocks.length, 9);
   for (const block of projectBlocks) {
     const points = [...block.matchAll(/points: (\d+)/g)].map((m) => Number(m[1]));
+    assert.ok(!/canvasId: 24134/.test(block) || (block.match(/hint: "/g) ?? []).length >= 10, "Verk 7 carries a hint on every step");
     assert.deepEqual(points, [6, 2, 2], `Project ${block.slice(0, 3)} has points ${points}`);
     assert.deepEqual([...block.matchAll(/key: "(easy|medium|hard)"/g)].map((m) => m[1]), ["easy", "medium", "hard"]);
   }
