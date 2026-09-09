@@ -3,8 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { defaultProjects, stepText, type Level } from "./project-data";
 import PhotoGuide from "./photo-guide";
 
-export const peerEvalPath = (number: number) => `${import.meta.env.BASE_URL}?view=jafningjamat&verk=${number}`;
-
 const levelGlyph = { easy: "01", medium: "02", hard: "03" } as const;
 const levelKeys: Level["key"][] = ["easy", "medium", "hard"];
 const storageKey = "fagu-verkefnabord-state-v2";
@@ -239,11 +237,10 @@ export default function ProjectBoard() {
 
         {project.photoGuide && <PhotoGuide />}
 
-        {project.peerEval && <section className="peer-eval-note" aria-labelledby="peer-eval-title">
-          <p className="eyebrow">EFTIR KYNNINGUNA</p>
-          <h3 id="peer-eval-title">Jafningjamat og sjálfsmat</h3>
-          <p>Hver og einn metur sjálfan sig og alla í hópnum: framlag og samvinnu, með stuttum rökstuðningi. Matið býr til texta sem þú límir í Canvas-verkefnið „Jafningjamat Verk {project.number}“. Aðeins kennari sér svörin og notar þau til að stilla einkunn hvers og eins út frá hópeinkunninni.</p>
-          <a className="canvas-link" href={peerEvalPath(project.number)} target="_blank" rel="noreferrer">OPNA JAFNINGJAMAT <span>↗</span></a>
+        {project.assessment && <section className="assessment" aria-labelledby="assessment-title">
+          <p className="eyebrow">EINKUNNAGJÖF</p>
+          <h3 id="assessment-title">Hópeinkunn 50% · einkunn kennara 50%</h3>
+          {project.assessment.split("\n").map((paragraph, index) => <p key={index}>{paragraph}</p>)}
         </section>}
 
         <section className="submission" aria-labelledby="submission-title">
@@ -251,7 +248,7 @@ export default function ProjectBoard() {
           <div>
             <p className="eyebrow">SKILAÐU Í CANVAS</p>
             <h3 id="submission-title">Einn hluti eða allir þrír</h3>
-            {project.submission ? <p>{project.submission}</p> : <p>Skilaðu <strong>Hluta 1 einum</strong> eða bættu við Hluta 2 og/eða Hluta 3. Settu allt í eitt Canvas-skil: eina PDF/ZIP-skrá, virkan hlekk eða texta og viðhengi. Merktu greinilega <b>Hluti 1</b>, <b>Hluti 2</b> og <b>Hluti 3</b>. Opnaðu skrár og hlekki áður en þú lýkur skilum.</p>}
+            {project.submission ? <p className="submission-text">{project.submission}</p> : <p>Skilaðu <strong>Hluta 1 einum</strong> eða bættu við Hluta 2 og/eða Hluta 3. Settu allt í eitt Canvas-skil: eina PDF/ZIP-skrá, virkan hlekk eða texta og viðhengi. Merktu greinilega <b>Hluti 1</b>, <b>Hluti 2</b> og <b>Hluti 3</b>. Opnaðu skrár og hlekki áður en þú lýkur skilum.</p>}
             {project.group && <p className="group-note">Einn nemandi skilar fyrir hópinn. Nöfn, ábyrgð og framlag allra þurfa að koma fram.</p>}
           </div>
           <a className="canvas-link" href={`${canvasCourse}${project.canvasId}`} target={embedded ? "_top" : "_blank"} rel="noreferrer">SKILA VERK {project.number} Í CANVAS <span>↗</span></a>

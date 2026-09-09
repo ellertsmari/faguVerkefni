@@ -58,3 +58,17 @@ test("every project has three levels worth 6 + 2 + 2 points", async () => {
     assert.deepEqual([...block.matchAll(/key: "(easy|medium|hard)"/g)].map((m) => m[1]), ["easy", "medium", "hard"]);
   }
 });
+
+test("Verk 7 makes the presentation and peer evaluation part of Grunnur", async () => {
+  const data = await read("src/project-data.ts");
+  const verk7 = data.slice(data.indexOf("number: 7,"), data.indexOf("number: 9,"));
+  const easy = verk7.slice(verk7.indexOf('key: "easy"'), verk7.indexOf('key: "medium"'));
+  assert.match(easy, /flytjið hana á 3–4 mínútum mánudaginn 21\. september/);
+  assert.match(easy, /jafningjamat og sjálfsmat í Canvas eftir kynningarnar/);
+  assert.match(easy, /zip-skrá/);
+  assert.match(easy, /bæði í Innu og Canvas/);
+  assert.doesNotMatch(verk7, /pípulagnir, húsasmíði eða rafvirkjun/);
+  assert.doesNotMatch(verk7, /groups:/);
+  assert.match(verk7, /assessment: "[^"]*50%|Helmingurinn er hópeinkunn/);
+  assert.doesNotMatch(data, /peerEval/);
+});

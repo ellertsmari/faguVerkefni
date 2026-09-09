@@ -24,7 +24,7 @@ Edit `src/project-data.ts`. Each project is an object with:
 | `scenario` | Optional. A boxed "read this first" text, used for the customer email in Verk 8. |
 | `submission` | Optional. Replaces the default submission instructions. |
 | `photoGuide` | Optional. Shows the Inna and Canvas profile-photo guides (Verk 6). |
-| `peerEval` | Optional. Adds the peer and self evaluation box and link after the project (Verk 7). |
+| `assessment` | Optional. A "how the grade is made up" section after the parts; line breaks separate paragraphs (Verk 7). |
 | `levels` | Exactly three parts with keys `easy`, `medium`, `hard`, each with `label`, `kicker`, `points`, `task`, `steps` and `deliverable`. |
 
 A step is either a plain string or an object with `text`, a `hint` and an
@@ -65,35 +65,23 @@ part.
 Checkmarks and the last selected project are stored in the student's browser
 only. Nothing is sent anywhere.
 
-## Peer and self evaluation (Verk 7)
+## Verk 7: grading and peer evaluation
 
-After the group presentation every student rates themselves and each
-teammate on two axes, contribution and teamwork, from −2 to +2 with a
-written reason. Scores are relative, so per axis they must add up to zero or
-less: a team cannot rate itself above its own average. This is the same model
-Vefskólinn uses for its group projects.
+Verk 7 is the group capstone. Every group hands in three things that each
+show the whole work: a PDF report, a zip file with tidy folders and file
+names, and a presentation given in class on 21 September 2026. The teams are
+fixed by the teacher and published in Canvas, not on the site.
 
-There is no backend, so Canvas stores the answers:
+The grade is two equal halves. The group grade for the submission and the
+presentation (parts 1–3, up to 10) counts 50% and is the same for everyone in
+the team. The other 50% is the teachers' grade for each student, based on how
+they saw the student work in class during the project.
 
-1. **Student form.** `?view=jafningjamat&verk=7` shows the form with a live
-   balance meter and produces a text block ending in a `KÓÐI:` line. The
-   Verk 7 page links to it.
-2. **Canvas assignment.** Create an individual assignment named
-   "Jafningjamat Verk 7" with submission type *Text Entry*, 0 points, due
-   the day after the presentation. Put the form link in its description. Only
-   the teacher sees text submissions.
-3. **Teacher summary.** `?view=matsyfirlit` takes everything pasted from
-   SpeedGrader, groups it into teams by the names mentioned, averages what
-   each student received, and computes the individual grade from the group
-   grade you enter. Confirmed figures default to the averages and can be
-   changed per student. "Afrita töflu" copies a tab-separated table for Excel.
-   Everything stays in your browser.
-4. **Grading in Canvas.** On the Verk 7 group assignment tick *Assign grades
-   to each student individually*, then enter the computed grades.
-
-The formula: `P = (contribution + 2) × (teamwork + 2) − 4`, factor
-`1 + P × 0.025` when P ≥ 0 and `1 + P × 0.175` otherwise, grade
-`group grade × factor` capped at 10. That is at most +30% and at least −70%.
+The peer and self evaluation is mandatory and is the student's voice in that
+second half. It is a 0-point Canvas quiz named "Jafningjamat Verk 7", filled
+in after the presentations. The site only explains it and links nowhere; the
+answers stay in Canvas. Suggested questions: for yourself and each teammate,
+what did they do, and one or two sentences of reasoning.
 
 ## Working locally
 
