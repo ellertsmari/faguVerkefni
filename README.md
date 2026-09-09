@@ -24,7 +24,8 @@ Edit `src/project-data.ts`. Each project is an object with:
 | `scenario` | Optional. A boxed "read this first" text, used for the customer email in Verk 8. |
 | `submission` | Optional. Replaces the default submission instructions. |
 | `photoGuide` | Optional. Shows the Inna and Canvas profile-photo guides (Verk 6). |
-| `assessment` | Optional. Paragraphs under the rubric explaining how the grade is made up; line breaks separate paragraphs (Verk 7). |
+| `gradeSplit` | Optional. Boxes under the rubric showing how the final grade is split, same shape as `rubric` (Verk 7). |
+| `assessment` | Optional. Paragraphs under the grade split; line breaks separate paragraphs (Verk 7). |
 | `rubric` | Optional. Three quality bands (`grade`, `title`, `text`) for a single-part project graded 0–10 (Verk 7). |
 | `levels` | Three parts with keys `easy`, `medium`, `hard` worth 6 + 2 + 2, or a single `easy` part worth 10 when the project has a `rubric`. Each has `label`, `kicker`, `points`, `task`, `steps` and `deliverable`. |
 
@@ -70,13 +71,16 @@ only. Nothing is sent anywhere.
 
 Verk 7 is the group capstone and the one project without optional parts. It
 is a single list of ten required steps, and the grade depends on the quality
-of the work: 5–6 for handing in everything at a bare minimum, 7–8 when the
+of the work: 1–2 for almost nothing, 3–4 when parts are missing, 5–6 for
+handing in everything at a bare minimum, 7–8 when the
 PDF, zip folder, slides and presentation are all well done, and 9–10 for
 extra effort such as a richer floor plan, a more elaborate circuit, animated
 slides or a report that looks like it came from a professional firm. Every
 group hands in three things that each show the whole work: a PDF report, a
-zip file with tidy folders and file names, and a presentation given in class
-on 21 September 2026. The teams are fixed by the teacher and published in
+zip file with tidy folders and file names (the spreadsheet included as a
+file), and a slide deck presented in class on 22 September 2026. The work
+day is 15 September, submissions are due 21 September at 23:59, and the peer
+evaluation by 23 September. The teams are fixed by the teacher and published in
 Canvas, not on the site. Students open the page in its own window from a
 link in Canvas rather than in an iframe, because there is a lot to read.
 

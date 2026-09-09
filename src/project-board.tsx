@@ -222,9 +222,7 @@ export default function ProjectBoard() {
         </div>
 
         <section className="levels" aria-label="Verkefnahlutar">
-          {single
-            ? <p>Eitt verkefni, tíu skref, einkunn 0–10. Hakaðu við skrefin jafnóðum. Það sem ræður einkunninni er hversu vel er vandað til verksins, sjá Einkunn neðar á síðunni.</p>
-            : <p>Byrjaðu á Hluta 1 (6 stig). Hlutar 2 og 3 eru valfrjáls viðbót, 2 stig hvor. Samtals 10 stig.</p>}
+          {!single && <p>Byrjaðu á Hluta 1 (6 stig). Hlutar 2 og 3 eru valfrjáls viðbót, 2 stig hvor. Samtals 10 stig.</p>}
           {project.scenario && <aside className="scenario"><h3>Aðstæður: lestu þetta fyrst</h3><p>{project.scenario}</p></aside>}
           {project.levels.map((level) => {
             const expanded = single || openLevel === level.key;
@@ -243,7 +241,7 @@ export default function ProjectBoard() {
                       <span className="toggle" aria-hidden="true">{expanded ? "−" : "+"}</span>
                     </button>}
                 <div className="level-body" hidden={!expanded}>
-                  <p className="task">{level.task}</p>
+                  {level.task && <p className="task">{level.task}</p>}
                   <ol>
                     {level.steps.map((step, index) => {
                       const key = `${project.number}-${level.key}-${index}`;
@@ -277,13 +275,22 @@ export default function ProjectBoard() {
 
         {(project.rubric || project.assessment) && <section className="assessment" aria-labelledby="assessment-title">
           <p className="eyebrow">EINKUNN</p>
-          <h3 id="assessment-title">Hvað gefur hvaða einkunn</h3>
+          <h3 id="assessment-title">Hvernig er einkunnin reiknuð?</h3>
           {project.rubric && <div className="rubric">
             {project.rubric.map((band, index) => (
               <div className={`rubric-band b${index + 1}`} key={band.grade}>
                 <b>{band.grade}</b>
                 <strong>{band.title}</strong>
                 <p>{band.text}</p>
+              </div>
+            ))}
+          </div>}
+          {project.gradeSplit && <div className="grade-split">
+            {project.gradeSplit.map((box, index) => (
+              <div className={`split-box s${index + 1}`} key={box.title}>
+                <b>{box.grade}</b>
+                <strong>{box.title}</strong>
+                <p>{box.text}</p>
               </div>
             ))}
           </div>}

@@ -68,14 +68,22 @@ test("every project has three levels worth 6 + 2 + 2 points, except Verk 7 which
 test("Verk 7 lists the presentation, three deliverables and peer evaluation as required steps", async () => {
   const data = await read("src/project-data.ts");
   const verk7 = data.slice(data.indexOf("number: 7,"), data.indexOf("number: 9,"));
-  assert.match(verk7, /flytjið hana á 3–4 mínútum mánudaginn 21\. september/);
+  assert.match(verk7, /flytjið hana á 3–4 mínútum þriðjudaginn 22\. september/);
+  assert.match(verk7, /task: ""/, "single-part card has no left-column task text");
   assert.match(verk7, /jafningjamat og sjálfsmat í Canvas eftir kynningarnar/);
-  assert.match(verk7, /zip-skrá/);
-  assert.match(verk7, /bæði í Innu og Canvas/);
+  assert.match(verk7, /zip-möppu/);
+  assert.match(verk7, /prófílmynd í Innu og Canvas/);
   assert.doesNotMatch(verk7, /pípulagnir, húsasmíði eða rafvirkjun/);
   assert.doesNotMatch(verk7, /groups:/);
-  assert.deepEqual([...verk7.matchAll(/grade: "([^"]+)"/g)].map((m) => m[1]), ["5–6", "7–8", "9–10"]);
-  assert.match(verk7, /Helmingurinn er hópeinkunn/);
+  const rubric = verk7.slice(verk7.indexOf("rubric: ["), verk7.indexOf("gradeSplit: ["));
+  assert.deepEqual([...rubric.matchAll(/grade: "([^"]+)"/g)].map((m) => m[1]), ["1–2", "3–4", "5–6", "7–8", "9–10"]);
+  assert.match(verk7, /Ekki PDF/);
+  assert.match(verk7, /Hlaða niður → Excel/);
+  assert.match(verk7, /21\. september kl\. 23:59/);
+  assert.match(verk7, /23\. september/);
+  assert.doesNotMatch(verk7, /brennur yfir/);
+  assert.equal((verk7.match(/grade: "50%"/g) ?? []).length, 2);
+  assert.match(verk7, /Lokaeinkunn = helmingur hópeinkunnar/);
   assert.doesNotMatch(data, /peerEval/);
 });
 
