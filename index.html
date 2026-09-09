@@ -4,7 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>FAGU · Stafrænn verkfærakassi</title>
-    <meta name="description" content="Verkefnaborð FAGU með skýrum auðveldum, miðlungs og erfiðum verkefnahlutum." />
+    <meta name="description" content="Verkefnaborð FAGU: skýr skref, vísbendingar og skil í Canvas." />
+    <script>
+      // Pick the theme before the first paint so the page never flashes. The board keeps this in sync.
+      try {
+        var t = localStorage.getItem("fagu-theme");
+        if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        document.documentElement.dataset.theme = t;
+      } catch (e) { document.documentElement.dataset.theme = "dark"; }
+    </script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="is_IS" />

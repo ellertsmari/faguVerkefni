@@ -6,6 +6,20 @@ import PhotoGuide from "./photo-guide";
 const levelGlyph = { easy: "01", medium: "02", hard: "03" } as const;
 const levelKeys: Level["key"][] = ["easy", "medium", "hard"];
 const storageKey = "fagu-verkefnabord-state-v2";
+const themeKey = "fagu-theme";
+
+type Theme = "dark" | "light";
+
+// index.html applies the same rule before the first paint so there is no flash.
+function initialTheme(): Theme {
+  try {
+    const stored = window.localStorage.getItem(themeKey);
+    if (stored === "light" || stored === "dark") return stored;
+  } catch {
+    // Storage may be blocked; fall through to the system preference.
+  }
+  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
 const canvasCourse = "https://canvas.tskoli.is/courses/1907/assignments/";
 const projects = defaultProjects;
 
@@ -66,7 +80,17 @@ export default function ProjectBoard() {
   const [openLevel, setOpenLevel] = useState<Level["key"]>(initial.openLevel);
   const [checked, setChecked] = useState<Record<string, boolean>>(initial.checked);
   const [openHints, setOpenHints] = useState<Record<string, boolean>>({});
+  const [theme, setTheme] = useState<Theme>(initialTheme);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      window.localStorage.setItem(themeKey, theme);
+    } catch {
+      // The choice then lasts for this page load only.
+    }
+  }, [theme]);
 
   useEffect(() => {
     if (!locked) {
@@ -136,6 +160,7 @@ export default function ProjectBoard() {
   }, []);
 
   const project = projects.find((item) => item.number === selected) ?? projects[0];
+  const single = project.levels.length === 1;
   const activeLevel = project.levels.find((level) => level.key === openLevel) ?? project.levels[0];
   const activeLevelNumber = project.levels.findIndex((level) => level.key === activeLevel.key) + 1;
   const doneCount = activeLevel.steps.filter((_, index) => checked[`${project.number}-${activeLevel.key}-${index}`]).length;
@@ -152,7 +177,12 @@ export default function ProjectBoard() {
       <canvas ref={canvasRef} className="ambient" aria-hidden="true" />
       <header className="topbar">
         <div className="brand"><span>FAGU</span><i /> {locked ? `VERK ${String(project.number).padStart(2, "0")}` : "STAFRÆNN VERKFÆRAKASSI"}</div>
-        <div className="status"><b>{doneCount}</b> / {totalCount} SKREF · HLUTI {activeLevelNumber}</div>
+        <div className="topbar-right">
+          <div className="status"><b>{doneCount}</b> / {totalCount} SKREF{single ? "" : ` · HLUTI ${activeLevelNumber}`}</div>
+          <button type="button" className="theme-toggle" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label={theme === "dark" ? "Skipta í ljóst þema" : "Skipta í dökkt þema"} title={theme === "dark" ? "Ljóst þema" : "Dökkt þema"}>
+            {theme === "dark" ? "☀" : "☾"}
+          </button>
+        </div>
       </header>
 
       {!locked && <section className="hero" aria-labelledby="page-title">
@@ -161,8 +191,8 @@ export default function ProjectBoard() {
         <p className="hero-copy">Byrjaðu á græna hlutanum. Bættu gulum og bláum við ef þú vilt meiri áskorun og fleiri stig.</p>
         <div className="rule-strip">
           <span><b>1 DAGUR</b> Verk 5, 6 og 8–13</span>
-          <span><b>HÓPVERKEFNI</b> Verk 7 er kynnt sérstaklega</span>
-          <span><b>6 + 2 + 2</b> Samtals 10 stig</span>
+          <span><b>HÓPVERKEFNI</b> Verk 7 er ein heild, metin eftir gæðum</span>
+          <span><b>6 + 2 + 2</b> Samtals 10 stig í hinum</span>
         </div>
       </section>}
 
@@ -192,18 +222,26 @@ export default function ProjectBoard() {
         </div>
 
         <section className="levels" aria-label="Verkefnahlutar">
-          <p>Byrjaðu á Hluta 1 (6 stig). Hlutar 2 og 3 eru valfrjáls viðbót, 2 stig hvor. Samtals 10 stig.</p>
+          {single
+            ? <p>Eitt verkefni, tíu skref, einkunn 0–10. Hakaðu við skrefin jafnóðum. Það sem ræður einkunninni er hversu vel er vandað til verksins, sjá Einkunn neðar á síðunni.</p>
+            : <p>Byrjaðu á Hluta 1 (6 stig). Hlutar 2 og 3 eru valfrjáls viðbót, 2 stig hvor. Samtals 10 stig.</p>}
           {project.scenario && <aside className="scenario"><h3>Aðstæður: lestu þetta fyrst</h3><p>{project.scenario}</p></aside>}
           {project.levels.map((level) => {
-            const expanded = openLevel === level.key;
+            const expanded = single || openLevel === level.key;
             return (
-              <div className={`level-card ${level.key} ${expanded ? "expanded" : ""}`} key={level.key}>
-                <button className="level-trigger" onClick={() => setOpenLevel(level.key)} aria-expanded={expanded}>
-                  <span className="level-number">{levelGlyph[level.key]}</span>
-                  <span className="level-title"><small>{level.kicker}</small><b>{level.label}</b></span>
-                  <span className="points">+{level.points} STIG</span>
-                  <span className="toggle" aria-hidden="true">{expanded ? "−" : "+"}</span>
-                </button>
+              <div className={`level-card ${level.key} ${expanded ? "expanded" : ""}${single ? " single" : ""}`} key={level.key}>
+                {single
+                  ? <div className="level-trigger">
+                      <span className="level-number">{levelGlyph[level.key]}</span>
+                      <span className="level-title"><small>{level.kicker}</small><b>{level.label}</b></span>
+                      <span className="points">0–{level.points} EFTIR GÆÐUM</span>
+                    </div>
+                  : <button className="level-trigger" onClick={() => setOpenLevel(level.key)} aria-expanded={expanded}>
+                      <span className="level-number">{levelGlyph[level.key]}</span>
+                      <span className="level-title"><small>{level.kicker}</small><b>{level.label}</b></span>
+                      <span className="points">+{level.points} STIG</span>
+                      <span className="toggle" aria-hidden="true">{expanded ? "−" : "+"}</span>
+                    </button>}
                 <div className="level-body" hidden={!expanded}>
                   <p className="task">{level.task}</p>
                   <ol>
@@ -228,7 +266,7 @@ export default function ProjectBoard() {
                       );
                     })}
                   </ol>
-                  <div className="deliverable"><small>AFHENDING ÚR ÞESSUM HLUTA</small><p>{level.deliverable}</p></div>
+                  <div className="deliverable"><small>{single ? "ÞAÐ SEM ÞARF AÐ SKILA" : "AFHENDING ÚR ÞESSUM HLUTA"}</small><p>{level.deliverable}</p></div>
                 </div>
               </div>
             );
@@ -237,17 +275,26 @@ export default function ProjectBoard() {
 
         {project.photoGuide && <PhotoGuide />}
 
-        {project.assessment && <section className="assessment" aria-labelledby="assessment-title">
-          <p className="eyebrow">EINKUNNAGJÖF</p>
-          <h3 id="assessment-title">Hópeinkunn 50% · einkunn kennara 50%</h3>
-          {project.assessment.split("\n").map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+        {(project.rubric || project.assessment) && <section className="assessment" aria-labelledby="assessment-title">
+          <p className="eyebrow">EINKUNN</p>
+          <h3 id="assessment-title">Hvað gefur hvaða einkunn</h3>
+          {project.rubric && <div className="rubric">
+            {project.rubric.map((band, index) => (
+              <div className={`rubric-band b${index + 1}`} key={band.grade}>
+                <b>{band.grade}</b>
+                <strong>{band.title}</strong>
+                <p>{band.text}</p>
+              </div>
+            ))}
+          </div>}
+          {project.assessment?.split("\n").map((paragraph, index) => <p key={index}>{paragraph}</p>)}
         </section>}
 
         <section className="submission" aria-labelledby="submission-title">
           <div className="submission-mark" aria-hidden="true">↗</div>
           <div>
             <p className="eyebrow">SKILAÐU Í CANVAS</p>
-            <h3 id="submission-title">Einn hluti eða allir þrír</h3>
+            <h3 id="submission-title">{single ? "Þrjár skrár, ein skil" : "Einn hluti eða allir þrír"}</h3>
             {project.submission ? <p className="submission-text">{project.submission}</p> : <p>Skilaðu <strong>Hluta 1 einum</strong> eða bættu við Hluta 2 og/eða Hluta 3. Settu allt í eitt Canvas-skil: eina PDF/ZIP-skrá, virkan hlekk eða texta og viðhengi. Merktu greinilega <b>Hluti 1</b>, <b>Hluti 2</b> og <b>Hluti 3</b>. Opnaðu skrár og hlekki áður en þú lýkur skilum.</p>}
             {project.group && <p className="group-note">Einn nemandi skilar fyrir hópinn. Nöfn, ábyrgð og framlag allra þurfa að koma fram.</p>}
           </div>

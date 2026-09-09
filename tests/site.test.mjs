@@ -47,28 +47,43 @@ test("keeps every project mapped to its Canvas assignment", async () => {
   assert.match(page, /Einn hluti eða allir þrír/);
 });
 
-test("every project has three levels worth 6 + 2 + 2 points", async () => {
+test("every project has three levels worth 6 + 2 + 2 points, except Verk 7 which is one part graded by quality", async () => {
   const data = await read("src/project-data.ts");
   const projectBlocks = data.split(/\n {2}\{\n {4}number: /).slice(1);
   assert.equal(projectBlocks.length, 9);
   for (const block of projectBlocks) {
     const points = [...block.matchAll(/points: (\d+)/g)].map((m) => Number(m[1]));
-    assert.ok(!/canvasId: 24134/.test(block) || (block.match(/hint: "/g) ?? []).length >= 10, "Verk 7 carries a hint on every step");
+    const keys = [...block.matchAll(/key: "(easy|medium|hard)"/g)].map((m) => m[1]);
+    if (/canvasId: 24134/.test(block)) {
+      assert.deepEqual(points, [10]);
+      assert.deepEqual(keys, ["easy"]);
+      assert.equal((block.match(/hint: "/g) ?? []).length, 10, "Verk 7 carries a hint on every step");
+      continue;
+    }
     assert.deepEqual(points, [6, 2, 2], `Project ${block.slice(0, 3)} has points ${points}`);
-    assert.deepEqual([...block.matchAll(/key: "(easy|medium|hard)"/g)].map((m) => m[1]), ["easy", "medium", "hard"]);
+    assert.deepEqual(keys, ["easy", "medium", "hard"]);
   }
 });
 
-test("Verk 7 makes the presentation and peer evaluation part of Grunnur", async () => {
+test("Verk 7 lists the presentation, three deliverables and peer evaluation as required steps", async () => {
   const data = await read("src/project-data.ts");
   const verk7 = data.slice(data.indexOf("number: 7,"), data.indexOf("number: 9,"));
-  const easy = verk7.slice(verk7.indexOf('key: "easy"'), verk7.indexOf('key: "medium"'));
-  assert.match(easy, /flytjið hana á 3–4 mínútum mánudaginn 21\. september/);
-  assert.match(easy, /jafningjamat og sjálfsmat í Canvas eftir kynningarnar/);
-  assert.match(easy, /zip-skrá/);
-  assert.match(easy, /bæði í Innu og Canvas/);
+  assert.match(verk7, /flytjið hana á 3–4 mínútum mánudaginn 21\. september/);
+  assert.match(verk7, /jafningjamat og sjálfsmat í Canvas eftir kynningarnar/);
+  assert.match(verk7, /zip-skrá/);
+  assert.match(verk7, /bæði í Innu og Canvas/);
   assert.doesNotMatch(verk7, /pípulagnir, húsasmíði eða rafvirkjun/);
   assert.doesNotMatch(verk7, /groups:/);
-  assert.match(verk7, /assessment: "[^"]*50%|Helmingurinn er hópeinkunn/);
+  assert.deepEqual([...verk7.matchAll(/grade: "([^"]+)"/g)].map((m) => m[1]), ["5–6", "7–8", "9–10"]);
+  assert.match(verk7, /Helmingurinn er hópeinkunn/);
   assert.doesNotMatch(data, /peerEval/);
+});
+
+test("the page offers a light theme and applies it before the first paint", async () => {
+  const css = await read("src/globals.css");
+  const html = await read("index.html");
+  const page = await read("src/project-board.tsx");
+  assert.match(css, /:root\[data-theme="light"\]/);
+  assert.match(html, /localStorage\.getItem\("fagu-theme"\)/);
+  assert.match(page, /className="theme-toggle"/);
 });
