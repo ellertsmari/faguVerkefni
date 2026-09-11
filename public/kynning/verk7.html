@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="is">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Kynning á Verk 7, hópverkefni FAGU: hvað á að gera, hvað á að skila og hvernig það er metið.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<title>Verkstæði frá grunni · Verk 7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --ink:#0C1218; --ink-2:#111A22; --ink-3:#16222C;
+  --paper:#EAF0F5; --muted:#8CA1B2;
+  --line:rgba(140,175,200,.16); --line-soft:rgba(140,175,200,.08);
+  --hivis:#F5C518; --copper:#C9723F; --timber:#C79A5E; --current:#4FA3D9;
+  --ok:#5CCB8C; --warn:#E9A23B; --bad:#E0604F;
+  --on-hivis:#0C1218;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --gutter:clamp(20px,4vw,64px);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--body);font-size:16px;overflow:hidden;-webkit-font-smoothing:antialiased}
+button,input{font:inherit}
+button{cursor:pointer}
+a{color:var(--current)}
+:focus-visible{outline:2px solid var(--hivis);outline-offset:3px}
+
+/* ---------- ambient ---------- */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.grid{position:absolute;inset:-10%;
+  background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px),linear-gradient(rgba(140,175,200,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(140,175,200,.045) 1px,transparent 1px);
+  background-size:180px 180px,180px 180px,36px 36px,36px 36px;animation:drift 60s linear infinite}
+@keyframes drift{to{transform:translate3d(-180px,-180px,0)}}
+.vignette{position:absolute;inset:0;background:radial-gradient(120% 90% at 20% 0%,rgba(79,163,217,.10),transparent 60%),radial-gradient(90% 80% at 100% 100%,rgba(201,114,63,.10),transparent 62%),radial-gradient(140% 120% at 50% 50%,transparent 35%,rgba(6,10,14,.85) 100%)}
+canvas#amb{position:absolute;inset:0;width:100%;height:100%}
+
+/* ---------- chrome ---------- */
+.chrome{position:fixed;inset:0;z-index:5;pointer-events:none}
+.brand{position:absolute;top:clamp(16px,3vh,32px);left:var(--gutter);font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--muted);display:flex;align-items:center;gap:12px;text-transform:uppercase}
+.brand b{color:var(--hivis);font-weight:500}
+.brand .tick{width:22px;height:1px;background:var(--line);display:inline-block}
+.count{position:absolute;top:clamp(16px,3vh,32px);right:var(--gutter);font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--muted);font-variant-numeric:tabular-nums}
+.count em{color:var(--paper);font-style:normal}
+.rail{position:absolute;left:var(--gutter);right:var(--gutter);bottom:clamp(14px,2.6vh,28px);display:flex;gap:5px;align-items:center;pointer-events:auto}
+.seg{flex:1;height:14px;padding:0;border:0;background:transparent;position:relative}
+.seg span{position:absolute;left:0;right:0;top:6px;height:3px;background:rgba(140,175,200,.18);transition:background .3s}
+.seg.done span{background:rgba(245,197,24,.45)}
+.seg[aria-current="true"] span{background:var(--hivis)}
+.navs{position:absolute;right:var(--gutter);bottom:clamp(38px,6vh,58px);display:flex;gap:8px;pointer-events:auto}
+.navs button{width:40px;height:40px;border:1px solid var(--line);background:rgba(17,26,34,.85);color:var(--paper);border-radius:4px;font-family:var(--mono);font-size:16px}
+.navs button:hover{border-color:var(--hivis);color:var(--hivis)}
+.hint{position:fixed;left:var(--gutter);bottom:clamp(38px,6vh,58px);font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted);z-index:5;pointer-events:none}
+.hint kbd{color:var(--paper);font-family:inherit}
+
+/* notes + help */
+.panel{position:fixed;z-index:6;background:rgba(12,18,24,.96);border:1px solid var(--line);border-radius:6px;padding:18px 20px;font-size:15px;line-height:1.55;color:var(--paper);max-width:min(560px,calc(100vw - 2*var(--gutter)));display:none}
+.panel.show{display:block}
+#notes{left:var(--gutter);bottom:clamp(64px,10vh,96px)}
+#notes .lbl,#help .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--hivis);text-transform:uppercase;margin-bottom:8px}
+#help{right:var(--gutter);top:clamp(52px,8vh,72px)}
+#help table{border-collapse:collapse}
+#help td{padding:3px 12px 3px 0;vertical-align:top}
+#help kbd{font-family:var(--mono);color:var(--hivis)}
+
+/* ---------- slides ---------- */
+.deck{position:relative;z-index:2;height:100dvh}
+.slide{position:absolute;inset:0;padding:clamp(60px,9vh,96px) var(--gutter) clamp(72px,11vh,110px);display:none;overflow:auto}
+.slide.on{display:grid;animation:in .45s ease both}
+.slide.off{display:grid;animation:out .3s ease both}
+@keyframes in{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+@keyframes out{from{opacity:1}to{opacity:0;transform:translateX(-18px)}}
+.two{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(24px,4vw,64px);align-items:center;align-content:center}
+.one{grid-template-columns:minmax(0,1fr);align-content:center;max-width:1100px;margin:0 auto;width:100%}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--hivis);margin:0 0 14px}
+h1,h2{font-family:var(--display);font-weight:900;letter-spacing:-.025em;line-height:.98;margin:0 0 18px;text-wrap:balance}
+h1{font-size:clamp(40px,7vw,96px)}
+h2{font-size:clamp(30px,4.6vw,60px)}
+h1 em,h2 em{font-style:normal;color:var(--hivis)}
+h3{font-family:var(--display);font-weight:700;font-size:clamp(18px,1.6vw,22px);margin:0 0 10px;letter-spacing:-.01em}
+.lede{font-size:clamp(16px,1.5vw,20px);line-height:1.55;color:var(--muted);max-width:60ch;margin:0 0 18px}
+.lede b,.lede strong{color:var(--paper);font-weight:600}
+p{margin:0}
+.mono{font-family:var(--mono)}
+.stack{display:grid;gap:14px}
+
+/* fragments */
+.frag{opacity:0;transform:translateY(10px);transition:opacity .4s ease,transform .4s ease}
+.frag.on{opacity:1;transform:none}
+.static .frag{opacity:1;transform:none;transition:none}
+.static .grid{animation:none}
+.static .slide.on,.static .slide.off{animation:none}
+
+/* plate: the working area on the right */
+.plate{background:rgba(17,26,34,.78);border:1px solid var(--line);border-radius:6px;padding:clamp(16px,2vw,26px);position:relative;min-width:0}
+.plate .cap{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:12px;margin-bottom:14px}
+.plate .cap b{color:var(--hivis);font-weight:500}
+
+/* trades */
+.trades{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px}
+.trade{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.trade svg{width:28px;height:28px}
+.trade.c1 svg{color:var(--copper)}.trade.c2 svg{color:var(--timber)}.trade.c3 svg{color:var(--current)}
+
+/* date strip */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);margin-top:26px}
+.strip div{padding:12px 14px;border-left:1px solid var(--line);font-family:var(--mono);font-size:12px;line-height:1.5;color:var(--muted)}
+.strip div:first-child{border-left:0}
+.strip b{display:block;color:var(--paper);font-weight:500;font-size:14px}
+
+/* flip cards (Verk 3–6) */
+.flips{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.flip{perspective:1000px;height:150px;background:none;border:0;padding:0;text-align:left;color:inherit}
+.flip-inner{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d}
+.flip.flipped .flip-inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border:1px solid var(--line);border-radius:6px;padding:16px;background:var(--ink-2);display:grid;align-content:space-between}
+.face.back{transform:rotateY(180deg);background:var(--ink-3);border-color:var(--c,var(--hivis))}
+.face .k{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--c,var(--hivis))}
+.face .t{font-family:var(--display);font-weight:700;font-size:20px;line-height:1.1}
+.face .d{font-size:14px;line-height:1.45;color:var(--muted)}
+.face.back .d{color:var(--paper)}
+.flip:hover .face.front{border-color:var(--c,var(--hivis))}
+
+/* room picker */
+.rooms{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.rooms button{border:1px solid var(--line);background:var(--ink-2);color:var(--paper);padding:10px 14px;border-radius:4px;font-family:var(--mono);font-size:13px;text-align:left;line-height:1.4}
+.rooms button b{color:var(--hivis);font-weight:700;margin-right:8px}
+.rooms button[aria-pressed="true"]{border-color:var(--hivis);background:rgba(245,197,24,.09)}
+.plan{width:100%;height:auto;display:block;aspect-ratio:4/3;max-width:100%}
+.plan text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+.plan .wall{fill:rgba(140,175,200,.05);stroke:var(--paper);stroke-width:3}
+.plan .dim{stroke:var(--hivis);stroke-width:1}
+.plan .dim-t{fill:var(--hivis)}
+.plan .win{stroke:var(--current);stroke-width:5}
+.plan .door{stroke:var(--timber);stroke-width:2;fill:none}
+.plan .walk{fill:rgba(92,203,140,.12);stroke:var(--ok);stroke-dasharray:4 4;stroke-width:1}
+.plan .area{font-family:var(--display);font-weight:900;font-size:28px;fill:var(--paper)}
+.plan .area-s{fill:var(--muted)}
+.planfoot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:10px}
+.planfoot b{color:var(--paper);font-weight:500}
+
+/* steps list */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.steps li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;font-size:clamp(15px,1.3vw,17px);line-height:1.5}
+.steps li b{font-family:var(--mono);font-weight:500;color:var(--hivis);font-size:13px;padding-top:3px}
+.steps li em{font-style:normal;color:var(--paper);font-weight:600}
+.steps li span{color:var(--muted)}
+.steps li span strong{color:var(--paper);font-weight:600}
+
+/* lanes (parallel work) */
+.lanes{display:grid;gap:8px}
+.lane{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center;border:1px solid var(--line);border-radius:4px;padding:10px 12px;background:var(--ink-2);border-left:3px solid var(--c,var(--hivis))}
+.lane .who{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--c,var(--hivis))}
+.lane .what{font-size:15px;line-height:1.4}
+.lane .what small{display:block;color:var(--muted);font-size:13px}
+.stop{margin-top:12px;border:1px dashed var(--hivis);border-radius:4px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.stop .sign{width:44px;height:44px;border-radius:50%;background:var(--hivis);color:var(--on-hivis);display:grid;place-items:center;font-family:var(--display);font-weight:900;font-size:13px}
+.stop p{font-size:15px;line-height:1.45}
+.stop p b{color:var(--hivis)}
+
+/* cost sheet */
+.sheet{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+.sheet th{font-weight:500;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.sheet td{padding:6px 8px;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+.sheet td.n,.sheet th.n{text-align:right}
+.sheet input{width:58px;background:var(--ink);border:1px solid var(--line);color:var(--paper);padding:4px 6px;border-radius:3px;text-align:right;font-family:var(--mono)}
+.sheet input:focus{border-color:var(--hivis)}
+.sheet tfoot td{border-bottom:0;padding-top:8px}
+.sheet tfoot tr.total td{color:var(--hivis);font-weight:700;font-size:15px;border-top:1px solid var(--line);padding-top:10px}
+.sheet .f{color:var(--current);font-size:11px}
+.sheet .item{font-family:var(--body);white-space:normal}
+.sheetnote{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px;letter-spacing:.06em}
+.sheet-wrap{overflow-x:auto}
+.flash td{animation:flash .6s ease}
+@keyframes flash{from{background:rgba(245,197,24,.18)}to{background:transparent}}
+
+/* circuit */
+.circ{width:100%;height:auto;display:block;max-width:100%}
+.circ .w{stroke:var(--paper);stroke-width:2;fill:none}
+.circ .w.live{stroke:var(--current)}
+.circ text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+.circ .led{fill:#2a2f36;stroke:var(--paper);stroke-width:2;transition:fill .25s}
+.circ .led.on{fill:var(--bad);filter:drop-shadow(0 0 10px rgba(224,96,79,.9)) drop-shadow(0 0 22px rgba(224,96,79,.6))}
+.circ .led.hot{fill:#fff0e8;filter:drop-shadow(0 0 14px #fff) drop-shadow(0 0 30px rgba(224,96,79,.9))}
+.circ .led.dim{fill:#9b463c;filter:drop-shadow(0 0 5px rgba(224,96,79,.5))}
+.circ .sw{stroke:var(--hivis);stroke-width:3;transition:transform .2s;transform-origin:150px 60px}
+.circ .sw.closed{transform:rotate(0deg)}
+.circ .sw.open{transform:rotate(-28deg)}
+.circ .hit{fill:transparent;cursor:pointer}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.ctrl .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-right:6px}
+.chip{border:1px solid var(--line);background:var(--ink-2);color:var(--paper);padding:7px 12px;border-radius:999px;font-family:var(--mono);font-size:13px}
+.chip[aria-pressed="true"]{border-color:var(--hivis);background:rgba(245,197,24,.12);color:var(--hivis)}
+.readout{margin-top:12px;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-family:var(--mono);font-size:13px;color:var(--muted);align-items:baseline}
+.readout b{font-size:22px;color:var(--paper);font-weight:700;font-variant-numeric:tabular-nums}
+.readout .st{grid-column:1/-1;padding:8px 10px;border-radius:4px;border:1px solid var(--line);color:var(--paper);font-size:13px}
+.readout .st.ok{border-color:var(--ok)}.readout .st.warn{border-color:var(--warn)}.readout .st.bad{border-color:var(--bad)}
+
+/* justification compare */
+.cmp{display:grid;gap:12px}
+.cmp .ex{border:1px solid var(--line);border-radius:6px;padding:14px 16px;background:var(--ink-2);display:grid;gap:6px}
+.cmp .ex .k{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+.cmp .ex.bad .k{color:var(--bad)}.cmp .ex.good .k{color:var(--ok)}
+.cmp .ex.good{border-color:rgba(92,203,140,.5)}
+.cmp .ex p{font-size:15px;line-height:1.5}
+.cmp .ex p mark{background:rgba(92,203,140,.18);color:var(--paper);padding:0 3px;border-radius:2px}
+
+/* files */
+.files{display:grid;gap:10px}
+.file{border:1px solid var(--line);border-radius:6px;background:var(--ink-2);overflow:hidden}
+.file > button{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:12px 14px;background:none;border:0;color:var(--paper);text-align:left}
+.file .ext{font-family:var(--mono);font-size:12px;font-weight:700;padding:6px 8px;border-radius:3px;color:var(--on-hivis);background:var(--c,var(--hivis))}
+.file .fn{font-family:var(--mono);font-size:13px}
+.file .fn small{display:block;color:var(--muted);font-family:var(--body);font-size:13px;margin-top:2px}
+.file .tog{font-family:var(--mono);color:var(--muted);font-size:12px}
+.file ul{list-style:none;margin:0;padding:6px 14px 12px 14px;display:grid;gap:4px;border-top:1px solid var(--line-soft)}
+.file li label{display:grid;grid-template-columns:18px 1fr;gap:10px;align-items:start;font-size:14px;line-height:1.45;padding:4px 0;cursor:pointer;color:var(--muted)}
+.file li input{width:16px;height:16px;margin:3px 0 0;accent-color:var(--hivis)}
+.file li input:checked + span{color:var(--paper)}
+.file .cnt{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:8px}
+
+/* timeline */
+.tl{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px}
+.tl::before{content:"";position:absolute;left:0;right:0;top:18px;height:1px;background:var(--line)}
+.tl .t{position:relative;padding-top:38px}
+.tl .t::before{content:"";position:absolute;left:0;top:12px;width:13px;height:13px;border-radius:50%;background:var(--ink);border:2px solid var(--c,var(--hivis))}
+.tl .t .d{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--c,var(--hivis));text-transform:uppercase}
+.tl .t .h{font-family:var(--display);font-weight:700;font-size:20px;margin:6px 0 6px}
+.tl .t p{font-size:14px;line-height:1.45;color:var(--muted)}
+.tl .t p b{color:var(--paper);font-weight:600}
+
+/* timer */
+.timer{display:grid;gap:12px}
+.clock{font-family:var(--display);font-weight:900;font-size:clamp(56px,8vw,104px);letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;text-align:center}
+.zone{position:relative;height:26px;border-radius:4px;background:linear-gradient(90deg,var(--warn) 0 50%,var(--ok) 50% 75%,var(--bad) 75% 100%);opacity:.9}
+.zone i{position:absolute;top:-6px;bottom:-6px;width:3px;background:var(--paper);left:0;transition:left .5s linear}
+.zonel{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em}
+.zonel span:nth-child(2){text-align:center}.zonel span:last-child{text-align:right}
+.tbtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--ink-2);color:var(--paper);padding:10px 18px;border-radius:4px;font-family:var(--mono);font-size:13px;letter-spacing:.08em}
+.btn.pri{background:var(--hivis);color:var(--on-hivis);border-color:var(--hivis);font-weight:700}
+.tstat{text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);min-height:1.4em}
+
+/* rubric bands */
+.bands{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+.band{border:1px solid var(--line);border-top:3px solid var(--c,var(--muted));background:var(--ink-2);color:var(--paper);padding:10px 8px;border-radius:4px;text-align:left;display:grid;gap:4px;min-width:0}
+.band b{font-family:var(--mono);font-size:18px;color:var(--c,var(--muted))}
+.band span{font-size:12px;line-height:1.3}
+.band[aria-pressed="true"]{background:var(--ink-3);border-color:var(--c,var(--hivis))}
+.bandtext{border:1px solid var(--line);border-radius:4px;padding:14px 16px;font-size:15px;line-height:1.5;min-height:110px}
+.bandtext b{color:var(--hivis)}
+
+/* grade calculator */
+.calc{display:grid;gap:14px}
+.calc label{display:grid;gap:6px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.calc label output{color:var(--paper);font-size:16px;font-weight:700}
+.calc input[type=range]{width:100%;accent-color:var(--hivis)}
+.calc .res{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;border:1px solid var(--hivis);border-radius:4px;padding:12px 16px}
+.calc .res .eq{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.calc .res b{font-family:var(--display);font-weight:900;font-size:40px;color:var(--hivis)}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.split div{border:1px solid var(--line);border-top:3px solid var(--c,var(--hivis));padding:12px 14px;border-radius:4px;background:var(--ink-2)}
+.split b{font-family:var(--mono);font-size:22px;color:var(--c,var(--hivis))}
+.split strong{display:block;font-size:15px;margin:4px 0}
+.split p{font-size:13px;color:var(--muted);line-height:1.45}
+
+/* url */
+.url{font-family:var(--mono);font-size:clamp(16px,2.4vw,30px);word-break:break-all;border:1px solid var(--hivis);padding:16px 20px;border-radius:4px;color:var(--hivis);margin:18px 0;display:block;text-decoration:none}
+.qr{display:grid;place-items:center}
+.qr{align-content:center}
+#qr{padding:10px;background:#fff;border-radius:4px;line-height:0}
+#qr img,#qr canvas{max-width:100%;height:auto}
+
+.big{font-family:var(--display);font-weight:900;font-size:clamp(28px,4vw,52px);line-height:1.05;letter-spacing:-.02em}
+.big em{font-style:normal;color:var(--hivis)}
+
+@media (max-width:900px){
+  .two{grid-template-columns:1fr;align-content:start}
+  .strip,.bands{grid-template-columns:1fr 1fr}
+  .tl{grid-template-columns:1fr 1fr}
+  .flips{grid-template-columns:1fr}
+  .lane{grid-template-columns:1fr}
+  .hint{display:none}
+}
+@media (max-width:560px){
+  .strip,.bands,.tl,.split{grid-template-columns:1fr}
+  .slide{padding-top:64px}
+  .count{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true"><div class="grid"></div><canvas id="amb"></canvas><div class="vignette"></div></div>
+
+<main class="deck" id="deck">
+
+<!-- 1 · Titill -->
+<section class="slide two" data-label="Titill" data-notes="Þetta er kynning á Verk 7. Markmið tímans: allir vita hvað á að gera, hvað á að skila, hvenær og hvernig það er metið. Segðu strax að allt sem þarf sé á verkefnasíðunni með gátlistum.">
+  <div>
+    <p class="eyebrow">FAGU · Verk 7 · hópverkefni</p>
+    <h1>Verkstæði<br><em>frá grunni</em></h1>
+    <p class="lede">Hannið verkstæði sem pípari, smiður og rafvirki geta allir notað. Grunnmynd, innkaupalisti, rafrás, skýrsla og kynning, allt úr því sem þið kunnið nú þegar.</p>
+    <div class="trades" aria-hidden="true">
+      <div class="trade c1"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h9a5 5 0 0 0 5-5V9"/><rect x="2" y="17" width="4" height="6"/><rect x="15" y="4" width="6" height="4"/><path d="M18 22.5a5.5 5.5 0 1 0 5.5-5.5"/><path d="M23.5 17v5.5H29"/></svg><span>Pípulagnir</span></div>
+      <div class="trade c2"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21 21 5l4 4L9 25z"/><path d="M5 21l4 4"/><path d="M20 6l6 6"/><path d="M9 17l1.5 1.5M12 14l1.5 1.5M15 11l1.5 1.5"/></svg><span>Húsasmíði</span></div>
+      <div class="trade c3"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3 8 18h7l-1 11 10-16h-7z"/><path d="M4 8h3M4 24h3M28 12h-2"/></svg><span>Rafvirkjun</span></div>
+    </div>
+  </div>
+  <div class="plate">
+    <div class="cap"><span>Yfirlit</span><b>Haust 2026</b></div>
+    <div class="strip" style="margin-top:0">
+      <div><b>Þri 15. sept.</b>Vinnudagur · 100 mín.<br>myndataka í stofu 312</div>
+      <div><b>Mán 21. sept.</b>Skráaskil kl. 23:59<br>þrjár skrár, einn skilar</div>
+      <div><b>Þri 22. sept.</b>Kynningar<br>10–15 mín. á hóp</div>
+      <div><b>Mið 23. sept.</b>Jafningjamat kl. 23:59<br>hver fyrir sig</div>
+    </div>
+    <p class="lede" style="margin:18px 0 0;font-size:15px">Hópar: 4–5 nemendur. Hópaskiptingin er á verkefnasíðunni í Canvas.</p>
+  </div>
+</section>
+
+<!-- 2 · Verk 3–6 verða að einu -->
+<section class="slide two" data-label="Úr Verk 3–6" data-notes="Smelltu á spjöldin (eða ýttu á T) til að snúa þeim. Hvert spjald sýnir hvað þau gerðu áður og hvað það verður í Verk 7. Punkturinn: ekkert nýtt tól, bara allt saman í einu verki.">
+  <div>
+    <p class="eyebrow">Hvað er þetta?</p>
+    <h2>Allt sem þið lærðuð í Verk 3–6 <em>í einu verki</em></h2>
+    <p class="lede">Engin ný forrit. Sömu verkfæri og áður, en nú vinna þau saman að einni niðurstöðu: verkstæði sem hægt er að teikna, verðleggja, lýsa upp og kynna.</p>
+    <p class="lede frag"><b>Snúið spjöldunum</b> til að sjá hvað hvert verk verður.</p>
+  </div>
+  <div class="flips" id="flips">
+    <button class="flip" style="--c:var(--timber)" type="button"><div class="flip-inner">
+      <div class="face front"><span class="k">Verk 3</span><span class="t">Stafræn grunnmynd</span><span class="d">Þið teiknuðuð rými í réttum hlutföllum.</span></div>
+      <div class="face back"><span class="k">Verður að</span><span class="t">Grunnmynd verkstæðisins</span><span class="d">Rými A, B eða C með málum, hurðum, gluggum, vinnuborði, hillu og 1 m gönguleið.</span></div>
+    </div></button>
+    <button class="flip" style="--c:var(--current)" type="button"><div class="flip-inner">
+      <div class="face front"><span class="k">Verk 4</span><span class="t">Stafræn rafrás</span><span class="d">Þið smíðuðuð rás í Falstad.</span></div>
+      <div class="face back"><span class="k">Verður að</span><span class="t">Merkiljósarás</span><span class="d">9 V, rofi, viðnám og LED. Skjámynd með logandi ljósi og vistuð rás í zip-möppuna.</span></div>
+    </div></button>
+    <button class="flip" style="--c:var(--copper)" type="button"><div class="flip-inner">
+      <div class="face front"><span class="k">Verk 5</span><span class="t">Myndaskýrsla og PDF</span><span class="d">Þið gerðuð skýrslu sem skilst án útskýringa.</span></div>
+      <div class="face back"><span class="k">Verður að</span><span class="t">PDF-skýrsla hópsins</span><span class="d">Forsíða, ábyrgðartafla, grunnmynd, innkaupalisti, rás og rökstuðningur með myndatextum.</span></div>
+    </div></button>
+    <button class="flip" style="--c:var(--hivis)" type="button"><div class="flip-inner">
+      <div class="face front"><span class="k">Verk 6</span><span class="t">Prófílmynd</span><span class="d">Þið tókuð mynd og settuð hana í Innu og Canvas.</span></div>
+      <div class="face back"><span class="k">Verður að</span><span class="t">Hópmynd á forsíðu</span><span class="d">Halli tekur hópmynd í stofu 312 á vinnudeginum. Hún fer á forsíðu skýrslunnar og í glærurnar.</span></div>
+    </div></button>
+  </div>
+</section>
+
+<!-- 3 · Rýmin -->
+<section class="slide two" data-label="Rýmin" data-notes="Veldu rými með hnöppunum. Teikningin er í réttum hlutföllum og sýnir flatarmálið. Bentu á að rými B hefur engan glugga og að 1 m gönguleiðin er lágmark. Spurðu bekkinn: hvaða rými hentar best fyrir þrjár iðngreinar?">
+  <div>
+    <p class="eyebrow">Skref 1 · veljið rými</p>
+    <h2>Þrjú rými, <em>eitt val</em></h2>
+    <p class="lede">Hópurinn velur eitt rými. Verkstæðið á að nýtast öllum þremur iðngreinunum, svo hugsið um vinnuborð, hillu, ljós, rafmagn og hvar fólk gengur.</p>
+    <div class="rooms" role="group" aria-label="Veldu rými">
+      <button type="button" data-room="A" aria-pressed="true"><b>A</b>Lítil stofa · 4 × 5 m</button>
+      <button type="button" data-room="B" aria-pressed="false"><b>B</b>Bílskúr · 6 × 8 m</button>
+      <button type="button" data-room="C" aria-pressed="false"><b>C</b>Langt herbergi · 3 × 9 m</button>
+    </div>
+    <p class="lede frag" style="font-size:15px">Flatarmál = lengd × breidd. Sú tala fer í skýrsluna, og grunnmyndin verður að vera í réttum hlutföllum eins og hér.</p>
+  </div>
+  <div class="plate">
+    <div class="cap"><span>Grunnmynd · mælikvarði</span><b id="planTitle">Rými A</b></div>
+    <svg class="plan" id="plan" viewBox="0 0 440 330" aria-label="Grunnmynd valins rýmis"></svg>
+    <div class="planfoot" id="planFoot"></div>
+  </div>
+</section>
+
+<!-- 4 · Vinnudagurinn -->
+<section class="slide two" data-label="Vinnudagurinn" data-notes="Engin mínútuáætlun, hópar vinna mishratt. Fyrst þrjú skref saman, svo vinna allir samtímis að sínum hlut. Eina tímamerkið: þegar um 50 mínútur eru eftir stoppa allir og fara yfir gátlistana. Það sem vantar er klárað heima í sameiginlegu möppunni.">
+  <div>
+    <p class="eyebrow">Þriðjudagur 15. september</p>
+    <h2>Byrjið saman, <em>vinnið samtímis</em></h2>
+    <ol class="steps">
+      <li class="frag"><b>01</b><span><em>Finnið hópinn</em> í Canvas og veljið rými.</span></li>
+      <li class="frag"><b>02</b><span><em>Sameiginleg vinnumappa</em> sem allir geta opnað og vistað í.</span></li>
+      <li class="frag"><b>03</b><span><em>Ábyrgðartafla:</em> nafn og ábyrgð á hverjum hluta. Veljið einn sem skilar.</span></li>
+    </ol>
+  </div>
+  <div class="plate">
+    <div class="cap"><span>Svo á sama tíma</span><b>Allir mega hjálpa öllum</b></div>
+    <div class="lanes">
+      <div class="lane frag" style="--c:var(--timber)"><span class="who">Grunnmynd</span><span class="what">Rýmið í réttum hlutföllum<small>Verk 3 aðferðin eða rúðustrikað blað</small></span></div>
+      <div class="lane frag" style="--c:var(--hivis)"><span class="who">Verð</span><span class="what">Átta hlutir í reiknisskjal með formúlum<small>byko.is, husa.is, bauhaus.is, elko.is, ikea.is</small></span></div>
+      <div class="lane frag" style="--c:var(--current)"><span class="who">Rás</span><span class="what">Merkiljósarás í Falstad, skjámynd og vistuð skrá<small>Verk 4 rásin, byrjið með 470 Ω</small></span></div>
+      <div class="lane frag" style="--c:var(--copper)"><span class="who">Rökstuðningur</span><span class="what">3–5 setningar: hvers vegna svona?<small>fer í skýrsluna og á eina glæru</small></span></div>
+      <div class="lane frag" style="--c:var(--paper)"><span class="who">Myndataka</span><span class="what">Öll saman til Halla í stofu 312<small>hópmyndin á forsíðuna</small></span></div>
+    </div>
+    <div class="stop frag"><div class="sign">STOPP</div><p><b>Þegar um 50 mínútur eru eftir:</b> farið saman yfir gátlistana þrjá á verkefnasíðunni og skráið hver klárar hvað fyrir 21. september.</p></div>
+  </div>
+</section>
+
+<!-- 5 · Innkaupalistinn -->
+<section class="slide two" data-label="Innkaupalisti" data-notes="Þetta er lifandi reiknisskjal. Breyttu fjölda á einhverjum hlut og sýndu að línusamtala, vörusamtala, ófyrirséð og heild uppfærast. Verðin eru sýnidæmi, ekki raunveruleg. Nemendur þurfa vöruhlekk sem heimild fyrir hverju verði.">
+  <div>
+    <p class="eyebrow">Verð · reiknisskjal</p>
+    <h2>Átta hlutir, <em>fjórar formúlur</em></h2>
+    <p class="lede">Hver hlutur fær línu: hlutur, verslun, vöruhlekkur, einingarverð, fjöldi og línusamtala. Formúlurnar reikna, ekki þið.</p>
+    <ul class="steps" style="font-family:var(--mono);font-size:14px">
+      <li class="frag"><b>=</b><span>línusamtala = einingarverð × fjöldi</span></li>
+      <li class="frag"><b>=</b><span>vörusamtala = SUM(línusamtölur)</span></li>
+      <li class="frag"><b>=</b><span>ófyrirséð = vörusamtala × 10%</span></li>
+      <li class="frag"><b>=</b><span>heildarkostnaður = vörusamtala + ófyrirséð</span></li>
+    </ul>
+    <p class="lede frag" style="font-size:15px;margin-top:16px"><b>Prófið:</b> breytið fjölda á einum hlut hér til hægri. Allt á að uppfærast sjálfkrafa.</p>
+  </div>
+  <div class="plate">
+    <div class="cap"><span>Innkaupalisti · sýnidæmi</span><b>Verð eru tilbúin dæmi</b></div>
+    <div class="sheet-wrap">
+    <table class="sheet" id="sheet">
+      <thead><tr><th>Hlutur</th><th class="n">Ein.verð</th><th class="n">Fjöldi</th><th class="n">Línusamtala</th></tr></thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr><td colspan="3">Vörusamtala <span class="f">=SUM</span></td><td class="n" id="sub"></td></tr>
+        <tr><td colspan="3">Ófyrirséð <span class="f">=vörusamtala×10%</span></td><td class="n" id="cont"></td></tr>
+        <tr class="total"><td colspan="3">Heildarkostnaður</td><td class="n" id="tot"></td></tr>
+      </tfoot>
+    </table>
+    </div>
+    <p class="sheetnote">Í skilum: vöruhlekkur við hvert verð, skjalið vistað sem .xlsx í zip-möppuna.</p>
+  </div>
+</section>
+
+<!-- 6 · Rásin -->
+<section class="slide two" data-label="Rásin" data-notes="Smelltu á rofann til að kveikja. Skiptu um viðnám: 220 Ω gefur of mikinn straum fyrir venjulegt LED (yfir 20 mA), 470 Ω er öruggt, 1 kΩ er dauft. Straumur = (9 V − 2 V) / R. Þetta er sama rás og í Verk 4.">
+  <div>
+    <p class="eyebrow">Rafrás · Falstad</p>
+    <h2>Merkiljós sem <em>kviknar</em></h2>
+    <p class="lede">9 V rafhlaða, rofi, viðnám og LED. Prófið að ljósið kvikni og slokkni með rofanum. Skjámynd með logandi LED og merktum gildum fer í skýrsluna, vistaða rásin í zip-möppuna.</p>
+    <p class="lede frag" style="font-size:15px">Hvers vegna viðnám? LED þolir um 20 mA. Straumurinn er <span class="mono">(9 V − 2 V) ÷ R</span>. Prófið að skipta um viðnám hér til hægri.</p>
+  </div>
+  <div class="plate">
+    <div class="cap"><span>Smellið á rofann</span><b id="circState">Rofi opinn</b></div>
+    <svg class="circ" viewBox="0 0 440 240" aria-label="Rafrás með rafhlöðu, rofa, viðnámi og LED">
+      <g id="wires" class="w">
+        <path d="M60 60H130"/><path d="M170 60H220"/><path d="M270 60H360V110"/><path d="M360 150V200H60V120"/>
+      </g>
+      <!-- battery -->
+      <path class="w" d="M60 60V90"/><path class="w" d="M45 90H75"/><path class="w" d="M52 100H68" stroke-width="4"/><path class="w" d="M45 110H75"/><path class="w" d="M52 120H68" stroke-width="4"/>
+      <text x="14" y="104">9 V</text>
+      <!-- switch -->
+      <circle cx="130" cy="60" r="3" fill="#EAF0F5"/><circle cx="170" cy="60" r="3" fill="#EAF0F5"/>
+      <line id="swArm" class="sw open" x1="130" y1="60" x2="170" y2="60"/>
+      <rect class="hit" id="swHit" x="115" y="25" width="70" height="55" role="button" tabindex="0" aria-label="Rofi"/>
+      <text x="128" y="92">rofi</text>
+      <!-- resistor -->
+      <path class="w" d="M220 60l5 -9 10 18 10 -18 10 18 10 -18 5 9"/>
+      <text x="222" y="92" id="rLabel">R = 470 Ω</text>
+      <!-- LED -->
+      <polygon id="led" class="led" points="348,110 372,110 360,130"/>
+      <path class="w" d="M348 130H372"/><path class="w" d="M360 130V150"/>
+      <path class="w" d="M376 112l10-8M382 120l10-8" stroke-width="1.5"/>
+      <text x="380" y="150">LED</text>
+      <text x="200" y="222" id="iLabel"></text>
+    </svg>
+    <div class="ctrl"><span class="lbl">Viðnám</span>
+      <button class="chip" type="button" data-r="220" aria-pressed="false">220 Ω</button>
+      <button class="chip" type="button" data-r="470" aria-pressed="true">470 Ω</button>
+      <button class="chip" type="button" data-r="1000" aria-pressed="false">1 kΩ</button>
+    </div>
+    <div class="readout"><span>Straumur</span><b id="iOut">0 mA</b><div class="st" id="iStat">Rofinn er opinn. Enginn straumur, ljósið er slökkt.</div></div>
+  </div>
+</section>
+
+<!-- 7 · Rökstuðningur -->
+<section class="slide two" data-label="Rökstuðningur" data-notes="Nýtt í ár: rökstuðningur. Þetta skilur 9–10 frá 7–8. Sýndu muninn á lélegri og góðri setningu. Góður rökstuðningur nefnir ástæðu og eitthvað sem var sannreynt.">
+  <div>
+    <p class="eyebrow">3–5 setningar</p>
+    <h2>Hvers vegna <em>svona?</em></h2>
+    <p class="lede">Rétt unnið verk er 7–8. Rétt unnið verk sem þið getið <b>útskýrt</b> er 9–10. Rökstuðningurinn svarar: hvers vegna þessi röðun, þessir hlutir, þessar verslanir? Og nefnir eitt sem þið sannreynduð.</p>
+    <p class="lede frag" style="font-size:15px">Hann fer í skýrsluna og á eina glæru í kynningunni.</p>
+  </div>
+  <div class="cmp">
+    <div class="ex bad frag"><span class="k">Dugar ekki</span><p>„Við settum vinnuborðið við vegginn og keyptum hlutina í Byko.“</p></div>
+    <div class="ex good frag"><span class="k">Rökstuðningur</span><p>„Vinnuborðið er <mark>undir glugganum</mark> svo dagsbirtan lendi á vinnusvæðinu, og hillan er <mark>við hurðina</mark> svo hægt sé að leggja efni frá sér um leið og komið er inn. Við bárum saman <mark>LED-vinnuljós í Elko og Byko</mark>; Byko var 1.500 kr. ódýrara fyrir sambærilegt ljós. Formúlurnar prófuðum við með því að <mark>breyta fjölda hillueininga úr 1 í 2</mark> og heildin hækkaði rétt.“</p></div>
+  </div>
+</section>
+
+<!-- 8 · Þrjár skrár -->
+<section class="slide two" data-label="Þrjár skrár" data-notes="Smelltu á skrá til að opna gátlistann. Sami listi og á verkefnasíðunni. Undirstrikaðu: glærur sem .pptx eða .key, ekki PDF og ekki hlekkur. Reiknisskjal og vistuð rás verða að vera í zip-möppunni.">
+  <div>
+    <p class="eyebrow">Skil · mánudagur 21. september kl. 23:59</p>
+    <h2>Þrjár skrár, <em>ein skil</em></h2>
+    <p class="lede">Einn úr hópnum hleður öllum þremur upp saman í Canvas. Engir hlekkir. Gátlistarnir á verkefnasíðunni segja nákvæmlega hvað á að vera í hverri skrá.</p>
+    <p class="lede frag" style="font-size:15px"><b>Áður en þið skilið:</b> opnið hverja skrá og prófið hana. Við endurskil fylgja allar þrjár aftur.</p>
+  </div>
+  <div class="files" id="files">
+    <div class="file" style="--c:var(--copper)">
+      <button type="button" aria-expanded="false"><span class="ext">PDF</span><span class="fn">HopurX_Verk7_skyrsla.pdf<small>Skýrslan, skiljanleg án munnlegrar útskýringar</small></span><span class="tog">+</span></button>
+      <ul hidden>
+        <li><label><input type="checkbox"><span>Forsíða með hópmynd, nöfnum, hópnúmeri og dagsetningu</span></label></li>
+        <li><label><input type="checkbox"><span>Ábyrgðartaflan</span></label></li>
+        <li><label><input type="checkbox"><span>Grunnmynd með málum og flatarmál</span></label></li>
+        <li><label><input type="checkbox"><span>Innkaupalisti með línusamtölum, vörusamtölu, 10% og heild</span></label></li>
+        <li><label><input type="checkbox"><span>Skjámynd af rásinni með logandi LED</span></label></li>
+        <li><label><input type="checkbox"><span>Rökstuðningur, 3–5 setningar</span></label></li>
+        <li><label><input type="checkbox"><span>Myndatexti við hverja mynd, samræmt letur, blaðsíðutal</span></label></li>
+      </ul>
+    </div>
+    <div class="file" style="--c:var(--timber)">
+      <button type="button" aria-expanded="false"><span class="ext">ZIP</span><span class="fn">HopurX_Verk7_vinnuskjol.zip<small>Öll vinnuskjöl í lýsandi möppum</small></span><span class="tog">+</span></button>
+      <ul hidden>
+        <li><label><input type="checkbox"><span>Skýrsluskjalið sjálft (Word eða Docs)</span></label></li>
+        <li><label><input type="checkbox"><span>Grunnmyndin sem mynd eða teikniskrá</span></label></li>
+        <li><label><input type="checkbox"><span>Reiknisskjalið sem .xlsx með formúlunum inni</span></label></li>
+        <li><label><input type="checkbox"><span>Vistaða rásin, .txt úr Falstad</span></label></li>
+        <li><label><input type="checkbox"><span>Allar myndir, þar á meðal hópmyndin</span></label></li>
+        <li><label><input type="checkbox"><span>Glærurnar</span></label></li>
+        <li><label><input type="checkbox"><span>Engar tómar möppur, zip opnuð og prófuð</span></label></li>
+      </ul>
+    </div>
+    <div class="file" style="--c:var(--current)">
+      <button type="button" aria-expanded="false"><span class="ext">PPTX</span><span class="fn">HopurX_Verk7_kynning.pptx eða .key<small>Ekki PDF, engir hlekkir</small></span><span class="tog">+</span></button>
+      <ul hidden>
+        <li><label><input type="checkbox"><span>Titilglæra með hópmynd, nöfnum og rými</span></label></li>
+        <li><label><input type="checkbox"><span>Rýmið: grunnmynd og flatarmál</span></label></li>
+        <li><label><input type="checkbox"><span>Kostnaður: helstu hlutir og heild</span></label></li>
+        <li><label><input type="checkbox"><span>Rásin: skjámynd með logandi LED</span></label></li>
+        <li><label><input type="checkbox"><span>Rökstuðningur: hvers vegna svona</span></label></li>
+        <li><label><input type="checkbox"><span>Hvað hópurinn lærði</span></label></li>
+        <li><label><input type="checkbox"><span>Flutt út úr Google Slides eða Canva sem .pptx og opnuð aftur</span></label></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · Kynningin + tímamælir -->
+<section class="slide two" data-label="Kynningin" data-notes="Kynning 22. september, 10–15 mínútur á hóp, flutt af kennaratölvunni úr skránni sem hópurinn skilaði. Allir tala. Tímamælirinn er fyrir þau að æfa: grænt svæði er 10–15 mín. Þú getur sýnt hann hér og þau nota hann sjálf heima.">
+  <div>
+    <p class="eyebrow">Þriðjudagur 22. september</p>
+    <h2>Allir tala, <em>10–15 mínútur</em></h2>
+    <ul class="steps">
+      <li class="frag"><b>→</b><span>Flutt af <strong>kennaratölvunni</strong> úr glæruskránni sem þið skiluðu í Canvas. Afrit í vinnumöppunni til öryggis.</span></li>
+      <li class="frag"><b>→</b><span>Kennari ákveður <strong>röð hópanna</strong> í byrjun tímans.</span></li>
+      <li class="frag"><b>→</b><span><strong>Um 8–12 glærur.</strong> Ein mynd og fáar setningar á glæru. Segið frá, ekki lesa.</span></li>
+      <li class="frag"><b>→</b><span>Rýmið, kostnaðurinn, rásin, rökstuðningurinn og hvað þið lærðuð.</span></li>
+      <li class="frag"><b>→</b><span><strong>Æfið með tíma.</strong> Skiptið glærunum á milli ykkar fyrirfram.</span></li>
+    </ul>
+  </div>
+  <div class="plate">
+    <div class="cap"><span>Æfingaklukka</span><b>Grænt = innan tíma</b></div>
+    <div class="timer">
+      <div class="clock" id="clock">00:00</div>
+      <div class="zone"><i id="zoneMark"></i></div>
+      <div class="zonel"><span>0</span><span>10 mín.</span><span>15 mín.</span><span>20</span></div>
+      <div class="tbtns"><button class="btn pri" type="button" id="tStart">Byrja</button><button class="btn" type="button" id="tReset">Núllstilla</button></div>
+      <div class="tstat" id="tStat">Ýtið á Byrja þegar fyrsti byrjar að tala.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · Námsmat -->
+<section class="slide two" data-label="Námsmat" data-notes="Smelltu á bönd til að lesa lýsingu. Svo reiknivélin: lokaeinkunn er helmingur hópeinkunnar og helmingur einkunnar kennara fyrir þig. Sýndu dæmið 8 og 6 gefa 7. Tveir í sama hópi geta fengið ólíka einkunn.">
+  <div>
+    <p class="eyebrow">Hvernig er einkunnin reiknuð?</p>
+    <h2>Hópurinn <em>og þú</em></h2>
+    <div class="split">
+      <div style="--c:var(--hivis)"><b>50%</b><strong>Hópeinkunn</strong><p>Skilin og kynningin eftir gæðabandunum. Sama fyrir alla í hópnum.</p></div>
+      <div style="--c:var(--current)"><b>50%</b><strong>Einkunn kennara fyrir þig</strong><p>Mæting, þátttaka, ábyrgð og sýnilegt framlag. Athuganir úr tímum og jafningjamat.</p></div>
+    </div>
+    <div class="calc frag">
+      <label>Hópeinkunn <output id="gOut">8</output><input type="range" id="gIn" min="0" max="10" step="1" value="8"></label>
+      <label>Einkunn kennara fyrir þig <output id="iOutG">6</output><input type="range" id="iIn" min="0" max="10" step="1" value="6"></label>
+      <div class="res"><span class="eq" id="eq">(8 + 6) ÷ 2</span><b id="final">7</b></div>
+    </div>
+  </div>
+  <div class="plate">
+    <div class="cap"><span>Gæðabönd hópeinkunnar</span><b>Smellið á band</b></div>
+    <div class="bands" id="bands">
+      <button class="band" type="button" style="--c:var(--bad)" aria-pressed="false" data-t="Lítið er matshæft; megnið af verkefninu vantar."><b>1–2</b><span>Nánast ekkert</span></button>
+      <button class="band" type="button" style="--c:var(--bad)" aria-pressed="false" data-t="Mikilvæg skil eða skref vantar, eða verulegar villur eru í niðurstöðum."><b>3–4</b><span>Hluta vantar</span></button>
+      <button class="band" type="button" style="--c:var(--muted)" aria-pressed="false" data-t="Öll þrjú skil komin og kynning flutt þar sem allir tala. Öll skylduatriði til staðar, niðurstöður að mestu réttar og frágangur nægilegur."><b>5–6</b><span>Allt skilað</span></button>
+      <button class="band" type="button" style="--c:var(--warn)" aria-pressed="true" data-t="Mál, útreikningar og rás eru rétt. Skrár eru skipulagðar, skýrslan læsileg og myndir skýrar. Allir tala skýrt um sinn hluta og kynningin er innan tíma."><b>7–8</b><span>Vel unnið</span></button>
+      <button class="band" type="button" style="--c:var(--ok)" aria-pressed="false" data-t="Öll skylduatriði unnin af nákvæmni. Rökstuðningurinn útskýrir val á skipulagi og búnaði, hópurinn sannreynir verð og útreikninga og sýnir prófaða rás. Skýrsla, vinnuskjöl og kynning segja sömu skýru söguna. Ekki þarf fleiri íhluti eða hreyfingar í glærum."><b>9–10</b><span>Framúrskarandi</span></button>
+    </div>
+    <div class="bandtext" id="bandText"><b>7–8 · Vel unnið.</b> Mál, útreikningar og rás eru rétt. Skrár eru skipulagðar, skýrslan læsileg og myndir skýrar. Allir tala skýrt um sinn hluta og kynningin er innan tíma.</div>
+  </div>
+</section>
+
+<!-- 11 · Jafningjamat -->
+<section class="slide one" data-label="Jafningjamat" data-notes="Skylda, hver fyrir sig, fyrir miðvikudag 23. september kl. 23:59. Merkt nafni, aðeins kennarar sjá svörin. Það gefur ekki stig sjálft en styður einkunn kennara fyrir hvern og einn. Lýsa eigin framlagi og framlagi hvers hópfélaga með dæmum.">
+  <p class="eyebrow">Miðvikudagur 23. september kl. 23:59</p>
+  <h2>Jafningjamat <em>og sjálfsmat</em></h2>
+  <div class="two" style="display:grid;gap:clamp(20px,3vw,48px)">
+    <p class="lede">Hver nemandi svarar „Jafningjamat Verk 7“ í Canvas eftir kynningarnar. Þið lýsið eigin framlagi og framlagi hvers hópfélaga með stuttum dæmum um vinnuna sem var unnin.</p>
+    <ul class="steps">
+      <li class="frag"><b>✓</b><span><em>Skylda.</em> Hver fyrir sig, ekki hópurinn.</span></li>
+      <li class="frag"><b>✓</b><span><em>Merkt nafni.</em> Aðeins kennarar sjá svörin, hópfélagar ekki.</span></li>
+      <li class="frag"><b>✓</b><span><em>Gefur ekki stig sjálft.</em> Styður einkunn kennara fyrir hvern og einn.</span></li>
+      <li class="frag"><b>✓</b><span><em>Dæmi, ekki dómar.</em> „Hún fann verðin og setti upp formúlurnar“ segir meira en „hún var dugleg“.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 12 · Verkefnasíðan -->
+<section class="slide two" data-label="Verkefnasíðan" data-notes="Allt sem var sagt hér er á verkefnasíðunni með 36 gátreitum í sjö köflum. Hakið vistast bara í hverjum vafra, það er ekki skil. Opnið hana úr Canvas eða skannið kóðann.">
+  <div>
+    <p class="eyebrow">Allt á einum stað</p>
+    <h2>Gátlistinn <em>fylgir ykkur</em></h2>
+    <p class="lede">Verkefnasíðan er með öll skrefin, gátlista fyrir hverja skrá, námsmatið og skilin. Hakið við jafnóðum. Hakið er bara í ykkar vafra, það er ekki skil í Canvas.</p>
+    <a class="url" href="https://ellertsmari.github.io/faguVerkefni/?verk=7&locked=1" target="_blank" rel="noreferrer">ellertsmari.github.io/faguVerkefni/?verk=7</a>
+    <p class="lede" style="font-size:15px">Tengillinn er líka á verkefnasíðunni í Canvas. Hjálp við hvert skref opnast með „Hjálp“ hnappnum.</p>
+  </div>
+  <div class="plate qr"><div id="qr" aria-label="QR-kóði á verkefnasíðuna"></div><p class="sheetnote" style="margin-top:12px">Skannið með símanum</p></div>
+</section>
+
+<!-- 13 · Byrjum -->
+<section class="slide one" data-label="Spurningar" data-notes="Spurningar? Svo: finnið hópinn ykkar í Canvas og byrjið á skrefi 1.">
+  <p class="eyebrow">Að lokum</p>
+  <h1>Spurningar?<br><em>Svo byrjum við.</em></h1>
+  <p class="lede">Skref 1: finnið hópinn ykkar í Canvas, veljið rými og búið til sameiginlega vinnumöppu.</p>
+  <div class="strip" style="max-width:820px">
+    <div><b>15. sept.</b>Vinnudagur</div>
+    <div><b>21. sept.</b>Þrjár skrár</div>
+    <div><b>22. sept.</b>Kynningar</div>
+    <div><b>23. sept.</b>Jafningjamat</div>
+  </div>
+</section>
+
+</main>
+
+<div class="chrome">
+  <div class="brand"><b>FAGU</b><i class="tick"></i><span>Verk 7</span></div>
+  <div class="count"><em id="cn">01</em> / <span id="ct">13</span></div>
+  <div class="navs"><button type="button" id="prevBtn" aria-label="Fyrri">←</button><button type="button" id="nextBtn" aria-label="Næsta">→</button></div>
+  <div class="rail" id="rail"></div>
+</div>
+<div class="hint"><kbd>→</kbd> næsta · <kbd>N</kbd> glósur · <kbd>?</kbd> hjálp</div>
+<div class="panel" id="notes"><div class="lbl">Glósur</div><div id="notesText"></div></div>
+<div class="panel" id="help"><div class="lbl">Lyklaborð</div><table>
+<tr><td><kbd>→</kbd> <kbd>bil</kbd></td><td>næsta skref eða glæra</td></tr>
+<tr><td><kbd>←</kbd></td><td>til baka</td></tr>
+<tr><td><kbd>Home</kbd> <kbd>End</kbd></td><td>fyrsta / síðasta glæra</td></tr>
+<tr><td><kbd>N</kbd></td><td>glósur kennara</td></tr>
+<tr><td><kbd>F</kbd></td><td>fylla skjáinn</td></tr>
+<tr><td><kbd>T</kbd></td><td>snúa öllum spjöldum (glæra 2)</td></tr>
+<tr><td><kbd>?</kbd></td><td>þessi hjálp</td></tr>
+</table><p style="margin-top:10px;color:var(--muted);font-size:13px">Slóð með <span class="mono">#/5</span> opnar glæru 5. <span class="mono">?static&amp;all</span> slekkur á hreyfingum og sýnir allt.</p></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+  var $ = function(s,r){ return (r||document).querySelector(s); };
+  var $$ = function(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
+  var params = new URLSearchParams(location.search);
+  var STATIC = params.has('static'), ALL = params.has('all');
+  if (STATIC) document.documentElement.classList.add('static');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- navigation ---------- */
+  var slides = $$('.slide'), rail = $('#rail'), cn = $('#cn'), notesText = $('#notesText');
+  var cur = -1;
+  $('#ct').textContent = slides.length;
+  slides.forEach(function(s,i){
+    var b = document.createElement('button'); b.className = 'seg'; b.type = 'button';
+    b.setAttribute('aria-label','Glæra ' + (i+1) + ': ' + s.dataset.label);
+    b.appendChild(document.createElement('span'));
+    b.addEventListener('click', function(){ go(i); });
+    rail.appendChild(b);
+  });
+  var segs = $$('.seg', rail);
+  function frags(s){ return $$('.frag', s); }
+  function go(n, showAll){
+    n = Math.max(0, Math.min(slides.length-1, n));
+    if (n === cur) return;
+    if (cur > -1){
+      var old = slides[cur];
+      old.classList.remove('on'); old.classList.add('off');
+      setTimeout(function(){ old.classList.remove('off'); }, 300);
+    }
+    cur = n;
+    var s = slides[n];
+    s.classList.add('on');
+    s.scrollTop = 0;
+    frags(s).forEach(function(f){ f.classList.toggle('on', !!showAll || ALL); });
+    segs.forEach(function(g,i){ g.setAttribute('aria-current', i===n ? 'true':'false'); g.classList.toggle('done', i<n); });
+    cn.textContent = ('0' + (n+1)).slice(-2);
+    notesText.textContent = s.dataset.notes || '';
+    history.replaceState(null, '', '#/' + (n+1));
+    if (s.dataset.label === 'Kynningin') tickClock();
+  }
+  function next(){
+    var pending = frags(slides[cur]).filter(function(f){ return !f.classList.contains('on'); })[0];
+    if (pending) pending.classList.add('on'); else go(cur+1);
+  }
+  function prev(){
+    var shown = frags(slides[cur]).filter(function(f){ return f.classList.contains('on'); });
+    if (shown.length && !ALL) shown[shown.length-1].classList.remove('on'); else go(cur-1, true);
+  }
+  document.addEventListener('keydown', function(e){
+    var t = e.target, tag = t.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if ((e.key === ' ' || e.key === 'Enter') && (tag === 'BUTTON' || t.getAttribute('role') === 'button' || tag === 'A')) return;
+    switch (e.key){
+      case 'ArrowRight': case 'PageDown': case ' ': case 'Enter': e.preventDefault(); next(); break;
+      case 'ArrowLeft': case 'PageUp': e.preventDefault(); prev(); break;
+      case 'Home': go(0); break;
+      case 'End': go(slides.length-1); break;
+      case 'n': case 'N': $('#notes').classList.toggle('show'); break;
+      case '?': $('#help').classList.toggle('show'); break;
+      case 'Escape': $('#help').classList.remove('show'); break;
+      case 'f': case 'F': if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); break;
+      case 't': case 'T': $$('.flip').forEach(function(f){ f.classList.toggle('flipped'); }); break;
+    }
+  });
+  $('#nextBtn').addEventListener('click', next);
+  $('#prevBtn').addEventListener('click', prev);
+  $('#help').addEventListener('click', function(){ $('#help').classList.remove('show'); });
+  var tx = null, ty = null;
+  document.addEventListener('touchstart', function(e){ tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if (tx === null) return;
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy)*1.5) { if (dx < 0) next(); else prev(); }
+    tx = ty = null;
+  }, {passive:true});
+  var h = parseInt((location.hash.match(/#\/(\d+)/)||[])[1], 10);
+  go(isNaN(h) ? 0 : h-1);
+
+  /* ---------- slide 2 · flip cards ---------- */
+  $$('.flip').forEach(function(f){ f.addEventListener('click', function(){ f.classList.toggle('flipped'); }); });
+
+  /* ---------- slide 3 · room picker (drawn to scale) ---------- */
+  var ROOMS = {
+    A: { name:'Rými A · lítil stofa', w:5, h:4, doors:[{wall:'left', at:1.2, len:0.9}], wins:[{wall:'top', at:2.0, len:1.2}], note:'Ein hurð og einn gluggi.' },
+    B: { name:'Rými B · bílskúr', w:8, h:6, doors:[{wall:'left', at:1.5, len:2.5, garage:true},{wall:'bottom', at:6.2, len:0.9}], wins:[], note:'Bílskúrshurð og gönguhurð. Enginn gluggi, svo ljósið skiptir máli.' },
+    C: { name:'Rými C · langt herbergi', w:9, h:3, doors:[{wall:'left', at:1.0, len:0.9}], wins:[{wall:'top', at:2.0, len:1.2},{wall:'top', at:5.8, len:1.2}], note:'Hurð á enda og tveir gluggar á langvegg.' }
+  };
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, text){ var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+  function drawRoom(key){
+    var r = ROOMS[key], svg = $('#plan');
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var pad = 58, W = 440, H = 330;
+    var sc = Math.min((W - pad*2) / r.w, (H - pad*2 - 20) / r.h);
+    var x0 = (W - r.w*sc)/2, y0 = (H - 20 - r.h*sc)/2 + 6;
+    var x1 = x0 + r.w*sc, y1 = y0 + r.h*sc;
+    // walkway hint (1 m along bottom)
+    svg.appendChild(el('rect', {class:'walk', x:x0, y:y1 - 1*sc, width:r.w*sc, height:1*sc}));
+    svg.appendChild(el('text', {x:x0 + 6, y:y1 - 1*sc + 14, class:'area-s'}, 'gönguleið ≥ 1 m'));
+    // walls
+    svg.appendChild(el('rect', {class:'wall', x:x0, y:y0, width:r.w*sc, height:r.h*sc}));
+    // windows
+    r.wins.forEach(function(w){
+      if (w.wall === 'top') svg.appendChild(el('line', {class:'win', x1:x0 + w.at*sc, y1:y0, x2:x0 + (w.at+w.len)*sc, y2:y0}));
+    });
+    // doors
+    r.doors.forEach(function(d){
+      var L = d.len*sc;
+      if (d.wall === 'left'){
+        var ya = y0 + d.at*sc;
+        svg.appendChild(el('line', {x1:x0, y1:ya, x2:x0, y2:ya+L, stroke:'#0C1218', 'stroke-width':4}));
+        if (d.garage){
+          svg.appendChild(el('line', {class:'door', x1:x0, y1:ya, x2:x0, y2:ya+L, 'stroke-dasharray':'6 4', 'stroke-width':4}));
+          svg.appendChild(el('text', {x:x0 - 52, y:ya + L/2 + 4}, 'bílskúrs-'));
+          svg.appendChild(el('text', {x:x0 - 52, y:ya + L/2 + 16}, 'hurð'));
+        } else {
+          svg.appendChild(el('path', {class:'door', d:'M'+x0+' '+(ya+L)+' L'+(x0+L)+' '+(ya+L)+' A'+L+' '+L+' 0 0 0 '+x0+' '+ya}));
+        }
+      } else if (d.wall === 'bottom'){
+        var xa = x0 + d.at*sc;
+        svg.appendChild(el('line', {x1:xa, y1:y1, x2:xa+L, y2:y1, stroke:'#0C1218', 'stroke-width':4}));
+        svg.appendChild(el('path', {class:'door', d:'M'+xa+' '+y1+' L'+xa+' '+(y1-L)+' A'+L+' '+L+' 0 0 1 '+(xa+L)+' '+y1}));
+      }
+    });
+    // dimension lines
+    var dy = y1 + 26;
+    svg.appendChild(el('line', {class:'dim', x1:x0, y1:dy, x2:x1, y2:dy}));
+    svg.appendChild(el('line', {class:'dim', x1:x0, y1:dy-5, x2:x0, y2:dy+5}));
+    svg.appendChild(el('line', {class:'dim', x1:x1, y1:dy-5, x2:x1, y2:dy+5}));
+    svg.appendChild(el('text', {class:'dim-t', x:(x0+x1)/2 - 22, y:dy + 16}, (r.w*1000).toLocaleString('de-DE') + ' mm'));
+    var dx = x1 + 26;
+    svg.appendChild(el('line', {class:'dim', x1:dx, y1:y0, x2:dx, y2:y1}));
+    svg.appendChild(el('line', {class:'dim', x1:dx-5, y1:y0, x2:dx+5, y2:y0}));
+    svg.appendChild(el('line', {class:'dim', x1:dx-5, y1:y1, x2:dx+5, y2:y1}));
+    var t = el('text', {class:'dim-t', x:dx + 8, y:(y0+y1)/2 + 4}, (r.h*1000).toLocaleString('de-DE') + ' mm');
+    svg.appendChild(t);
+    // area
+    svg.appendChild(el('text', {class:'area', x:x0 + 12, y:y0 + 38}, (r.w*r.h) + ' m²'));
+    svg.appendChild(el('text', {class:'area-s', x:x0 + 12, y:y0 + 54}, r.w + ' × ' + r.h + ' m'));
+    // scale bar
+    svg.appendChild(el('line', {x1:x0, y1:H-6, x2:x0+sc, y2:H-6, stroke:'#8CA1B2', 'stroke-width':2}));
+    svg.appendChild(el('text', {x:x0 + sc + 6, y:H-3}, '1 m'));
+    $('#planTitle').textContent = 'Rými ' + key;
+    $('#planFoot').innerHTML = '<span><b>' + r.name.split(' · ')[1] + '</b></span><span>' + r.note + '</span>';
+  }
+  $$('.rooms button').forEach(function(b){
+    b.addEventListener('click', function(){
+      $$('.rooms button').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true':'false'); });
+      drawRoom(b.dataset.room);
+    });
+  });
+  drawRoom('A');
+
+  /* ---------- slide 5 · live cost sheet ---------- */
+  var ITEMS = [
+    ['Vinnuborð', 39990, 1], ['Hillueining', 14990, 2], ['LED-vinnuljós', 6990, 2], ['Fjöltengi / kefli', 3490, 2],
+    ['Verkfæratafla með krókum', 8990, 1], ['Slökkvitæki', 9990, 1], ['Sjúkrakassi', 4990, 1], ['Vinnustóll', 19990, 1]
+  ];
+  function isk(n){ return Math.round(n).toLocaleString('de-DE') + ' kr.'; }
+  var tbody = $('#sheet tbody');
+  ITEMS.forEach(function(it, i){
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="item">' + it[0] + '</td><td class="n">' + isk(it[1]) + '</td><td class="n"><input type="number" min="0" max="20" step="1" value="' + it[2] + '" id="qty' + i + '" aria-label="Fjöldi: ' + it[0] + '"></td><td class="n line"></td>';
+    tbody.appendChild(tr);
+  });
+  function calcSheet(changed){
+    var sub = 0;
+    ITEMS.forEach(function(it, i){
+      var q = Math.max(0, parseInt($('#qty'+i).value, 10) || 0);
+      var line = it[1] * q; sub += line;
+      var td = $$('td.line', tbody)[i]; td.textContent = isk(line);
+      if (changed === i){ var tr = td.parentNode; tr.classList.remove('flash'); void tr.offsetWidth; tr.classList.add('flash'); }
+    });
+    $('#sub').textContent = isk(sub);
+    $('#cont').textContent = isk(sub * 0.10);
+    $('#tot').textContent = isk(sub * 1.10);
+    if (changed != null) ['sub','cont','tot'].forEach(function(id){ var tr = $('#'+id).parentNode; tr.classList.remove('flash'); void tr.offsetWidth; tr.classList.add('flash'); });
+  }
+  ITEMS.forEach(function(_, i){ $('#qty'+i).addEventListener('input', function(){ calcSheet(i); }); });
+  calcSheet();
+
+  /* ---------- slide 6 · circuit ---------- */
+  var closed = false, R = 470;
+  function updCirc(){
+    var arm = $('#swArm'), led = $('#led'), st = $('#iStat'), out = $('#iOut');
+    arm.setAttribute('class', 'sw ' + (closed ? 'closed' : 'open'));
+    $('#wires').setAttribute('class', 'w' + (closed ? ' live' : ''));
+    $('#rLabel').textContent = 'R = ' + (R >= 1000 ? (R/1000) + ' kΩ' : R + ' Ω');
+    $('#circState').textContent = closed ? 'Rofi lokaður' : 'Rofi opinn';
+    if (!closed){
+      led.setAttribute('class', 'led'); out.textContent = '0 mA'; $('#iLabel').textContent = '';
+      st.className = 'st'; st.textContent = 'Rofinn er opinn. Enginn straumur, ljósið er slökkt.'; return;
+    }
+    var I = (9 - 2) / R * 1000;
+    out.textContent = I.toFixed(1).replace('.', ',') + ' mA';
+    $('#iLabel').textContent = 'I = (9 V − 2 V) ÷ ' + R + ' Ω ≈ ' + I.toFixed(1).replace('.', ',') + ' mA';
+    if (I > 20){ led.setAttribute('class', 'led hot'); st.className = 'st bad'; st.textContent = 'Yfir 20 mA. Ljósið er of bjart og getur brunnið yfir. Stærra viðnám.'; }
+    else if (I < 9){ led.setAttribute('class', 'led dim'); st.className = 'st warn'; st.textContent = 'Undir 9 mA. Ljósið logar, en dauft. Í lagi, en 470 Ω er skýrara merkiljós.'; }
+    else { led.setAttribute('class', 'led on'); st.className = 'st ok'; st.textContent = 'Um 15 mA. Öruggt fyrir LED og ljósið skín skýrt. Þetta er skjámyndin sem fer í skýrsluna.'; }
+  }
+  function toggleSw(){ closed = !closed; updCirc(); }
+  $('#swHit').addEventListener('click', toggleSw);
+  $('#swHit').addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleSw(); } });
+  $$('.chip[data-r]').forEach(function(c){ c.addEventListener('click', function(){
+    R = parseInt(c.dataset.r, 10);
+    $$('.chip[data-r]').forEach(function(o){ o.setAttribute('aria-pressed', o === c ? 'true':'false'); });
+    updCirc();
+  }); });
+  updCirc();
+
+  /* ---------- slide 8 · file checklists ---------- */
+  $$('.file').forEach(function(f){
+    var b = $('button', f), ul = $('ul', f), tog = $('.tog', f);
+    var cnt = document.createElement('span'); cnt.className = 'cnt'; b.querySelector('.fn').appendChild(cnt);
+    function count(){ var all = $$('input', ul), done = all.filter(function(i){ return i.checked; }).length; cnt.textContent = done + ' / ' + all.length; }
+    b.addEventListener('click', function(){ var open = ul.hidden; $$('.file').forEach(function(o){ if (o !== f){ $('ul', o).hidden = true; $('button', o).setAttribute('aria-expanded','false'); $('.tog', o).textContent = '+'; } }); ul.hidden = !open; b.setAttribute('aria-expanded', open ? 'true':'false'); tog.textContent = open ? '−' : '+'; });
+    ul.addEventListener('change', count); count();
+  });
+
+  /* ---------- slide 9 · practice clock ---------- */
+  var t0 = null, acc = 0, running = false, raf = 0;
+  function fmt(ms){ var s = Math.floor(ms/1000); return ('0'+Math.floor(s/60)).slice(-2) + ':' + ('0'+(s%60)).slice(-2); }
+  function tickClock(){
+    var ms = acc + (running ? performance.now() - t0 : 0);
+    $('#clock').textContent = fmt(ms);
+    var min = ms/60000;
+    $('#zoneMark').style.left = Math.min(100, min/20*100) + '%';
+    var st = $('#tStat');
+    if (!running && ms === 0) st.textContent = 'Ýtið á Byrja þegar fyrsti byrjar að tala.';
+    else if (min < 10) st.textContent = 'Of stutt enn. Grænt svæði byrjar við 10 mínútur.';
+    else if (min <= 15) st.textContent = 'Innan tíma. Ljúkið fyrir 15:00.';
+    else st.textContent = 'Yfir 15 mínútur. Styttið eða talið hraðar.';
+    if (running) raf = requestAnimationFrame(tickClock);
+  }
+  $('#tStart').addEventListener('click', function(){
+    if (running){ acc += performance.now() - t0; running = false; cancelAnimationFrame(raf); this.textContent = 'Halda áfram'; tickClock(); }
+    else { t0 = performance.now(); running = true; this.textContent = 'Stoppa'; tickClock(); }
+  });
+  $('#tReset').addEventListener('click', function(){ running = false; cancelAnimationFrame(raf); acc = 0; $('#tStart').textContent = 'Byrja'; tickClock(); });
+  tickClock();
+
+  /* ---------- slide 10 · bands + grade calculator ---------- */
+  $$('.band').forEach(function(b){ b.addEventListener('click', function(){
+    $$('.band').forEach(function(o){ o.setAttribute('aria-pressed', o === b ? 'true':'false'); });
+    $('#bandText').innerHTML = '<b>' + $('b', b).textContent + ' · ' + $('span', b).textContent + '.</b> ' + b.dataset.t;
+  }); });
+  function calcGrade(){
+    var g = +$('#gIn').value, i = +$('#iIn').value, f = (g + i) / 2;
+    $('#gOut').textContent = g; $('#iOutG').textContent = i;
+    $('#eq').textContent = '(' + g + ' + ' + i + ') ÷ 2';
+    $('#final').textContent = String(f).replace('.', ',');
+  }
+  $('#gIn').addEventListener('input', calcGrade); $('#iIn').addEventListener('input', calcGrade); calcGrade();
+
+  /* ---------- slide 12 · QR code ---------- */
+  if (window.QRCode){
+    new QRCode($('#qr'), { text: 'https://ellertsmari.github.io/faguVerkefni/?verk=7&locked=1', width: 260, height: 260, colorDark: '#0C1218', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+  }
+
+  /* ---------- ambient canvas: sawdust, dimension lines, current pulse ---------- */
+  var cv = $('#amb'), ctx = cv.getContext('2d');
+  var W=0, H=0, motes=[], dims=[], wire=[], tStart=performance.now();
+  function resize(){
+    var dpr = Math.min(window.devicePixelRatio||1, 2);
+    W = cv.clientWidth; H = cv.clientHeight; cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    motes = []; var n = Math.round(Math.min(70, W*H/26000));
+    for (var i=0;i<n;i++) motes.push({x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.5+0.4, vx:Math.random()*0.16+0.03, vy:-(Math.random()*0.13+0.02), a:Math.random()*0.28+0.06});
+    wire = []; var y = H*0.72, x = -60;
+    while (x < W+120){ wire.push([x,y]); x += W*0.13 + Math.random()*40; y += (Math.random()-0.5)*H*0.16; y = Math.max(H*0.2, Math.min(H*0.9, y)); }
+  }
+  window.addEventListener('resize', resize); resize();
+  function wireLen(){ var L=0; for (var i=1;i<wire.length;i++) L += Math.hypot(wire[i][0]-wire[i-1][0], wire[i][1]-wire[i-1][1]); return L; }
+  function pointAt(d){ var acc=0; for (var i=1;i<wire.length;i++){ var seg = Math.hypot(wire[i][0]-wire[i-1][0], wire[i][1]-wire[i-1][1]); if (acc+seg >= d){ var k=(d-acc)/seg; return [wire[i-1][0]+(wire[i][0]-wire[i-1][0])*k, wire[i-1][1]+(wire[i][1]-wire[i-1][1])*k]; } acc += seg; } return wire[wire.length-1]; }
+  function frame(now){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(79,163,217,.16)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(wire[0][0],wire[0][1]); for (var i=1;i<wire.length;i++) ctx.lineTo(wire[i][0],wire[i][1]); ctx.stroke();
+    if (!reduce && !STATIC){
+      var L = wireLen(), p = pointAt((((now-tStart)/34) % (L+240)) - 120);
+      if (p){ var g = ctx.createRadialGradient(p[0],p[1],0,p[0],p[1],26); g.addColorStop(0,'rgba(120,205,255,.55)'); g.addColorStop(1,'rgba(120,205,255,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p[0],p[1],26,0,Math.PI*2); ctx.fill(); }
+      for (var m=0;m<motes.length;m++){ var o=motes[m]; o.x+=o.vx; o.y+=o.vy; if (o.y<-10){ o.y=H+10; o.x=Math.random()*W; } if (o.x>W+10) o.x=-10; ctx.fillStyle='rgba(199,154,94,'+o.a+')'; ctx.beginPath(); ctx.arc(o.x,o.y,o.r,0,Math.PI*2); ctx.fill(); }
+      if (dims.length < 2 && Math.random() < 0.006){ var w = 90+Math.random()*180; dims.push({x:40+Math.random()*Math.max(10,W-w-80), y:60+Math.random()*Math.max(10,H-160), w:w, born:now, life:5200, txt:Math.round(w*1.7)+' mm'}); }
+      ctx.font = '10px "IBM Plex Mono", monospace';
+      for (var d=dims.length-1; d>=0; d--){ var q=dims[d], age=now-q.born; if (age>q.life){ dims.splice(d,1); continue; } var grow=Math.min(1,age/900), fade = age<700 ? age/700 : (age>q.life-900 ? (q.life-age)/900 : 1), w2=q.w*grow; ctx.globalAlpha=Math.max(0,fade)*0.5; ctx.strokeStyle='rgba(245,197,24,.85)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(q.x,q.y); ctx.lineTo(q.x+w2,q.y); ctx.moveTo(q.x,q.y-5); ctx.lineTo(q.x,q.y+5); ctx.moveTo(q.x+w2,q.y-5); ctx.lineTo(q.x+w2,q.y+5); ctx.stroke(); if (grow>0.98){ ctx.fillStyle='rgba(245,197,24,.8)'; ctx.fillText(q.txt, q.x+w2/2-18, q.y-9); } ctx.globalAlpha=1; }
+      requestAnimationFrame(frame);
+    }
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>
