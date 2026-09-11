@@ -73,7 +73,7 @@ only. Nothing is sent anywhere.
 Canvas links to `?verk=7&locked=1` in a new tab. The public page has the
 complete brief, a compact schedule, quick links and a checklist in seven
 sections: start together, work the parts in parallel, a stop-and-check step
-when about 50 minutes remain of the last work session, one checklist per
+when about 50 minutes remain of the 15 September workday, one checklist per
 deliverable (PDF report, ZIP, slides) and a final submit/present/evaluate
 section. Each section shows its own done/total count. There is deliberately
 no minute-by-minute timetable, since groups work at very different speeds.
@@ -89,7 +89,8 @@ The report includes a 3–5 sentence justification ("rökstuðningur") of the
 layout and purchases; it is what separates 9–10 from 7–8 in the rubric.
 Canvas assignment 24134 accepts only file uploads with pdf, zip, pptx, key
 extensions. Students export Google Slides/Canva to PPTX; links are not submissions.
-Workday: 15 September; files: 21 September 23:59; presentations: 22 September,
+Workday: 15 September, and groups are asked to submit at the end of it;
+files: at the latest 21 September 23:59 (wording "í síðasta lagi", never "fyrir"); presentations: 22 September,
 10–15 minutes per group, run from the teacher's computer using the uploaded
 slide file; individual reflection: 23 September 23:59. Dates must agree with Canvas.
 
