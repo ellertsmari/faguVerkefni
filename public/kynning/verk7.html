@@ -138,10 +138,10 @@ p{margin:0}
 .plan .dim-t{fill:var(--hivis)}
 .plan .win{stroke:var(--current);stroke-width:5}
 .plan .door{stroke:var(--timber);stroke-width:2;fill:none}
-.plan .walk{fill:rgba(92,203,140,.12);stroke:var(--ok);stroke-dasharray:4 4;stroke-width:1}
+.plan .walk{fill:rgba(92,203,140,.14);stroke:var(--ok);stroke-dasharray:4 4;stroke-width:1.5}
 .plan .area{font-family:var(--display);font-weight:900;font-size:28px;fill:var(--paper)}
 .plan .area-s{fill:var(--muted)}
-.planfoot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:10px}
+.planfoot{display:grid;gap:6px;line-height:1.5;font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:10px}
 .planfoot b{color:var(--paper);font-weight:500}
 
 /* steps list */
@@ -188,7 +188,7 @@ p{margin:0}
 .circ .led.on{fill:var(--bad);filter:drop-shadow(0 0 10px rgba(224,96,79,.9)) drop-shadow(0 0 22px rgba(224,96,79,.6))}
 .circ .led.hot{fill:#fff0e8;filter:drop-shadow(0 0 14px #fff) drop-shadow(0 0 30px rgba(224,96,79,.9))}
 .circ .led.dim{fill:#9b463c;filter:drop-shadow(0 0 5px rgba(224,96,79,.5))}
-.circ .sw{stroke:var(--hivis);stroke-width:3;transition:transform .2s;transform-origin:150px 60px}
+.circ .sw{stroke:var(--hivis);stroke-width:3;transition:transform .2s;transform-origin:130px 60px;transform-box:view-box}
 .circ .sw.closed{transform:rotate(0deg)}
 .circ .sw.open{transform:rotate(-28deg)}
 .circ .hit{fill:transparent;cursor:pointer}
@@ -332,7 +332,7 @@ p{margin:0}
   <div>
     <p class="eyebrow">Hvað er þetta?</p>
     <h2>Allt sem þið lærðuð í Verk 3–6 <em>í einu verki</em></h2>
-    <p class="lede">Engin ný forrit. Sömu verkfæri og áður, en nú vinna þau saman að einni niðurstöðu: verkstæði sem hægt er að teikna, verðleggja, lýsa upp og kynna.</p>
+    <p class="lede">Nánast engin ný forrit; reiknisskjal með formúlum er það eina sem bætist við. Sömu verkfæri og áður, en nú vinna þau saman að einni niðurstöðu: verkstæði sem hægt er að teikna, verðleggja, lýsa upp og kynna.</p>
     <p class="lede frag"><b>Snúið spjöldunum</b> til að sjá hvað hvert verk verður.</p>
   </div>
   <div class="flips" id="flips">
@@ -539,7 +539,7 @@ p{margin:0}
     <p class="eyebrow">Þriðjudagur 22. september</p>
     <h2>Allir tala, <em>10–15 mínútur</em></h2>
     <ul class="steps">
-      <li class="frag"><b>→</b><span>Flutt af <strong>kennaratölvunni</strong> úr glæruskránni sem þið skiluðu í Canvas. Afrit í vinnumöppunni til öryggis.</span></li>
+      <li class="frag"><b>→</b><span>Flutt af <strong>kennaratölvunni</strong> úr glæruskránni sem þið skiluðuð í Canvas. Afrit í vinnumöppunni til öryggis.</span></li>
       <li class="frag"><b>→</b><span>Kennari ákveður <strong>röð hópanna</strong> í byrjun tímans.</span></li>
       <li class="frag"><b>→</b><span><strong>Um 8–12 glærur.</strong> Ein mynd og fáar setningar á glæru. Segið frá, ekki lesa.</span></li>
       <li class="frag"><b>→</b><span>Rýmið, kostnaðurinn, rásin, rökstuðningurinn og hvað þið lærðuð.</span></li>
@@ -731,9 +731,9 @@ p{margin:0}
 
   /* ---------- slide 3 · room picker (drawn to scale) ---------- */
   var ROOMS = {
-    A: { name:'Rými A · lítil stofa', w:5, h:4, doors:[{wall:'left', at:1.2, len:0.9}], wins:[{wall:'top', at:2.0, len:1.2}], note:'Ein hurð og einn gluggi.' },
-    B: { name:'Rými B · bílskúr', w:8, h:6, doors:[{wall:'left', at:1.5, len:2.5, garage:true},{wall:'bottom', at:6.2, len:0.9}], wins:[], note:'Bílskúrshurð og gönguhurð. Enginn gluggi, svo ljósið skiptir máli.' },
-    C: { name:'Rými C · langt herbergi', w:9, h:3, doors:[{wall:'left', at:1.0, len:0.9}], wins:[{wall:'top', at:2.0, len:1.2},{wall:'top', at:5.8, len:1.2}], note:'Hurð á enda og tveir gluggar á langvegg.' }
+    A: { name:'Rými A · lítil stofa', w:5, h:4, doors:[{wall:'left', at:1.2, len:0.9}], wins:[{wall:'top', at:2.0, len:1.2}], note:'Ein hurð og einn gluggi. Hvar þau eru: ykkar val, þetta er dæmi.' },
+    B: { name:'Rými B · bílskúr', w:8, h:6, doors:[{wall:'left', at:1.5, len:2.5, garage:true},{wall:'bottom', at:6.2, len:0.9}], wins:[], note:'Bílskúrshurð á enda, gönguhurð þar sem þið viljið. Enginn gluggi, svo ljósið skiptir máli.' },
+    C: { name:'Rými C · langt herbergi', w:9, h:3, doors:[{wall:'left', at:1.0, len:0.9}], wins:[{wall:'top', at:2.0, len:1.2},{wall:'top', at:5.8, len:1.2}], note:'Hurð á enda og tveir gluggar á langvegg, eins og teiknað.' }
   };
   var NS = 'http://www.w3.org/2000/svg';
   function el(tag, attrs, text){ var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
@@ -744,9 +744,6 @@ p{margin:0}
     var sc = Math.min((W - pad*2) / r.w, (H - pad*2 - 20) / r.h);
     var x0 = (W - r.w*sc)/2, y0 = (H - 20 - r.h*sc)/2 + 6;
     var x1 = x0 + r.w*sc, y1 = y0 + r.h*sc;
-    // walkway hint (1 m along bottom)
-    svg.appendChild(el('rect', {class:'walk', x:x0, y:y1 - 1*sc, width:r.w*sc, height:1*sc}));
-    svg.appendChild(el('text', {x:x0 + 6, y:y1 - 1*sc + 14, class:'area-s'}, 'gönguleið ≥ 1 m'));
     // walls
     svg.appendChild(el('rect', {class:'wall', x:x0, y:y0, width:r.w*sc, height:r.h*sc}));
     // windows
@@ -787,11 +784,14 @@ p{margin:0}
     // area
     svg.appendChild(el('text', {class:'area', x:x0 + 12, y:y0 + 38}, (r.w*r.h) + ' m²'));
     svg.appendChild(el('text', {class:'area-s', x:x0 + 12, y:y0 + 54}, r.w + ' × ' + r.h + ' m'));
-    // scale bar
+    // scale bar and a 1 m square: the minimum walkway width, drawn to the same scale but placed nowhere
     svg.appendChild(el('line', {x1:x0, y1:H-6, x2:x0+sc, y2:H-6, stroke:'#8CA1B2', 'stroke-width':2}));
     svg.appendChild(el('text', {x:x0 + sc + 6, y:H-3}, '1 m'));
+    var sq = Math.min(sc, 40), sx = x1 - sq, sy = H - 6 - sq;
+    svg.appendChild(el('rect', {class:'walk', x:sx, y:sy, width:sq, height:sq}));
+    svg.appendChild(el('text', {x:sx - 6, y:sy + sq/2 + 4, 'text-anchor':'end', class:'area-s'}, 'gönguleið ≥ 1 m breið, staðsetning ykkar val'));
     $('#planTitle').textContent = 'Rými ' + key;
-    $('#planFoot').innerHTML = '<span><b>' + r.name.split(' · ')[1] + '</b></span><span>' + r.note + '</span>';
+    $('#planFoot').innerHTML = '<span><b>' + r.name.split(' · ')[1] + '</b> · ' + r.note + '</span><span><b>Ykkar hlutverk:</b> vinnuborð, hilla, tveir hlutir til viðbótar og gönguleið, minnst 1 m breið.</span>';
   }
   $$('.rooms button').forEach(function(b){
     b.addEventListener('click', function(){
