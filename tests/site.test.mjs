@@ -31,6 +31,9 @@ test("locks an embedded assignment to its requested project", async () => {
   assert.match(page, /window\.self !== window\.top/);
   assert.match(page, /params\.get\("locked"\) === "1"/);
   assert.match(page, /\{!locked && <nav className="project-nav"/);
+  assert.match(page, /className="step-list"/);
+  assert.match(page, /className="step-link"/);
+  assert.match(page, /className="phase-count"/);
   assert.match(page, /AÐEINS ÞETTA VERKEFNI ER SÝNT HÉR/);
   assert.match(page, /SKILA VERK \{project\.number\} Í CANVAS/);
 });
@@ -57,7 +60,8 @@ test("every project has three levels worth 6 + 2 + 2 points, except Verk 7 which
     if (/canvasId: 24134/.test(block)) {
       assert.deepEqual(points, [10]);
       assert.deepEqual(keys, ["easy"]);
-      assert.equal((block.match(/hint: "/g) ?? []).length, 10, "Verk 7 carries a hint on every step");
+      assert.equal((block.match(/phase: "/g) ?? []).length, 7, "Verk 7 has seven checklist sections");
+      assert.ok((block.match(/hint: "/g) ?? []).length >= 15, "Verk 7 explains its working steps with hints");
       continue;
     }
     assert.deepEqual(points, [6, 2, 2], `Project ${block.slice(0, 3)} has points ${points}`);
@@ -68,9 +72,14 @@ test("every project has three levels worth 6 + 2 + 2 points, except Verk 7 which
 test("Verk 7 lists the presentation, three deliverables and peer evaluation as required steps", async () => {
   const data = await read("src/project-data.ts");
   const verk7 = data.slice(data.indexOf("number: 7,"), data.indexOf("number: 9,"));
-  assert.match(verk7, /flytjið hana á 3–4 mínútum þriðjudaginn 22\. september/);
-  assert.match(verk7, /task: ""/, "single-part card has no left-column task text");
-  assert.match(verk7, /jafningjamat og sjálfsmat í Canvas eftir kynningarnar/);
+  assert.match(verk7, /Kynnið þriðjudaginn 22\. september, 10–15 mínútur á hóp/);
+  assert.match(verk7, /kennaratölvunni úr glæruskránni sem hópurinn skilaði í Canvas/);
+  assert.match(verk7, /Skrifið rökstuðning, 3–5 setningar/);
+  assert.match(verk7, /Þegar um 50 mínútur eru eftir/);
+  for (const section of ["1 · Byrjið saman", "2 · Vinnið hlutana samtímis", "3 · Stoppið og athugið stöðuna", "4 · Gátlisti: skýrslan (PDF)", "5 · Gátlisti: vinnuskjölin (ZIP)", "6 · Gátlisti: glærusýningin", "7 · Skil, kynning og mat"]) {
+    assert.ok(verk7.includes(`phase: "${section}"`), `section ${section}`);
+  }
+  assert.match(verk7, /„Jafningjamat Verk 7“ í Canvas eftir kynningarnar/);
   assert.match(verk7, /zip-möppu/);
   assert.match(verk7, /prófílmynd í Innu og Canvas/);
   assert.doesNotMatch(verk7, /pípulagnir, húsasmíði eða rafvirkjun/);
@@ -84,7 +93,10 @@ test("Verk 7 lists the presentation, three deliverables and peer evaluation as r
   assert.doesNotMatch(verk7, /brennur yfir/);
   assert.equal((verk7.match(/grade: "50%"/g) ?? []).length, 2);
   assert.match(verk7, /Lokaeinkunn = helmingur hópeinkunnar/);
-  assert.doesNotMatch(data, /peerEval/);
+  assert.match(verk7, /reflectionUrl: "https:\/\/canvas.tskoli.is\/courses\/1907\/assignments\/30396"/);
+  assert.match(verk7, /Engir skilahlekkir/);
+  assert.match(verk7, /SUM af línusamtölum/);
+  assert.match(verk7, /Rými B hefur engan glugga/);
 });
 
 test("the page offers a light theme and applies it before the first paint", async () => {

@@ -29,9 +29,10 @@ Edit `src/project-data.ts`. Each project is an object with:
 | `rubric` | Optional. Three quality bands (`grade`, `title`, `text`) for a single-part project graded 0–10 (Verk 7). |
 | `levels` | Three parts with keys `easy`, `medium`, `hard` worth 6 + 2 + 2, or a single `easy` part worth 10 when the project has a `rubric`. Each has `label`, `kicker`, `points`, `task`, `steps` and `deliverable`. |
 
-A step is either a plain string or an object with `text`, a `hint` and an
-optional `link`. Steps with a hint get a small "?" button that opens the hint
-under the step. Use hints for where a tool lives, what a good answer looks
+A step is either a plain string or an object with `text` and optional
+`phase` (starts a checklist section), `hint`, `list` (always-visible
+requirement bullets) and `link` (shown inline under the step). Steps with a
+hint get a "Hjálp" button that opens the hint under the step. Use hints for where a tool lives, what a good answer looks
 like, or a link back to the earlier Verk the step builds on.
 
 Keep the points at 6, 2 and 2. The test suite checks this and the Canvas ids.
@@ -67,33 +68,46 @@ part.
 Checkmarks and the last selected project are stored in the student's browser
 only. Nothing is sent anywhere.
 
-## Verk 7: grading and peer evaluation
+## Verk 7: student workflow and assessment
 
-Verk 7 is the group capstone and the one project without optional parts. It
-is a single list of ten required steps, and the grade depends on the quality
-of the work: 1–2 for almost nothing, 3–4 when parts are missing, 5–6 for
-handing in everything at a bare minimum, 7–8 when the
-PDF, zip folder, slides and presentation are all well done, and 9–10 for
-extra effort such as a richer floor plan, a more elaborate circuit, animated
-slides or a report that looks like it came from a professional firm. Every
-group hands in three things that each show the whole work: a PDF report, a
-zip file with tidy folders and file names (the spreadsheet included as a
-file), and a slide deck presented in class on 22 September 2026. The work
-day is 15 September, submissions are due 21 September at 23:59, and the peer
-evaluation by 23 September. The teams are fixed by the teacher and published in
-Canvas, not on the site. Students open the page in its own window from a
-link in Canvas rather than in an iframe, because there is a lot to read.
+Canvas links to `?verk=7&locked=1` in a new tab. The public page has the
+complete brief, a compact schedule, quick links and a checklist in seven
+sections: start together, work the parts in parallel, a stop-and-check step
+when about 50 minutes remain of the last work session, one checklist per
+deliverable (PDF report, ZIP, slides) and a final submit/present/evaluate
+section. Each section shows its own done/total count. There is deliberately
+no minute-by-minute timetable, since groups work at very different speeds.
+Required details stay visible; "Hjálp" explains how to do the work, and links
+to earlier Verk are shown inline under the step. Checklist marks are personal
+to the browser, never shared group progress or Canvas submissions.
+`checklistVersion` invalidates stale Verk 7 marks after substantial
+instruction changes without touching the other projects.
 
-The final grade is two equal halves. The group grade from the quality bands
-counts 50% and is the same for everyone in the team. The other 50% is the
-teachers' grade for each student, based on how they saw the student work in
-class during the project.
+A group submits exactly three files together: PDF report, ZIP of working
+files (including the spreadsheet and saved circuit), and PPTX or Keynote slides.
+The report includes a 3–5 sentence justification ("rökstuðningur") of the
+layout and purchases; it is what separates 9–10 from 7–8 in the rubric.
+Canvas assignment 24134 accepts only file uploads with pdf, zip, pptx, key
+extensions. Students export Google Slides/Canva to PPTX; links are not submissions.
+Workday: 15 September; files: 21 September 23:59; presentations: 22 September,
+10–15 minutes per group, run from the teacher's computer using the uploaded
+slide file; individual reflection: 23 September 23:59. Dates must agree with Canvas.
 
-The peer and self evaluation is mandatory and is the student's voice in that
-second half. It is a 0-point Canvas quiz named "Jafningjamat Verk 7", filled
-in after the presentations. The site only explains it and links nowhere; the
-answers stay in Canvas. Suggested questions: for yourself and each teammate,
-what did they do, and one or two sentences of reasoning.
+The five group quality bands are 1–2, 3–4, 5–6, 7–8 and 9–10. Everyone
+speaking in the presentation is a requirement from 5–6 upwards. Excellence
+means accurate, justified, verified execution of the required work, without
+requiring decorative effects or extra circuit components. The group grade
+counts 50%; each student's teacher assessment counts 50%. Canvas uses two
+5-point criteria; halve each 0–10 grade when entering it.
+
+“Jafningjamat Verk 7” is a mandatory, named, ungraded Canvas survey
+(assignment 30396). Students describe their own contribution, every teammate's
+contribution and their experience of collaboration. Responses support the
+teacher's individual assessment. The public page only links to Canvas.
+
+The group screenshot is an existing Canvas course file and is embedded only
+inside the Canvas assignment. Never copy student names, group screenshots,
+or assessment responses into this public repository or its assets.
 
 ## Theme
 

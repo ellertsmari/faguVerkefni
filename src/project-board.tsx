@@ -163,8 +163,16 @@ export default function ProjectBoard() {
   const single = project.levels.length === 1;
   const activeLevel = project.levels.find((level) => level.key === openLevel) ?? project.levels[0];
   const activeLevelNumber = project.levels.findIndex((level) => level.key === activeLevel.key) + 1;
-  const doneCount = activeLevel.steps.filter((_, index) => checked[`${project.number}-${activeLevel.key}-${index}`]).length;
+  const stepKey = (level: string, index: number) => `${project.number}-${level}-${index}${project.checklistVersion ? `-${project.checklistVersion}` : ""}`;
+  const doneCount = activeLevel.steps.filter((_, index) => checked[stepKey(activeLevel.key, index)]).length;
   const totalCount = activeLevel.steps.length;
+  // "done / total" for the section that starts at a step, so a long checklist reads section by section.
+  const sectionCount = (level: Level, start: number) => {
+    let end = start + 1;
+    while (end < level.steps.length && !(typeof level.steps[end] === "object" && (level.steps[end] as { phase?: string }).phase)) end += 1;
+    const done = level.steps.slice(start, end).filter((_, offset) => checked[stepKey(level.key, start + offset)]).length;
+    return `${done} / ${end - start}`;
+  };
 
   const selectProject = (number: number) => {
     setSelected(number);
@@ -205,23 +213,32 @@ export default function ProjectBoard() {
         ))}
       </nav>}
 
-      <article className="project" id="project" key={project.number}>
+      <article className={`project${project.overview ? " group-project" : ""}`} id="project" key={project.number}>
         {locked && <p className="context-note">ÞÚ ERT Í VERK {project.number} · AÐEINS ÞETTA VERKEFNI ER SÝNT HÉR</p>}
         <div className="project-heading">
           <div className="project-index">VERK {String(project.number).padStart(2, "0")}</div>
           <div>
             <p className="eyebrow">{project.group ? "HÓPVERKEFNI" : "EIN VINNULOTA"}</p>
-            <h2>{project.title}</h2>
+            {locked ? <h1>{project.title}</h1> : <h2>{project.title}</h2>}
             <p>{project.intro}</p>
           </div>
         </div>
 
+        {project.overview && <>
+          <dl className="project-overview">{project.overview.map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
+          <nav className="quick-links" aria-label="Á þessari síðu">
+            <a href="#instructions">Vinnuáætlun</a><a href="#submission">Skil</a><a href="#assessment-title">Námsmat</a>
+            <a href={`${canvasCourse}${project.canvasId}#hopar`}>Hópar í Canvas</a>
+            {project.reflectionUrl && <a href={project.reflectionUrl}>Jafningjamat í Canvas</a>}
+          </nav>
+          <p className="checklist-note">Gátlistinn er fyrir þig: hakið vistast aðeins í þessum vafra. Hópfélagar og kennarar sjá það ekki. Hakið er ekki skil í Canvas.</p>
+        </>}
         <div className="meta-grid">
           <div><small>VERKFÆRI</small><p>{project.tools}</p></div>
           <div><small>AI-REGLA</small><p>{project.ai}</p></div>
         </div>
 
-        <section className="levels" aria-label="Verkefnahlutar">
+        <section className="levels" id="instructions" aria-label="Verkefnahlutar">
           {!single && <p>Byrjaðu á Hluta 1 (6 stig). Hlutar 2 og 3 eru valfrjáls viðbót, 2 stig hvor. Samtals 10 stig.</p>}
           {project.scenario && <aside className="scenario"><h3>Aðstæður: lestu þetta fyrst</h3><p>{project.scenario}</p></aside>}
           {project.levels.map((level) => {
@@ -230,9 +247,8 @@ export default function ProjectBoard() {
               <div className={`level-card ${level.key} ${expanded ? "expanded" : ""}${single ? " single" : ""}`} key={level.key}>
                 {single
                   ? <div className="level-trigger">
-                      <span className="level-number">{levelGlyph[level.key]}</span>
                       <span className="level-title"><small>{level.kicker}</small><b>{level.label}</b></span>
-                      <span className="points">0–{level.points} EFTIR GÆÐUM</span>
+                      <span className="points">HÓPEINKUNN 0–{level.points}</span>
                     </div>
                   : <button className="level-trigger" onClick={() => setOpenLevel(level.key)} aria-expanded={expanded}>
                       <span className="level-number">{levelGlyph[level.key]}</span>
@@ -244,22 +260,23 @@ export default function ProjectBoard() {
                   {level.task && <p className="task">{level.task}</p>}
                   <ol>
                     {level.steps.map((step, index) => {
-                      const key = `${project.number}-${level.key}-${index}`;
-                      const hint = typeof step === "string" ? null : step;
+                      const key = stepKey(level.key, index);
+                      const detail = typeof step === "string" ? null : step;
+                      const hint = detail?.hint;
                       const hintOpen = Boolean(openHints[key]);
                       return (
                         <li key={key}>
+                          {detail?.phase && <h3 className="phase-title">{detail.phase}<span className="phase-count">{sectionCount(level, index)}</span></h3>}
                           <div className="step-row">
                             <label>
                               <input type="checkbox" checked={Boolean(checked[key])} onChange={(event) => setChecked((state) => ({ ...state, [key]: event.target.checked }))} />
                               <span>{stepText(step)}</span>
                             </label>
-                            {hint && <button type="button" className="hint-toggle" aria-expanded={hintOpen} aria-controls={`hint-${key}`} aria-label={hintOpen ? "Fela vísbendingu" : "Sýna vísbendingu"} onClick={() => setOpenHints((state) => ({ ...state, [key]: !hintOpen }))}>?</button>}
+                            {hint && <button type="button" className="hint-toggle" aria-expanded={hintOpen} aria-controls={`hint-${key}`} aria-label={hintOpen ? "Fela vísbendingu" : "Sýna vísbendingu"} onClick={() => setOpenHints((state) => ({ ...state, [key]: !hintOpen }))}>Hjálp</button>}
                           </div>
-                          {hint && <div className="hint" id={`hint-${key}`} hidden={!hintOpen}>
-                            <p>{hint.hint}</p>
-                            {hint.link && <a href={hint.link.url} target="_blank" rel="noreferrer">{hint.link.label} ↗</a>}
-                          </div>}
+                          {detail?.list && <ul className="step-list">{detail.list.map((item) => <li key={item}>{item}</li>)}</ul>}
+                          {detail?.link && <a className="step-link" href={detail.link.url} target="_blank" rel="noreferrer">{detail.link.label} ↗</a>}
+                          {hint && <div className="hint" id={`hint-${key}`} hidden={!hintOpen}><p>{hint}</p></div>}
                         </li>
                       );
                     })}
@@ -297,15 +314,21 @@ export default function ProjectBoard() {
           {project.assessment?.split("\n").map((paragraph, index) => <p key={index}>{paragraph}</p>)}
         </section>}
 
-        <section className="submission" aria-labelledby="submission-title">
+        <section className="submission" id="submission" aria-labelledby="submission-title">
           <div className="submission-mark" aria-hidden="true">↗</div>
           <div>
             <p className="eyebrow">SKILAÐU Í CANVAS</p>
             <h3 id="submission-title">{single ? "Þrjár skrár, ein skil" : "Einn hluti eða allir þrír"}</h3>
             {project.submission ? <p className="submission-text">{project.submission}</p> : <p>Skilaðu <strong>Hluta 1 einum</strong> eða bættu við Hluta 2 og/eða Hluta 3. Settu allt í eitt Canvas-skil: eina PDF/ZIP-skrá, virkan hlekk eða texta og viðhengi. Merktu greinilega <b>Hluti 1</b>, <b>Hluti 2</b> og <b>Hluti 3</b>. Opnaðu skrár og hlekki áður en þú lýkur skilum.</p>}
-            {project.group && <p className="group-note">Einn nemandi skilar fyrir hópinn. Nöfn, ábyrgð og framlag allra þurfa að koma fram.</p>}
+            {project.group && <>
+              <h4>Áður en þið skilið</h4>
+              <ul className="submission-checks"><li>Opnið PDF-skrána og athugið myndir, tölur og blaðsíðuskipti.</li><li>Opnið ZIP-skrána og prófið að vinnuskjölin opnist.</li><li>Opnið glæruskrána og prófið kynninguna.</li><li>Einn nemandi velur „Hlaða upp“, bætir öllum þremur skránum við og lýkur skilum í Canvas.</li><li>Athugið staðfestingu Canvas og að allar þrjár skrárnar fylgi. Við endurskil fylgja allar þrjár aftur.</li></ul>
+              <p className="group-note">Einn skilar fyrir hópinn. Hver nemandi skilar sínu jafningjamati og sjálfsmati sérstaklega.</p>
+              {project.reflectionUrl && <p><a href={project.reflectionUrl}>Opna Jafningjamat Verk 7 í Canvas</a></p>}
+              <p>Endurgjöf og einkunn birtast við verkefnið í Canvas. Ef skrá opnast ekki eða skil ganga ekki, látið kennara vita í tímanum eða í Canvas-innhólfinu.</p>
+            </>}
           </div>
-          <a className="canvas-link" href={`${canvasCourse}${project.canvasId}`} target={embedded ? "_top" : "_blank"} rel="noreferrer">SKILA VERK {project.number} Í CANVAS <span>↗</span></a>
+          <a className="canvas-link" href={`${canvasCourse}${project.canvasId}`} target={embedded ? "_top" : "_self"} rel="noreferrer">SKILA VERK {project.number} Í CANVAS <span>↗</span></a>
         </section>
       </article>
 

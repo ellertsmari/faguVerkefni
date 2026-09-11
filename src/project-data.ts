@@ -1,7 +1,12 @@
 export type Step = string | {
   text: string;
-  /** Shown when the student presses the "?" next to the step. */
-  hint: string;
+  /** Starts a new section of the checklist with this title. */
+  phase?: string;
+  /** Shown when the student presses "Hjálp" next to the step. */
+  hint?: string;
+  /** Requirements listed under the step text, always visible. */
+  list?: string[];
+  /** Shown inline under the step, outside the hint. */
   link?: { label: string; url: string };
 };
 
@@ -27,6 +32,9 @@ export type Project = {
   ai: string;
   canvasId: number;
   group?: boolean;
+  overview?: { label: string; value: string }[];
+  reflectionUrl?: string;
+  checklistVersion?: string;
   scenario?: string;
   submission?: string;
   photoGuide?: boolean;
@@ -86,39 +94,74 @@ export const defaultProjects: Project[] = [
   },
   {
     number: 7,
-    title: "Verkstæði frá grunni: teikning, kostnaður, rás og kynning",
-    intro: "Hópverkefni, fjórir til fimm í hóp. Þið fáið autt rými og gerið úr því verkstæði: teiknið grunnmynd, verðleggið búnaðinn á netinu, smíðið merkiljósarás í hermi og takið hópmynd. Skilin eru PDF-skýrsla, zip-mappa og glærusýning sem þið flytjið þriðjudaginn 22. september. Einkunnin ræðst af því hversu vel er vandað til verksins.",
-    tools: "Teikniforritið úr Verk 3 eða rúðustrikað blað · Excel eða Google Sheets · Falstad (falstad.com/circuit) · Word eða Google Docs fyrir PDF · PowerPoint, Google Slides eða Canva · byko.is, husa.is, bauhaus.is, elko.is, ikea.is",
-    ai: "AI 1 — AI má hjálpa við orðalag. Tölur, verð og rásin þurfa að vera ykkar eigin. Viljið þið nota AI í meira, spyrjið kennara.",
+    title: "Verkstæði frá grunni",
+    intro: "Hannið verkstæði fyrir pípara, smið og rafvirkja. Notið það sem þið lærðuð í Verk 3–6: grunnmynd, innkaupalista, merkiljósarás og myndaskýrslu. Allir taka þátt og allir tala í kynningunni.",
+    tools: "Teikniforritið úr Verk 3 eða rúðustrikað blað · Excel eða Google Sheets · Falstad · Word eða Google Docs · PowerPoint, Keynote, Google Slides eða Canva",
+    ai: "AI 1 — AI má hjálpa við orðalag. Tölur, verð, rökstuðningur og rásin þurfa að vera ykkar eigin. Viljið þið nota AI í meira, spyrjið kennara.",
     canvasId: 24134,
     group: true,
-    scenario: "Verkstæðið á að nýtast pípara, smið og rafvirkja jafnt. Hóparnir eru í Canvas. Veljið eitt rými:\nA · Lítil stofa, 4 × 5 m, ein hurð og einn gluggi.\nB · Bílskúr, 6 × 8 m, bílskúrshurð og ein gönguhurð, enginn gluggi.\nC · Langt herbergi, 3 × 9 m, hurð á enda og tveir gluggar á langvegg.\nÞri. 15. sept.: vinnudagur, 100 mínútur. Sama dag fer hver hópur til Halla í stofu 312 í myndatöku. Skiptið verkum strax og stefnið á að klára allt þann dag.\nMán. 21. sept. kl. 23:59: skilafrestur í Canvas.\nÞri. 22. sept.: kynningar í tímanum, jafningjamat í Canvas á eftir.",
-    submission: "Einn úr hópnum skilar þremur skrám í Canvas í síðasta lagi mánudaginn 21. september kl. 23:59, en best er að klára allt í tímanum 15. september:\n1 · PDF-skýrsla: forsíða með hópmynd og nöfnum, ábyrgðartafla, grunnmynd, innkaupalisti með samtölum, skjámynd af rásinni. Myndatexti við hverja mynd.\n2 · Zip-mappa með öllum vinnuskjölum hópsins, reiknisskjalinu þar með, í snyrtilegum möppum með lýsandi heitum.\n3 · Glærusýningin: PowerPoint- eða Keynote-skrá, eða hlekkur á Google Slides eða Canva. Ekki PDF.\nKynningar eru þriðjudaginn 22. september. Jafningjamatið fyllir hver og einn út í Canvas eftir kynningarnar, í síðasta lagi miðvikudaginn 23. september.",
+    checklistVersion: "2026-09-12",
+    reflectionUrl: "https://canvas.tskoli.is/courses/1907/assignments/30396",
+    overview: [
+      { label: "Hópur", value: "4–5 nemendur · listi í Canvas" },
+      { label: "Vinnudagur", value: "15. sept. · 100 mín." },
+      { label: "Skráaskil", value: "21. sept. · kl. 23:59" },
+      { label: "Kynning", value: "22. sept. · 10–15 mín. á hóp" },
+      { label: "Jafningjamat", value: "23. sept. · kl. 23:59" },
+    ],
+    scenario: "Veljið eitt rými. Verkstæðið á að nýtast öllum þremur iðngreinunum.\nA · Lítil stofa, 4 × 5 m, ein hurð og einn gluggi.\nB · Bílskúr, 6 × 8 m, bílskúrshurð og ein gönguhurð, enginn gluggi.\nC · Langt herbergi, 3 × 9 m, hurð á enda og tveir gluggar á langvegg.",
+    submission: "Einn úr hópnum skilar þremur skrám saman í Canvas fyrir mánudaginn 21. september kl. 23:59:\n1 · HopurX_Verk7_skyrsla.pdf — forsíða með hópmynd, nöfnum og dagsetningu; ábyrgðartafla; grunnmynd og flatarmál; innkaupalisti með samtölum; skjámynd af rásinni; rökstuðningur. Myndatexti við hverja mynd.\n2 · HopurX_Verk7_vinnuskjol.zip — öll vinnuskjöl í lýsandi möppum: skýrsluskjal, grunnmynd, reiknisskjal, vistuð rás, myndir og glærur.\n3 · HopurX_Verk7_kynning.pptx eða .key — glærusýningin sem skrá. Úr Google Slides: Skrá → Hlaða niður → Microsoft PowerPoint (.pptx). Úr Canva: Deila → Sækja / Download → Microsoft PowerPoint (.pptx). Ekki PDF og engir hlekkir. Opnið útfluttu glærurnar og athugið að myndir og texti birtist rétt.\nGátlistarnir í vinnuáætluninni hér fyrir ofan segja nákvæmlega hvað á að vera í hverri skrá.",
     rubric: [
-      { grade: "1–2", title: "Nánast ekkert", text: "Lítið sem ekkert skilað." },
-      { grade: "3–4", title: "Hluta vantar", text: "Eitt eða fleiri skref eða skil vantar." },
-      { grade: "5–6", title: "Allt skilað", text: "Öll skref gerð, öll þrjú skil komin. Rétt innihald, lágmarksfrágangur." },
-      { grade: "7–8", title: "Vel unnið", text: "PDF snyrtileg og læsileg, zip-mappan skipulögð, glærur auðlesnar, kynningin skýr og innan tíma." },
-      { grade: "9–10", title: "Umfram það sem beðið var um", text: "Fallegri grunnmynd, flóknari rás, hreyfingar í glærunum, PDF eins og frá fagfyrirtæki, verð borin saman milli verslana." },
+      { grade: "1–2", title: "Nánast ekkert", text: "Lítið er matshæft; megnið af verkefninu vantar." },
+      { grade: "3–4", title: "Hluta vantar", text: "Mikilvæg skil eða skref vantar, eða verulegar villur eru í niðurstöðum." },
+      { grade: "5–6", title: "Allt skilað", text: "Öll þrjú skil komin og kynning flutt þar sem allir tala. Öll skylduatriði til staðar, niðurstöður að mestu réttar og frágangur nægilegur." },
+      { grade: "7–8", title: "Vel unnið", text: "Mál, útreikningar og rás eru rétt. Skrár eru skipulagðar, skýrslan læsileg og myndir skýrar. Allir tala skýrt um sinn hluta og kynningin er innan tíma." },
+      { grade: "9–10", title: "Framúrskarandi", text: "Öll skylduatriði eru unnin af nákvæmni. Rökstuðningurinn útskýrir val á skipulagi og búnaði, hópurinn sannreynir verð og útreikninga og sýnir prófaða rás. Skýrsla, vinnuskjöl og kynning segja sömu skýru söguna. Ekki þarf fleiri íhluti eða hreyfingar í glærum." },
     ],
     gradeSplit: [
-      { grade: "50%", title: "Hópeinkunn", text: "Skilin og kynningin, metin eftir töflunni hér fyrir ofan. Sama einkunn fyrir alla í hópnum." },
-      { grade: "50%", title: "Einkunn kennara fyrir þig", text: "Hvernig kennarar sáu þig vinna í tímunum: mæting, þátttaka og að þú kláraðir þitt. Jafningjamatið og sjálfsmatið er ykkar rödd hér." },
+      { grade: "50%", title: "Hópeinkunn", text: "Skilin og kynningin samkvæmt viðmiðunum hér fyrir ofan. Sama hópeinkunn fyrir alla í hópnum." },
+      { grade: "50%", title: "Einkunn kennara fyrir þig", text: "Mæting, þátttaka, ábyrgð og sýnilegt framlag. Kennarar nota athuganir úr tímum og rökstutt jafningjamat og sjálfsmat." },
     ],
-    assessment: "Lokaeinkunn = helmingur hópeinkunnar + helmingur einkunnar kennara. Tveir í sama hópi geta því fengið ólíka einkunn.\nJafningjamatið og sjálfsmatið er skylda. Í „Jafningjamat Verk 7“ í Canvas segið þið hvað hver og einn gerði, líka það sem kennarar sáu ekki. Aðeins kennarar sjá svörin. Skilafrestur: miðvikudagur 23. september.",
+    assessment: "Lokaeinkunn = helmingur hópeinkunnar + helmingur einkunnar kennara. Dæmi: hópeinkunn 8 og einstaklingsmat 6 gefa lokaeinkunn 7. Tveir í sama hópi geta fengið ólíka einkunn.\nJafningjamat og sjálfsmat er skylda, sjá síðasta skref vinnuáætlunarinnar. Svörin eru merkt nafni og aðeins kennarar sjá þau. Þau styðja einstaklingsmat kennara; þau gefa ekki sjálfstæð stig.",
     levels: [
-      { key: "easy", label: "Verkefnið", kicker: "Tíu skref", points: 10, task: "", steps: [
-        { text: "Skráið nöfn allra í hópnum og hver ber ábyrgð á hverju: grunnmynd, innkaupalisti, rás, skýrsla, zip-mappa og kynning.", hint: "Fyrstu tíu mínúturnar 15. september. Tafla með tveimur dálkum, nafn og ábyrgð, dugar. Allir mega vinna í öllu, en einn ber ábyrgð á að hver hluti klárist." },
-        { text: "Veljið rými A, B eða C og teiknið grunnmynd með málum, hurð, glugga, vinnuborði, hillu og gönguleið.", hint: "Sama aðferð og í Verk 3, eða rúðustrikað blað og mynd af því. Mál á alla veggi og að minnsta kosti tvo hluti. Gönguleið minnst 1 m breið. Smáatriði, litir og rétt hlutföll gefa hærri einkunn.", link: { label: "Verk 3 · Stafræn grunnmynd í Canvas", url: "https://canvas.tskoli.is/courses/1907/assignments/24132" } },
-        { text: "Finnið verð á netinu á öllum átta hlutunum og skráið í reiknisskjal: hlutur, verslun, hlekkur, verð, fjöldi, samtala.", hint: "Listinn: vinnuborð, hillueining, LED-vinnuljós, fjöltengi eða framlengingarkefli, verkfæratafla með krókum, slökkvitæki, sjúkrakassi, vinnustóll. Afritið hlekkinn á vöruna svo kennari geti sannreynt verðið. Reiknisskjalið fer sem skrá í zip-möppuna; úr Google Sheets: Skrá → Hlaða niður → Excel." },
-        { text: "Reiknið flatarmál rýmisins og heildarkostnað með 10% viðbót fyrir ófyrirséð.", hint: "Flatarmál = lengd × breidd. Samtala = SUM af verðdálkinum. Viðbót = samtala × 0,1. Heild = samtala + viðbót. Notið formúlur. Allar þrjár tölurnar í skýrsluna." },
-        { text: "Smíðið merkiljósarás í Falstad: 9 V rafhlaða, rofi, viðnám og LED sem logar þegar rofinn er á. Takið skjámynd þar sem ljósið logar.", hint: "Ljósið við hurðina sem sýnir að verkstæðið sé upptekið. Sama rás og í Verk 4. Byrjið með 470 Ω. Haldið músinni yfir LED-inu: sé straumurinn yfir 20 mA er viðnámið of lítið. Merkið íhluti og gildi á myndina. Viljið þið meira: annað ljós, hljóðgjafi eða skynjari.", link: { label: "Verk 4 · Stafræn rafrás í Canvas", url: "https://canvas.tskoli.is/courses/1907/assignments/24133" } },
-        { text: "Farið öll til Halla í stofu 312 í tímanum þriðjudaginn 15. september í myndatöku, hópmynd og mynd af hverjum og einum. Setjið eigin mynd sem prófílmynd í Innu og Canvas; hópmyndin fer á forsíðu skýrslunnar.", hint: "Halli segir ykkur hvernig þið fáið myndirnar. Þær fara í zip-möppuna, PDF-skýrsluna og glærurnar. Prófílmynd: Stillingar → Breyta mynd í Innu, Reikningur → Stillingar í Canvas, sjá Verk 6.", link: { label: "Verk 6 · Prófílmynd, leiðbeiningar með skjámyndum", url: "https://ellertsmari.github.io/faguVerkefni/?verk=6&locked=1" } },
-        { text: "Setjið allt í eina PDF-skýrslu með myndatexta við hverja mynd, eins og fagmaður myndi afhenda viðskiptavini.", hint: "Sama snið og í Verk 5. Röð: forsíða með hópmynd, nöfnum og dagsetningu, ábyrgðartafla, grunnmynd, innkaupalisti með samtölum, rásin. Sama letur í gegn, blaðsíðutal. Opnið PDF-skrána áður en þið skilið.", link: { label: "Verk 5 · Myndaskýrsla og PDF", url: "https://ellertsmari.github.io/faguVerkefni/?verk=5&locked=1" } },
-        { text: "Safnið öllum vinnuskjölum hópsins í eina zip-möppu með lýsandi heitum á öllum skrám og möppum.", hint: "Dæmi: Hopur3_Verk7.zip með 01_Skyrsla, 02_Grunnmynd, 03_Innkaupalisti, 04_Rafras, 05_Myndir, 06_Kynning. Heiti segja hvað er í skránni: Grunnmynd_rymi_B.png, ekki IMG_4821.jpg eða final_final2.docx. Engar tómar möppur, engin tvítök. Windows: hægrismella → Þjappa í ZIP-skrá. Mac: hægrismella → Compress." },
-        { text: "Búið til glærusýningu um allt verkið og flytjið hana á 3–4 mínútum þriðjudaginn 22. september. Allir tala.", hint: "PowerPoint, Google Slides, Canva eða Keynote. Fjórir hlutar: rýmið, kostnaðurinn, rásin, hvað við lærðum. Ein mynd og fáar setningar á glæru, ekki upplestur. Æfið einu sinni með tíma." },
-        { text: "Fyllið út jafningjamat og sjálfsmat í Canvas eftir kynningarnar, í síðasta lagi miðvikudaginn 23. september. Hver fyrir sig.", hint: "„Jafningjamat Verk 7“ í Canvas. Þið metið ykkur sjálf og alla í hópnum með stuttum rökstuðningi: hvað gerði hver og einn? Þetta er ykkar rödd í einkunn kennara, sjá neðar." },
-      ], deliverable: "Í Canvas fyrir kl. 23:59 mánudaginn 21. september: PDF-skýrsla, zip-mappa og glærusýning. Þriðjudaginn 22.: kynningin. Miðvikudaginn 23. í síðasta lagi: jafningjamat frá hverjum og einum." },
+      { key: "easy", label: "Vinnuáætlun og gátlistar", kicker: "Sjö áfangar · hakið við jafnóðum", points: 10, task: "Skilið PDF-skýrslu, zip-möppu með vinnuskjölum og glærusýningu um verkstæðið ykkar og kynnið það fyrir bekknum. Áfangar 4–6 eru gátlistar yfir það sem þarf að vera í hverri skrá.", steps: [
+        { phase: "1 · Byrjið saman", text: "Finnið hópinn ykkar á verkefnasíðunni í Canvas og veljið rými A, B eða C.", hint: "Hópaskiptingin er undir Hópar á verkefnasíðunni í Canvas. Ekkert rými er auðveldara en annað; veljið það sem hópurinn sér skýrast fyrir sér." },
+        { text: "Búið til sameiginlega vinnumöppu og prófið að allir í hópnum geti opnað og vistað þar.", hint: "Notið skólaaðganginn, t.d. OneDrive eða Google Drive. Allar skrár hópsins fara í þessa möppu og zip-mappan verður búin til úr henni." },
+        { text: "Fyllið út ábyrgðartöflu: hver ber ábyrgð á grunnmynd, innkaupalista, rás, rökstuðningi, skýrslu, zip-möppu og kynningu. Veljið einn til að skila.", hint: "Tveggja dálka tafla, nafn og ábyrgð, dugar. Allir mega hjálpa til við alla hluta; ábyrgð þýðir að einhver sér til þess að hlutinn klárist. Taflan fer í skýrsluna." },
+        { phase: "2 · Vinnið hlutana samtímis", text: "Teiknið grunnmynd af rýminu í réttum hlutföllum. Hún þarf að sýna:", list: ["mál á öllum veggjum", "hurðir og glugga eins og rýminu er lýst. Rými B hefur engan glugga", "vinnuborð og hillueiningu", "að minnsta kosti tvo aðra hluti af innkaupalistanum, t.d. verkfæratöflu og vinnustól", "gönguleið sem er að minnsta kosti 1 m breið"], hint: "Notið teikniforritið úr Verk 3 eða rúðustrikað blað og takið skýra mynd af blaðinu. Grunnmynd, verðleit og rás geta ólíkir hópfélagar unnið á sama tíma.", link: { label: "Verk 3 · Stafræn grunnmynd", url: "https://canvas.tskoli.is/courses/1907/assignments/24132" } },
+        { text: "Finnið verð á átta hlutum og skráið í reiknisskjal með dálkunum hlutur, verslun, vöruhlekkur, einingarverð, fjöldi og línusamtala:", list: ["vinnuborð", "hillueining", "LED-vinnuljós", "fjöltengi eða framlengingarkefli", "verkfæratafla með krókum", "slökkvitæki", "sjúkrakassi", "vinnustóll"], hint: "Leitið t.d. á byko.is, husa.is, bauhaus.is, elko.is eða ikea.is. Vöruhlekkurinn er heimildin fyrir verðinu. Reiknisskjalið þarf að vera skrá í zip-möppunni; úr Google Sheets: Skrá → Hlaða niður → Excel." },
+        { text: "Reiknið flatarmál = lengd × breidd og notið formúlur í reiknisskjalinu: línusamtala = einingarverð × fjöldi; vörusamtala = SUM af línusamtölum; ófyrirséð = vörusamtala × 10%; heildarkostnaður = vörusamtala + ófyrirséð.", hint: "Prófið formúlurnar með því að breyta fjölda á einum hlut. Línusamtala og heild eiga að uppfærast sjálfkrafa. Stillið síðan réttan fjölda aftur." },
+        { text: "Smíðið merkiljósarás í Falstad: 9 V rafhlaða, rofi, viðnám og LED. Prófið að ljósið kvikni og slokkni með rofanum. Takið skjámynd með logandi LED, merktum íhlutum og gildum og vistið rásina sem skrá.", hint: "Sama rás og í Verk 4. Byrjið með 470 Ω. Í Falstad: File → Export as Text og vistið textann í .txt-skrá í vinnumöppunni. Opnið hana aftur með File → Import from Text til að prófa.", link: { label: "Verk 4 · Stafræn rafrás", url: "https://canvas.tskoli.is/courses/1907/assignments/24133" } },
+        { text: "Skrifið rökstuðning, 3–5 setningar: hvers vegna er rýminu raðað svona og hvers vegna völduð þið þessa hluti og þessar verslanir? Nefnið eitt sem þið sannreynduð, t.d. verð sem þið báruð saman í tveimur verslunum eða formúlu sem þið prófuðuð.", hint: "Rökstuðningurinn fer í skýrsluna og á eina glæru. Hann skilur 9–10 frá 7–8 í námsmatinu: rétt unnið verk sem þið getið útskýrt hvers vegna er svona." },
+        { text: "Farið öll saman til Halla í stofu 312 í myndatöku á vinnudeginum 15. september. Hópmyndin fer á forsíðu skýrslunnar og í glærurnar; allar myndirnar fara í zip-möppuna.", hint: "Halli segir ykkur hvernig þið fáið myndirnar. Ef einhver er fjarverandi eða myndin berst ekki í tíma, talið við kennara og haldið áfram með hina hlutana. Viljið þið nota myndina sem prófílmynd í Innu og Canvas eru leiðbeiningarnar í Verk 6.", link: { label: "Verk 6 · Prófílmynd, skref fyrir skref", url: "https://ellertsmari.github.io/faguVerkefni/?verk=6&locked=1" } },
+        { phase: "3 · Stoppið og athugið stöðuna", text: "Þegar um 50 mínútur eru eftir af síðasta vinnutímanum fyrir skil: stoppið, farið saman yfir gátlistana þrjá hér fyrir neðan og skráið við hvert atriði sem vantar hver klárar það og hvenær, fyrir mánudaginn 21. september kl. 23:59.", hint: "Þetta er mikilvægasta stopp verkefnisins. Hópar vinna mishratt og það skiptir ekki máli hvað er búið, heldur að allir viti hvað vantar og hver gerir það. Allt sem eftir er má klára heima í sameiginlegu vinnumöppunni." },
+        { phase: "4 · Gátlisti: skýrslan (PDF)", text: "Forsíða með hópmynd, nöfnum allra í hópnum, hópnúmeri og dagsetningu." },
+        "Ábyrgðartaflan.",
+        "Grunnmyndin með málum og útreiknað flatarmál.",
+        "Innkaupalistinn með línusamtölum, vörusamtölu, 10% ófyrirséðu og heildarkostnaði.",
+        "Skjámynd af rásinni með logandi LED og merktum íhlutum.",
+        "Rökstuðningurinn, 3–5 setningar.",
+        "Myndatexti við hverja mynd, samræmt letur og blaðsíðutal.",
+        { text: "Vistuð sem HopurX_Verk7_skyrsla.pdf, opnuð og skoðuð: ekkert klippist af og skýrslan er skiljanleg án munnlegrar útskýringar.", hint: "Sömu kröfur og í Verk 5. Opnið PDF-skrána í öðru forriti en hún var búin til í, t.d. í vafra, og flettið í gegnum allar síður.", link: { label: "Verk 5 · Myndaskýrsla og PDF", url: "https://ellertsmari.github.io/faguVerkefni/?verk=5&locked=1" } },
+        { phase: "5 · Gátlisti: vinnuskjölin (ZIP)", text: "Skýrsluskjalið sjálft, Word- eða Docs-skjalið sem PDF-skráin var búin til úr." },
+        "Grunnmyndin sem mynd eða teikniskrá.",
+        "Reiknisskjalið sem skrá, t.d. .xlsx, með formúlunum inni.",
+        "Vistaða rásin, t.d. .txt úr Falstad.",
+        "Allar myndir, þar á meðal hópmyndin.",
+        "Glærurnar.",
+        { text: "Lýsandi möppuheiti og engar tómar möppur. Vistuð sem HopurX_Verk7_vinnuskjol.zip, opnuð og skrárnar prófaðar.", hint: "Dæmi: 01_Skyrsla, 02_Grunnmynd, 03_Innkaupalisti, 04_Rafras, 05_Myndir, 06_Kynning. Windows: veljið möppurnar, hægrismellið → Þjappa í ZIP-skrá. Mac: hægrismellið → Compress." },
+        { phase: "6 · Gátlisti: glærusýningin", text: "Titilglæra með hópmynd, nöfnum og heiti rýmisins." },
+        "Rýmið: grunnmyndin og flatarmálið.",
+        "Kostnaður: helstu hlutir, vörusamtala og heildarkostnaður.",
+        "Rásin: skjámyndin með logandi LED.",
+        "Rökstuðningurinn: hvers vegna svona.",
+        "Hvað hópurinn lærði og hvað hann myndi gera öðruvísi.",
+        { text: "Allir í hópnum tala. Kynningin er æfð með tíma og tekur 10–15 mínútur.", hint: "Um 8–12 glærur duga. Ein mynd og fáar setningar á glæru; segið frekar frá en lesið. Skiptið glærunum á milli ykkar fyrirfram." },
+        { text: "Flutt út sem HopurX_Verk7_kynning.pptx eða .key og útflutta skráin opnuð og skoðuð: myndir og texti birtast rétt.", hint: "Google Slides: Skrá → Hlaða niður → Microsoft PowerPoint (.pptx). Canva: Deila → Sækja → Microsoft PowerPoint (.pptx). Ekki PDF og engir hlekkir." },
+        { phase: "7 · Skil, kynning og mat", text: "Einn úr hópnum skilar öllum þremur skránum saman í Canvas fyrir mánudaginn 21. september kl. 23:59. Sjá „Áður en þið skilið“ hér fyrir neðan.", hint: "Við endurskil þurfa allar þrjár skrárnar að fylgja aftur. Athugið staðfestinguna frá Canvas." },
+        { text: "Kynnið þriðjudaginn 22. september, 10–15 mínútur á hóp. Kynningin er flutt af kennaratölvunni úr glæruskránni sem hópurinn skilaði í Canvas og kennari ákveður röð hópanna í byrjun tímans. Hafið afrit af glærunum í vinnumöppunni til öryggis.", hint: "Þið þurfið ekki að koma með eigin tölvu. Ef eitthvað birtist vitlaust á kennaratölvunni er afritið úr vinnumöppunni notað." },
+        { text: "Hver fyrir sig: svarið „Jafningjamat Verk 7“ í Canvas eftir kynningarnar, í síðasta lagi miðvikudaginn 23. september kl. 23:59.", hint: "Tengillinn er efst á síðunni og undir Skil. Lýsið eigin framlagi og framlagi hvers hópfélaga með stuttum dæmum. Aðeins kennarar sjá svörin." },
+      ], deliverable: "Þrjár skrár saman í einni skilatilraun: PDF-skýrsla, ZIP með vinnuskjölum og glærusýning (.pptx eða .key). Engir skilahlekkir. Einn skilar fyrir hópinn; hver nemandi skilar eigin jafningjamati og sjálfsmati." },
     ],
   },
   {
