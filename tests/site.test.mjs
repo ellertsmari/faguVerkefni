@@ -32,6 +32,7 @@ test("locks an embedded assignment to its requested project", async () => {
   assert.match(page, /params\.get\("locked"\) === "1"/);
   assert.match(page, /\{!locked && <nav className="project-nav"/);
   assert.match(page, /className="step-list"/);
+  assert.match(page, /setOpenLevel\(expanded \? null : level\.key\)/, "clicking an open part collapses it");
   assert.match(page, /className="step-link"/);
   assert.match(page, /className="phase-count"/);
   assert.match(page, /AÐEINS ÞETTA VERKEFNI ER SÝNT HÉR/);

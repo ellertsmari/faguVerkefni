@@ -77,7 +77,7 @@ export default function ProjectBoard() {
   const [initial] = useState(initialState);
   const { embedded, locked } = initial;
   const [selected, setSelected] = useState(initial.selected);
-  const [openLevel, setOpenLevel] = useState<Level["key"]>(initial.openLevel);
+  const [openLevel, setOpenLevel] = useState<Level["key"] | null>(initial.openLevel);
   const [checked, setChecked] = useState<Record<string, boolean>>(initial.checked);
   const [openHints, setOpenHints] = useState<Record<string, boolean>>({});
   const [theme, setTheme] = useState<Theme>(initialTheme);
@@ -97,7 +97,8 @@ export default function ProjectBoard() {
       const url = new URL(window.location.href);
       url.searchParams.delete("assignment");
       url.searchParams.set("verk", String(selected));
-      url.searchParams.set("level", openLevel);
+      if (openLevel) url.searchParams.set("level", openLevel);
+      else url.searchParams.delete("level");
       window.history.replaceState({}, "", url);
     }
     try {
@@ -250,7 +251,7 @@ export default function ProjectBoard() {
                       <span className="level-title"><small>{level.kicker}</small><b>{level.label}</b></span>
                       <span className="points">HÓPEINKUNN 0–{level.points}</span>
                     </div>
-                  : <button className="level-trigger" onClick={() => setOpenLevel(level.key)} aria-expanded={expanded}>
+                  : <button className="level-trigger" onClick={() => setOpenLevel(expanded ? null : level.key)} aria-expanded={expanded}>
                       <span className="level-number">{levelGlyph[level.key]}</span>
                       <span className="level-title"><small>{level.kicker}</small><b>{level.label}</b></span>
                       <span className="points">+{level.points} STIG</span>
