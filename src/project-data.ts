@@ -78,19 +78,19 @@ export const defaultProjects: Project[] = [
     ],
   },
   {
-    number: 8,
+    number: 9,
     title: "Fagleg samskipti",
     intro: "Viðskiptavinur sendir óskýra beiðni. Þú skrifar svarið fyrst með þínum eigin orðum og lætur svo AI gera það formlegt. Síðan fer þetta á flug: sjóræningjar, enskur herramaður frá 18. öld og loks þinn eigin texti í nýjum stíl með mynd eftir AI. Í öllum hlutum sýnir þú skýrt hvað þú skrifaðir og hvað AI skrifaði.",
-    tools: "Microsoft Copilot með skólareikningi, bæði texti og myndir · Word eða Google Docs · PDF",
+    tools: "Microsoft Copilot með skólareikningi, bæði texti og myndir · Word eða Google Docs sem vinnuskjal · textareitur í Canvas-skilum",
     ai: "AI 2 — AI er krafist, en alltaf á eftir þér: þú skrifar fyrst, svo breytir AI. Merktu hvern texta og hverja mynd með hlutanum og því hver skrifaði. Settu engin raunveruleg nöfn, netföng eða persónuupplýsingar í AI.",
     canvasId: 24136,
     checklistVersion: "ai-stilar",
     scenario: "Þetta er tilbúin æfing. Þú ert nemi hjá þjónustufyrirtæki og átt að semja svar, ekki senda raunverulegan tölvupóst. Jón skrifar: „Sæl/l. Getið þið sett upp hillur hjá mér? Ég er með eitthvað efni og þarf þetta fljótt. Hvað kostar þetta og getið þið komið í vikunni? Kveðja, Jón.“ Þú veist ekki fjölda, mál, efni, aðstæður eða staðsetningu. Ekki búa til verð eða lofa komu áður en þetta liggur fyrir.",
-    submission: "Skilaðu einni PDF-skrá. Settu merkingu fyrir ofan hvern texta og hverja mynd sem segir bæði í hvaða hluta hann er og hver skrifaði hann: „Hluti 1 · Ég skrifaði“, „Hluti 1 · Promptið mitt“ eða „Hluti 1 · AI skrifaði (Copilot)“, og eins fyrir Hluta 2 og 3. Hluti 1: upprunalega svarið þitt, promptið og formlega AI-útgáfan. Hluti 2, ef þú gerir hann: promptin þín og AI-útgáfurnar tvær, á íslensku sjóræningjamáli og á 18. aldar Oxford-ensku. Hluti 3, ef þú gerir hann: textinn þinn, promptin, AI-textinn í nýja stílnum og myndin. Ekki laga upprunalegu textana þína eftir á. Þeir eiga að sýna hvað þú skrifaðir áður en AI kom að þeim. Ekki senda póst til raunverulegs viðskiptavinar.",
+    submission: "Skilaðu öllu í textareit í Canvas (Text Entry), ekki sem skrá. Þú mátt vinna í Word eða Google Docs og afrita allt yfir í lokin. Settu myndina í Hluta 3 inn með myndahnappinum í ritlinum í Canvas, því myndir sem eru límdar beint úr Word skila sér ekki alltaf. Settu merkingu fyrir ofan hvern texta og hverja mynd sem segir bæði í hvaða hluta hann er og hver skrifaði hann: „Hluti 1 · Ég skrifaði“, „Hluti 1 · Promptið mitt“ eða „Hluti 1 · AI skrifaði (Copilot)“, og eins fyrir Hluta 2 og 3. Hluti 1: upprunalega svarið þitt, promptið og formlega AI-útgáfan. Hluti 2, ef þú gerir hann: promptin þín og AI-útgáfurnar tvær, á íslensku sjóræningjamáli og á 18. aldar Oxford-ensku. Hluti 3, ef þú gerir hann: textinn þinn, promptin, AI-textinn í nýja stílnum og myndin. Ekki laga upprunalegu textana þína eftir á. Þeir eiga að sýna hvað þú skrifaðir áður en AI kom að þeim. Ekki senda póst til raunverulegs viðskiptavinar.",
     levels: [
       { key: "easy", label: "Grunnur", kicker: "Þín orð fyrst", points: 6, task: "Lestu erindi Jóns hér að ofan. Skrifaðu svarið fyrst með þínum eigin orðum og láttu svo AI umorða það á formlegt og faglegt mál.", steps: [
         { text: "Skrifaðu svar til Jóns með þínum eigin orðum, um 80–150 orð, án AI. Þetta eru drögin þín, svo stafsetningarvillur og talmál eru í lagi. Svarið þarf að innihalda:", list: ["Efnislínu um hillurnar", "Ávarp og það sem þú skilur úr erindinu", "2–3 afmarkaðar spurningar, t.d. um mál, efni og staðsetningu", "Næsta skref eftir að Jón svarar, án loforðs um verð eða tíma", "Kveðju"] },
-        { text: "Settu drögin í Word eða Google Docs undir merkinguna „Hluti 1 · Ég skrifaði“. Ekki breyta þeim eftir þetta.", hint: "Upprunalegi textinn á að sýna hvað þú skrifaðir áður en AI kom að honum. Ef þú lagar hann eftir á sést ekki lengur munurinn á þér og AI. Það er einmitt munurinn sem verið er að meta." },
+        { text: "Opnaðu Word eða Google Docs sem vinnuskjal og settu drögin þar undir merkinguna „Hluti 1 · Ég skrifaði“. Ekki breyta þeim eftir þetta. Í lokin afritarðu allt úr vinnuskjalinu í textareitinn í Canvas.", hint: "Upprunalegi textinn á að sýna hvað þú skrifaðir áður en AI kom að honum. Ef þú lagar hann eftir á sést ekki lengur munurinn á þér og AI. Það er einmitt munurinn sem verið er að meta." },
         { text: "Opnaðu Copilot með skólareikningnum og biddu það að umorða textann þinn á formlegt og faglegt mál. Settu promptið í skjalið undir merkinguna „Hluti 1 · Promptið mitt“.", hint: "Dæmi um prompt: „Umorðaðu þennan tölvupóst á formlega og faglega íslensku. Ekki bæta við nýjum upplýsingum, verði eða loforðum um tíma. Haltu öllum spurningunum.“ Svo límirðu textann þinn fyrir neðan. Jón er tilbúinn viðskiptavinur, svo það er í lagi að nota nafnið hans. Ekki setja þitt fulla nafn eða netfang í promptið." },
         { text: "Lestu AI-útgáfuna vandlega. Bætti AI við verði, dagsetningu eða loforði? Datt spurning út? Ef svo er, biddu Copilot að laga það og bættu því promptinu við í skjalið.", hint: "AI á það til að lofa fyrir þína hönd, t.d. „við getum komið á fimmtudaginn“. Þú berð ábyrgð á því sem er sent, sama hver skrifaði það." },
         "Settu lokaútgáfuna frá AI í skjalið undir merkinguna „Hluti 1 · AI skrifaði (Copilot)“. Skrifaðu eina setningu undir merkingunni „Hluti 1 · Ég skrifaði“ um hvað AI breytti mest.",
@@ -105,7 +105,7 @@ export const defaultProjects: Project[] = [
         { text: "Skrifaðu 60–120 orða texta um hvað sem þú vilt, án AI. Settu hann undir merkinguna „Hluti 3 · Ég skrifaði“.", hint: "Dæmi: áhugamál, iðngreinin þín, uppáhaldsverkfæri, ferðalag, bíll, matur eða stutt saga sem þú býrð til. Ekki skrifa um annað raunverulegt fólk með nafni." },
         { text: "Veldu stíl og biddu Copilot að endurskrifa textann þinn í honum. Settu promptið undir „Hluti 3 · Promptið mitt“ og nýja textann undir „Hluti 3 · AI skrifaði (Copilot)“.", hint: "Hugmyndir að stíl: æsifrétt, íþróttalýsing í beinni, ævintýri, rapptexti, Íslendingasaga, náttúrulífsþáttur, auglýsing í sjónvarpi eða leiðbeiningar með IKEA-húsgögnum. Því ólíkari upprunalega textanum, því skemmtilegra." },
         { text: "Biddu Copilot að búa til mynd sem passar við textann. Settu myndina í skjalið með merkingunni „Hluti 3 · Mynd sem AI bjó til (Copilot)“ og promptið fyrir ofan hana.", hint: "Dæmi um prompt: „Búðu til mynd sem passar við þennan texta, í teiknimyndastíl.“ Ekki biðja um myndir af raunverulegu fólki og ekki hlaða upp myndum af þér eða öðrum. Ef Copilot býr ekki til myndir á skólareikningnum þínum skaltu spyrja kennara hvaða tól má nota." },
-        "Farðu yfir skjalið: ber hver texti og mynd í Hluta 3 merkingu með bæði hlutanum og því hver skrifaði eða bjó til?",
+        "Farðu yfir skjalið: ber hver texti og mynd í Hluta 3 merkingu með bæði hlutanum og því hver skrifaði eða bjó til? Afritaðu svo textann í textareitinn í Canvas og settu myndina inn með myndahnappinum í ritlinum.",
       ], deliverable: "Textinn þinn, promptin þín, AI-textinn í nýja stílnum og myndin. Hver texti og myndin eru merkt með hlutanum og því hvort þú eða AI gerðir þau." },
     ],
   },
@@ -182,7 +182,7 @@ export const defaultProjects: Project[] = [
     ],
   },
   {
-    number: 9,
+    number: 10,
     title: "AI-notkun og sannprófun",
     intro: "AI svarar hratt en getur haft rangt fyrir sér. Prófaðu svar, finndu veikleika og taktu sjálfstæða afstöðu.",
     tools: "Microsoft Copilot með skólareikningi · reiknivél · opinber eða traust heimild",
@@ -195,7 +195,7 @@ export const defaultProjects: Project[] = [
     ],
   },
   {
-    number: 10,
+    number: 11,
     title: "Vefveiðar og stafrænt öryggi",
     intro: "Greindu tilbúin svikaskilaboð án þess að opna grunsamlega hlekki og settu upp öruggt viðbragðsferli.",
     tools: "Sýnidæmin í Canvas · vafri án þess að opna grunsamlegar slóðir",
@@ -208,7 +208,7 @@ export const defaultProjects: Project[] = [
     ],
   },
   {
-    number: 11,
+    number: 12,
     title: "Tilboð, tímaskrá og PDF",
     intro: "Búðu til skriflegt tilboð þar sem efni, vinna, forsendur, VSK og heildarverð stemma.",
     tools: "Excel eða Sheets · tilboðssniðmát · PDF · tímaskrá",
@@ -221,7 +221,7 @@ export const defaultProjects: Project[] = [
     ],
   },
   {
-    number: 12,
+    number: 13,
     title: "Einföld 3D-hönnun",
     intro: "Hannaðu festihlut, merkiplötu eða millistykki sem leysir eitt mælanlegt vandamál í verkstæði.",
     tools: "Tinkercad 3D, Onshape Education eða annað samþykkt CAD-verkfæri",
@@ -234,7 +234,7 @@ export const defaultProjects: Project[] = [
     ],
   },
   {
-    number: 13,
+    number: 14,
     title: "Ferilskrá og stafrænn vinnumappi",
     intro: "Sýndu á einni síðu hver þú ert sem nemi og veldu sönnunargögn sem sýna hvað þú getur.",
     tools: "Word, Google Docs eða Canva · PDF · verkefnamappa",

@@ -21,7 +21,7 @@ Edit `src/project-data.ts`. Each project is an object with:
 | `tools`, `ai` | The "Verkfæri" and "AI-regla" boxes. |
 | `canvasId` | The Canvas assignment id. Used for the submit link and for `?assignment=` embeds. |
 | `group` | Optional. Marks a group project and adds the group submission note. |
-| `scenario` | Optional. A boxed "read this first" text, used for the customer email in Verk 8. |
+| `scenario` | Optional. A boxed "read this first" text, used for the customer email in Verk 9. |
 | `submission` | Optional. Replaces the default submission instructions. |
 | `photoGuide` | Optional. Shows the Inna and Canvas profile-photo guides (Verk 6). |
 | `gradeSplit` | Optional. Boxes under the rubric showing how the final grade is split, same shape as `rubric` (Verk 7). |

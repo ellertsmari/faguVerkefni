@@ -41,7 +41,7 @@ test("locks an embedded assignment to its requested project", async () => {
 test("keeps every project mapped to its Canvas assignment", async () => {
   const page = await read("src/project-board.tsx");
   const data = await read("src/project-data.ts");
-  const expected = [[5, 24135], [6, 27490], [7, 24134], [8, 24136], [9, 24137], [10, 24138], [11, 24139], [12, 24140], [13, 24142]];
+  const expected = [[5, 24135], [6, 27490], [7, 24134], [9, 24136], [10, 24137], [11, 24138], [12, 24139], [13, 24140], [14, 24142]];
   for (const [number, canvasId] of expected) {
     assert.match(data, new RegExp(`number: ${number},[\\s\\S]*?canvasId: ${canvasId},`));
   }
@@ -71,7 +71,7 @@ test("every project has three levels worth 6 + 2 + 2 points, except Verk 7 which
 
 test("Verk 7 lists the presentation, three deliverables and peer evaluation as required steps", async () => {
   const data = await read("src/project-data.ts");
-  const verk7 = data.slice(data.indexOf("number: 7,"), data.indexOf("number: 9,"));
+  const verk7 = data.slice(data.indexOf("number: 7,"), data.indexOf("number: 10,"));
   assert.match(verk7, /Kynnið þriðjudaginn 22\. september, 10–15 mínútur á hóp/);
   assert.match(verk7, /kennaratölvunni úr glæruskránni sem hópurinn skilaði í Canvas/);
   assert.match(verk7, /Skrifið rökstuðning, 3–5 setningar/);
