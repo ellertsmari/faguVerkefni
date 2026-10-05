@@ -1,7 +1,7 @@
 # FAGU verkefnaborð
 
-Static project board for the FAGU course (Tækniskólinn, autumn 2026). Nine
-projects. Eight have three parts: a 6-point base part and two optional 2-point
+Static project board for the FAGU course (Tækniskólinn, autumn 2026). Ten
+projects, one of them a spare in the teachers' project bank. Nine have three parts: a 6-point base part and two optional 2-point
 additions. Students open the board inside Canvas or on its own page, tick off
 steps as they go, and follow the Canvas link to submit.
 
@@ -20,6 +20,8 @@ Edit `src/project-data.ts`. Each project is an object with:
 | `title`, `intro` | Heading and one-paragraph introduction. |
 | `tools`, `ai` | The "Verkfæri" and "AI-regla" boxes. |
 | `canvasId` | The Canvas assignment id. Used for the submit link and for `?assignment=` embeds. |
+| `bank` | Optional. A spare project kept for teachers. Listed last and labelled "Banki" instead of a Verk number. Its `number` (e.g. 101) is only an id. |
+| `introImage` | Optional. A picture under the introduction, `{ src, alt, caption? }` with `src` relative to `public/` (Verk 11). |
 | `group` | Optional. Marks a group project and adds the group submission note. |
 | `scenario` | Optional. A boxed "read this first" text, used for the customer email in Verk 9. |
 | `submission` | Optional. Replaces the default submission instructions. |
@@ -31,7 +33,9 @@ Edit `src/project-data.ts`. Each project is an object with:
 
 A step is either a plain string or an object with `text` and optional
 `phase` (starts a checklist section), `hint`, `list` (always-visible
-requirement bullets) and `link` (shown inline under the step). Steps with a
+requirement bullets), `link` (shown inline under the step), `images`
+(screenshots shown in the "Hjálp" drawer under the hint) and `prompt` (text to
+paste into Copilot, shown in a box with a copy button). Steps with a
 hint get a "Hjálp" button that opens the hint under the step. Use hints for where a tool lives, what a good answer looks
 like, or a link back to the earlier Verk the step builds on.
 
@@ -41,6 +45,10 @@ You can edit the file directly on GitHub. Once the commit lands on `main`,
 the "Deploy to GitHub Pages" action runs the type check, lint and tests, then
 publishes. Allow a minute or two before reloading the site. Students on an
 already-open page see the change on their next page load.
+
+Verk 11 screenshots are in `public/guides/verk11/`. Files whose image says
+"SKJÁMYND VANTAR" are placeholders: replace the file with a real screenshot
+under the same name.
 
 The profile-photo guide texts and screenshots are in `src/photo-guide.tsx` and
 `public/guides/`. Identifying details in the screenshots were permanently

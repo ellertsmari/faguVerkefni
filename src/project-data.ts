@@ -8,7 +8,14 @@ export type Step = string | {
   list?: string[];
   /** Shown inline under the step, outside the hint. */
   link?: { label: string; url: string };
+  /** Screenshots shown in the "Hjálp" drawer under the hint text. */
+  images?: GuideImage[];
+  /** Text for the student to paste into an AI, shown in a box with a copy button. */
+  prompt?: string;
 };
+
+/** `src` is relative to public/, e.g. "guides/verk11/copilot-1-takn.png". */
+export type GuideImage = { src: string; alt: string; caption?: string };
 
 export const stepText = (step: Step): string => (typeof step === "string" ? step : step.text);
 
@@ -31,6 +38,10 @@ export type Project = {
   tools: string;
   ai: string;
   canvasId: number;
+  /** Spare project kept for teachers. Listed last and labelled "Banki" instead of a Verk number. */
+  bank?: boolean;
+  /** Picture under the introduction. */
+  introImage?: GuideImage;
   group?: boolean;
   overview?: { label: string; value: string }[];
   reflectionUrl?: string;
@@ -196,6 +207,63 @@ export const defaultProjects: Project[] = [
   },
   {
     number: 11,
+    title: "Frá plakati í vefsíðu",
+    intro: "Í gær bjóstu til plakat sem PDF eða PNG. En ef þú vilt auglýsa viðburðinn í SMS eða á Messenger er PDF vesen: fólk þarf að sækja skrána og þysja inn. Vefsíða opnast með einum smelli, passar á símaskjáinn og getur gert það sem pappír getur ekki, t.d. takka, kort og niðurtalningu. Þú þarft ekki að kunna að forrita. Copilot skrifar kóðann og þú stjórnar.",
+    introImage: { src: "guides/verk11/pdf-vs-vefur.png", alt: "Tveir símar. Vinstra megin SMS með PDF-viðhengi sem þarf að sækja og opna í öðru forriti. Hægra megin sama plakat sem vefsíða með stórum texta og tökkunum Ég mæti og Sýna á korti." },
+    tools: "Plakatið þitt úr Verk 10 sem PNG · Copilot í Outlook með skólareikningi · Notepad · Chrome eða Edge · Netlify í Hluta 3",
+    ai: "AI 2 — Copilot skrifar kóðann, þú stjórnar og prófar. Ekki setja kennitölu, símanúmer eða heimilisfang á síðuna, því hún getur orðið opin öllum á netinu.",
+    canvasId: 33166,
+    submission: "Í síðasta lagi þriðjudaginn 6. október kl. 23:59. Skilin eru opin viku lengur, til þriðjudagsins 13. október kl. 23:59.\n✔ Hluti 1: index.html + skjámynd af síðunni í símastærð.\n✔ Hluti 2: nýjasta index.html + setningin „Ég bætti við ___ og ___.“ í athugasemd.\n✔ Hluti 3: hlekkurinn á síðuna í athugasemd + skjámynd úr símanum.\nAllt í einni skilatilraun. Opnaðu index.html áður en þú skilar.",
+    levels: [
+      { key: "easy", label: "Grunnur", kicker: "Plakatið verður vefsíða", points: 6, task: "Láttu Copilot breyta plakatinu þínu í vefsíðu sem lítur vel út í síma.", steps: [
+        { text: "Finndu plakatið þitt úr Verk 10 sem PNG-mynd. Misstirðu af tímanum? Þá máttu finna mynd af plakati á netinu og nota hana.", hint: "Plakatið heitir líklega 10-plakat-nafn.png. Áttu bara SVG? Opnaðu hana í Inkscape og ýttu á Ctrl + Shift + E → Page → PNG → Export. Áttu bara PDF? Opnaðu hana og taktu skjámynd með Windows + Shift + S. Plakat af netinu: leitaðu t.d. að „tónleikaplakat“ og vistaðu myndina.", images: [
+          { src: "guides/verk11/daemi-plakat.png", alt: "Dæmi um plakat: SPILAKVÖLD, teningur, 16. október kl. 18, Salur 2.", caption: "Dæmi um plakat sem PNG-mynd." },
+        ] },
+        { text: "Opnaðu Copilot í Outlook með skólareikningnum og veldu Think deeper.", link: { label: "Opna Outlook (sama og Vefpóstur á tskoli.is)", url: "https://www.outlook.com/tskoli.is" }, hint: "Smelltu á Copilot-merkið vinstra megin. Smelltu svo á Auto efst hægra megin og veldu Think deeper. Þetta er eins og í Verk 8.", images: [
+          { src: "guides/verk11/copilot-1-takn.png", alt: "Outlook: Copilot-merkið vinstra megin, innan rauða ferningsins.", caption: "1. Smelltu á Copilot-merkið." },
+          { src: "guides/verk11/copilot-2-auto.jpg", alt: "Copilot: Auto-valmyndin efst hægra megin.", caption: "2. Smelltu á Auto." },
+          { src: "guides/verk11/copilot-3-think-deeper.jpg", alt: "Opna valmyndin: Think deeper fyrir neðan Quick response.", caption: "3. Veldu Think deeper." },
+          { src: "guides/verk11/copilot-4-tilbuid.jpg", alt: "Tilbúið: Think deeper sést efst og Message Copilot er reiturinn fyrir fyrirmæli.", caption: "4. Tilbúið. Hér skrifarðu til Copilot." },
+        ] },
+        { text: "Smelltu á + í Copilot-reitnum og hengdu plakatmyndina við.", hint: "Veldu að hlaða upp skrá úr tölvunni og finndu PNG-myndina. Bíddu þar til myndin sést í reitnum.", images: [
+          { src: "guides/verk11/copilot-5-vidhengi.png", alt: "Copilot: plúsinn neðst í reitnum til að hengja mynd við.", caption: "Smelltu á + og hladdu upp myndinni." },
+        ] },
+        { text: "Afritaðu textann, límdu hann í Copilot og ýttu á Enter.", prompt: "Ég hengdi við mynd af plakati. Búðu til vefsíðu úr því.\n- Sami texti, sömu litir og svipað útlit og á plakatinu.\n- Síðan á að líta vel út í síma og líka í tölvu.\n- Teiknaðu myndir og form með HTML og CSS eða notaðu emoji. Engar myndaskrár.\n- Allur texti á íslensku.\n- Settu allt í eina index.html skrá.\nSýndu mér svo í stuttum skrefum hvernig ég vista skrána og opna hana í vafra." },
+        { text: "Vistaðu kóðann sem index.html í nýrri möppu, t.d. plakat-vefur.", hint: "Smelltu á Copy efst á kóðanum. Opnaðu Notepad og límdu (Ctrl + V). Veldu File → Save as. Skráarheiti: index.html. Save as type: All files. Encoding: UTF-8.", images: [
+          { src: "guides/verk11/copilot-6-kodi.png", alt: "Svar frá Copilot með kóða. Copy-hnappurinn er efst á kóðanum.", caption: "1. Smelltu á Copy." },
+          { src: "guides/verk11/notepad-vista.png", alt: "Notepad: Save as með index.html, All files og UTF-8.", caption: "2. Vistaðu sem index.html með All files og UTF-8." },
+        ] },
+        { text: "Tvísmelltu á index.html til að opna hana í vafra. Skoðaðu hana í símastærð.", hint: "Ýttu á F12 og svo Ctrl + Shift + M. Veldu síma efst, t.d. iPhone. F12 lokar aftur. Er eitthvað skakkt? Segðu Copilot nákvæmlega hvað er að, t.d. „Fyrirsögnin fer út fyrir skjáinn í síma. Lagaðu það og sýndu mér alla skrána aftur.“", images: [
+          { src: "guides/verk11/simastaerd.png", alt: "Chrome með símasýn: tækjastikan opin og sími valinn efst.", caption: "F12 og svo Ctrl + Shift + M." },
+          { src: "guides/verk11/daemi-vefur-simi.png", alt: "Dæmi um útkomu: plakatið sem vefsíða í símastærð.", caption: "Dæmi um útkomu í símastærð." },
+        ] },
+        { text: "Lestu textann yfir. Eru dagsetning, tími og staður eins og á plakatinu?", hint: "AI getur breytt eða sleppt texta án þess að segja frá því. Þú berð ábyrgð á því sem stendur á síðunni." },
+        { text: "Taktu skjámynd af síðunni í símastærð og vistaðu hana.", hint: "Ýttu á Windows + Shift + S og veldu svæðið. Smelltu á myndina sem birtist neðst í horninu og vistaðu hana (Ctrl + S)." },
+      ], deliverable: "index.html og ein skjámynd af síðunni í símastærð." },
+      { key: "medium", label: "Viðbót", kicker: "Gerðu það sem pappír getur ekki", points: 2, task: "Bættu tveimur hlutum við síðuna sem plakat á pappír getur ekki gert.", steps: [
+        { text: "Veldu tvennt:", list: ["📍 Takki „Sýna á korti“ sem opnar staðinn í Google Maps", "⏳ Niðurtalning: „Hefst eftir 11 daga“", "🙋 Takki „Ég mæti!“ sem segir „Sjáumst!“", "✨ Hreyfing, t.d. fyrirsögnin rennur inn eða myndin snýst", "🔗 Takki „Deila“ sem opnar deilivalmyndina í símanum"] },
+        { text: "Biddu Copilot um eina breytingu í einu. Breyttu textanum í [hornklofunum].", prompt: "Bættu við takka sem segir „Sýna á korti“ og opnar [staðurinn] í Google Maps. Breyttu engu öðru. Sýndu mér alla index.html skrána aftur." },
+        { text: "Vistaðu yfir index.html, endurhladdu síðuna (F5) og prófaðu viðbótina. Gerðu svo seinni breytinguna eins.", hint: "Smelltu á Copy í Copilot. Í Notepad: Ctrl + A, Ctrl + V og Ctrl + S. Virkar eitthvað ekki? Skrifaðu t.d.: „Takkinn gerir ekkert þegar ég smelli. Lagaðu það og sýndu mér alla skrána aftur.“ Deila-takkinn virkar oft ekki fyrr en síðan er komin á netið í Hluta 3." },
+        "Skrifaðu eina setningu: „Ég bætti við ___ og ___.“",
+      ], deliverable: "Nýjasta index.html með tveimur viðbótum sem virka og ein setning í athugasemd." },
+      { key: "hard", label: "Viðbót", kicker: "Fáðu alvöru hlekk", points: 2, task: "Settu síðuna á netið og opnaðu hana í símanum þínum. Við mælum með Netlify. Ef þú kannt þegar á GitHub Pages, Vercel eða aðra leið máttu nota hana.", steps: [
+        { text: "Hafðu index.html eina í möppu, t.d. plakat-vefur.", hint: "Ef þú vistaðir hana í nýrri möppu í Hluta 1 er þetta komið. Skráin verður að heita nákvæmlega index.html." },
+        { text: "Opnaðu Netlify Drop og dragðu möppuna inn á síðuna.", link: { label: "Opna Netlify Drop", url: "https://app.netlify.com/drop" }, images: [
+          { src: "guides/verk11/netlify-1-drop.png", alt: "Netlify Drop: mappan dregin inn á svæðið.", caption: "Dragðu möppuna inn á svæðið." },
+        ], hint: "Opnaðu möppuna í File Explorer við hliðina á vafranum og dragðu hana yfir." },
+        { text: "Búðu til ókeypis aðgang með skólanetfanginu svo síðan verði opin öllum.", hint: "Án aðgangs er síðan læst með lykilorði og henni er eytt. Netlify á ekki að biðja um greiðslukort. Ef það gerist skaltu hætta og tala við kennara. Ertu þegar með aðgang að GitHub Pages, Vercel eða annarri hýsingu? Þá máttu nota hana í staðinn.", images: [
+          { src: "guides/verk11/netlify-2-claim.png", alt: "Netlify eftir upphal: hnappurinn til að vista síðuna.", caption: "Vistaðu síðuna með ókeypis aðgangi." },
+        ] },
+        { text: "Afritaðu hlekkinn á síðuna (t.d. …netlify.app), sendu þér hann og opnaðu í símanum.", hint: "Sendu þér tölvupóst úr Outlook með hlekknum eða skrifaðu hann inn í símann. Bættirðu við Deila-takka í Hluta 2? Prófaðu hann núna.", images: [
+          { src: "guides/verk11/netlify-3-hlekkur.png", alt: "Netlify: tilbúin síða og hlekkurinn sem endar á netlify.app.", caption: "Hlekkurinn á síðuna þína." },
+        ] },
+        "Taktu skjámynd í símanum þar sem síðan sést.",
+      ], deliverable: "Hlekkurinn í athugasemd og skjámynd úr símanum." },
+    ],
+  },
+  {
+    number: 101,
+    bank: true,
     title: "Vefveiðar og stafrænt öryggi",
     intro: "Greindu tilbúin svikaskilaboð án þess að opna grunsamlega hlekki og settu upp öruggt viðbragðsferli.",
     tools: "Sýnidæmin í Canvas · vafri án þess að opna grunsamlegar slóðir",

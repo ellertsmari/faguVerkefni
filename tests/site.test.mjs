@@ -22,7 +22,7 @@ test("static build contains the FAGU shell and its assets", async () => {
   const guides = await readdir(new URL("dist/guides/", root));
   assert.deepEqual(guides.sort(), [
     "canvas-menu.png", "canvas-settings.png", "canvas-upload.png",
-    "inna-menu.png", "inna-settings.png", "inna-upload.png",
+    "inna-menu.png", "inna-settings.png", "inna-upload.png", "verk11",
   ]);
 });
 
@@ -42,7 +42,7 @@ test("locks an embedded assignment to its requested project", async () => {
 test("keeps every project mapped to its Canvas assignment", async () => {
   const page = await read("src/project-board.tsx");
   const data = await read("src/project-data.ts");
-  const expected = [[5, 24135], [6, 27490], [7, 24134], [9, 24136], [10, 24137], [11, 24138], [12, 24139], [13, 24140], [14, 24142]];
+  const expected = [[5, 24135], [6, 27490], [7, 24134], [9, 24136], [10, 24137], [11, 33166], [12, 24139], [101, 24138], [13, 24140], [14, 24142]];
   for (const [number, canvasId] of expected) {
     assert.match(data, new RegExp(`number: ${number},[\\s\\S]*?canvasId: ${canvasId},`));
   }
@@ -54,7 +54,7 @@ test("keeps every project mapped to its Canvas assignment", async () => {
 test("every project has three levels worth 6 + 2 + 2 points, except Verk 7 which is one part graded by quality", async () => {
   const data = await read("src/project-data.ts");
   const projectBlocks = data.split(/\n {2}\{\n {4}number: /).slice(1);
-  assert.equal(projectBlocks.length, 9);
+  assert.equal(projectBlocks.length, 10);
   for (const block of projectBlocks) {
     const points = [...block.matchAll(/points: (\d+)/g)].map((m) => Number(m[1]));
     const keys = [...block.matchAll(/key: "(easy|medium|hard)"/g)].map((m) => m[1]);
@@ -98,6 +98,24 @@ test("Verk 7 lists the presentation, three deliverables and peer evaluation as r
   assert.match(verk7, /Engir skilahlekkir/);
   assert.match(verk7, /SUM af línusamtölum/);
   assert.match(verk7, /Rými B hefur engan glugga/);
+});
+
+test("Verk 11 turns the poster into a website, with screenshots in the help drawer", async () => {
+  const data = await read("src/project-data.ts");
+  const page = await read("src/project-board.tsx");
+  const verk11 = data.slice(data.indexOf("number: 11,"), data.indexOf("number: 101,"));
+  assert.match(verk11, /canvasId: 33166,/);
+  assert.match(verk11, /6\. október kl\. 23:59/);
+  assert.match(verk11, /13\. október kl\. 23:59/);
+  assert.match(verk11, /finna mynd af plakati á netinu/);
+  assert.match(verk11, /https:\/\/www\.outlook\.com\/tskoli\.is/);
+  assert.match(verk11, /prompt: "/);
+  assert.match(data, /number: 101,\n {4}bank: true,\n {4}title: "Vefveiðar og stafrænt öryggi"/);
+  for (const [, src] of verk11.matchAll(/src: "(guides\/verk11\/[^"]+)"/g)) {
+    await readFile(new URL(`public/${src}`, root));
+  }
+  assert.match(page, /className="copy-prompt"/);
+  assert.match(page, /images\?\.map/);
 });
 
 test("the page offers a light theme and applies it before the first paint", async () => {

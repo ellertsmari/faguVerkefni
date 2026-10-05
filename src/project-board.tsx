@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { defaultProjects, stepText, type Level } from "./project-data";
+import { defaultProjects, stepText, type GuideImage, type Level, type Project } from "./project-data";
 import PhotoGuide from "./photo-guide";
 
 const levelGlyph = { easy: "01", medium: "02", hard: "03" } as const;
@@ -22,6 +22,15 @@ function initialTheme(): Theme {
 }
 const canvasCourse = "https://canvas.tskoli.is/courses/1907/assignments/";
 const projects = defaultProjects;
+const pad = (number: number) => String(number).padStart(2, "0");
+const verkLabel = (project: Project) => (project.bank ? "BANKI" : `VERK ${pad(project.number)}`);
+
+function Figure({ image }: { image: GuideImage }) {
+  return <figure className="guide-figure">
+    <img src={`${import.meta.env.BASE_URL}${image.src}`} alt={image.alt} loading="lazy" />
+    {image.caption && <figcaption>{image.caption}</figcaption>}
+  </figure>;
+}
 
 type PersistedState = {
   selected?: number;
@@ -80,6 +89,7 @@ export default function ProjectBoard() {
   const [openLevel, setOpenLevel] = useState<Level["key"] | null>(initial.openLevel);
   const [checked, setChecked] = useState<Record<string, boolean>>(initial.checked);
   const [openHints, setOpenHints] = useState<Record<string, boolean>>({});
+  const [copied, setCopied] = useState<string | null>(null);
   const [theme, setTheme] = useState<Theme>(initialTheme);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -175,6 +185,15 @@ export default function ProjectBoard() {
     return `${done} / ${end - start}`;
   };
 
+  const copyPrompt = (key: string, text: string) => {
+    navigator.clipboard?.writeText(text).then(() => {
+      setCopied(key);
+      window.setTimeout(() => setCopied((current) => (current === key ? null : current)), 2000);
+    }, () => {
+      // Clipboard can be blocked inside the Canvas frame; the text is still selectable.
+    });
+  };
+
   const selectProject = (number: number) => {
     setSelected(number);
     setOpenLevel("easy");
@@ -185,7 +204,7 @@ export default function ProjectBoard() {
     <main className={`site-shell${embedded ? " embedded" : ""}${locked ? " locked" : ""}`}>
       <canvas ref={canvasRef} className="ambient" aria-hidden="true" />
       <header className="topbar">
-        <div className="brand"><span>FAGU</span><i /> {locked ? `VERK ${String(project.number).padStart(2, "0")}` : "STAFRÆNN VERKFÆRAKASSI"}</div>
+        <div className="brand"><span>FAGU</span><i /> {locked ? verkLabel(project) : "STAFRÆNN VERKFÆRAKASSI"}</div>
         <div className="topbar-right">
           <div className="status"><b>{doneCount}</b> / {totalCount} SKREF{single ? "" : ` · HLUTI ${activeLevelNumber}`}</div>
           <button type="button" className="theme-toggle" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label={theme === "dark" ? "Skipta í ljóst þema" : "Skipta í dökkt þema"} title={theme === "dark" ? "Ljóst þema" : "Dökkt þema"}>
@@ -199,7 +218,7 @@ export default function ProjectBoard() {
         <h1 id="page-title">Veldu hversu<br /><em>langt þú ferð.</em></h1>
         <p className="hero-copy">Byrjaðu á græna hlutanum. Bættu gulum og bláum við ef þú vilt meiri áskorun og fleiri stig.</p>
         <div className="rule-strip">
-          <span><b>1 DAGUR</b> Verk 5, 6 og 8–13</span>
+          <span><b>1 DAGUR</b> Verk 5, 6 og 8–14</span>
           <span><b>HÓPVERKEFNI</b> Verk 7 er ein heild, metin eftir gæðum</span>
           <span><b>6 + 2 + 2</b> Samtals 10 stig í hinum</span>
         </div>
@@ -207,23 +226,24 @@ export default function ProjectBoard() {
 
       {!locked && <nav className="project-nav" aria-label="Veldu verkefni">
         {projects.map((item) => (
-          <button key={item.number} className={item.number === selected ? "active" : ""} onClick={() => selectProject(item.number)} aria-current={item.number === selected ? "page" : undefined}>
-            <span>{String(item.number).padStart(2, "0")}</span>
+          <button key={item.number} className={`${item.number === selected ? "active" : ""}${item.bank ? " bank" : ""}`} onClick={() => selectProject(item.number)} aria-current={item.number === selected ? "page" : undefined}>
+            <span>{item.bank ? "BANKI" : pad(item.number)}</span>
             <b>{item.title}</b>
           </button>
         ))}
       </nav>}
 
       <article className={`project${project.overview ? " group-project" : ""}`} id="project" key={project.number}>
-        {locked && <p className="context-note">ÞÚ ERT Í VERK {project.number} · AÐEINS ÞETTA VERKEFNI ER SÝNT HÉR</p>}
+        {locked && <p className="context-note">ÞÚ ERT Í {project.bank ? "VERKEFNABANKA" : `VERK ${project.number}`} · AÐEINS ÞETTA VERKEFNI ER SÝNT HÉR</p>}
         <div className="project-heading">
-          <div className="project-index">VERK {String(project.number).padStart(2, "0")}</div>
+          <div className="project-index">{verkLabel(project)}</div>
           <div>
-            <p className="eyebrow">{project.group ? "HÓPVERKEFNI" : "EIN VINNULOTA"}</p>
+            <p className="eyebrow">{project.bank ? "VERKEFNABANKI · AUKAVERKEFNI FYRIR KENNARA" : project.group ? "HÓPVERKEFNI" : "EIN VINNULOTA"}</p>
             {locked ? <h1>{project.title}</h1> : <h2>{project.title}</h2>}
             <p>{project.intro}</p>
           </div>
         </div>
+        {project.introImage && <div className="intro-image"><Figure image={project.introImage} /></div>}
 
         {project.overview && <>
           <dl className="project-overview">{project.overview.map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
@@ -264,6 +284,8 @@ export default function ProjectBoard() {
                       const key = stepKey(level.key, index);
                       const detail = typeof step === "string" ? null : step;
                       const hint = detail?.hint;
+                      const images = detail?.images;
+                      const hasHelp = Boolean(hint || images?.length);
                       const hintOpen = Boolean(openHints[key]);
                       return (
                         <li key={key}>
@@ -273,11 +295,18 @@ export default function ProjectBoard() {
                               <input type="checkbox" checked={Boolean(checked[key])} onChange={(event) => setChecked((state) => ({ ...state, [key]: event.target.checked }))} />
                               <span>{stepText(step)}</span>
                             </label>
-                            {hint && <button type="button" className="hint-toggle" aria-expanded={hintOpen} aria-controls={`hint-${key}`} aria-label={hintOpen ? "Fela vísbendingu" : "Sýna vísbendingu"} onClick={() => setOpenHints((state) => ({ ...state, [key]: !hintOpen }))}>Hjálp</button>}
+                            {hasHelp && <button type="button" className="hint-toggle" aria-expanded={hintOpen} aria-controls={`hint-${key}`} aria-label={hintOpen ? "Fela vísbendingu" : "Sýna vísbendingu"} onClick={() => setOpenHints((state) => ({ ...state, [key]: !hintOpen }))}>Hjálp</button>}
                           </div>
                           {detail?.list && <ul className="step-list">{detail.list.map((item) => <li key={item}>{item}</li>)}</ul>}
                           {detail?.link && <a className="step-link" href={detail.link.url} target="_blank" rel="noreferrer">{detail.link.label} ↗</a>}
-                          {hint && <div className="hint" id={`hint-${key}`} hidden={!hintOpen}><p>{hint}</p></div>}
+                          {detail?.prompt && <div className="prompt-box">
+                            <pre>{detail.prompt}</pre>
+                            <button type="button" className="copy-prompt" onClick={() => copyPrompt(key, detail.prompt as string)}>{copied === key ? "Afritað ✓" : "Afrita texta"}</button>
+                          </div>}
+                          {hasHelp && <div className="hint" id={`hint-${key}`} hidden={!hintOpen}>
+                            {hint && <p>{hint}</p>}
+                            {images?.map((image) => <Figure image={image} key={image.src} />)}
+                          </div>}
                         </li>
                       );
                     })}
@@ -329,7 +358,7 @@ export default function ProjectBoard() {
               <p>Endurgjöf og einkunn birtast við verkefnið í Canvas. Ef skrá opnast ekki eða skil ganga ekki, látið kennara vita í tímanum eða í Canvas-innhólfinu.</p>
             </>}
           </div>
-          <a className="canvas-link" href={`${canvasCourse}${project.canvasId}`} target={embedded ? "_top" : "_self"} rel="noreferrer">SKILA VERK {project.number} Í CANVAS <span>↗</span></a>
+          <a className="canvas-link" href={`${canvasCourse}${project.canvasId}`} target={embedded ? "_top" : "_self"} rel="noreferrer">{project.bank ? "OPNA Í CANVAS" : <>SKILA VERK {project.number} Í CANVAS</>} <span>↗</span></a>
         </section>
       </article>
 

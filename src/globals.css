@@ -211,7 +211,7 @@ footer { max-width: 1160px; margin: 0 auto; min-height: 100px; display: flex; ju
 
 /* Step hints */
 .step-row { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 10px; }
-.hint-toggle { width: 28px; height: 28px; margin-top: 12px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--accent); font-family: "Courier New", monospace; font-weight: 700; cursor: pointer; transition: background .2s, color .2s; }
+.hint-toggle { width: auto; min-width: 28px; height: 28px; padding: 0 10px; border-radius: 14px !important; margin-top: 12px; display: grid; place-items: center; border: 1px solid var(--line); background: transparent; color: var(--accent); font-family: "Courier New", monospace; font-weight: 700; cursor: pointer; transition: background .2s, color .2s; }
 .hint-toggle:hover, .hint-toggle[aria-expanded="true"] { background: var(--accent); color: var(--on-yellow); }
 .hint { margin: -6px 0 14px 42px; padding: 12px 16px; border-left: 2px solid var(--accent); background: var(--soft); color: var(--muted); font-size: 14px; line-height: 1.55; }
 .hint p { margin: 0; }
@@ -272,6 +272,20 @@ footer { max-width: 1160px; margin: 0 auto; min-height: 100px; display: flex; ju
 .step-list li { border-top: 0; counter-increment: none; margin: 2px 0; }
 .step-link { display: inline-block; margin: -4px 0 14px 42px; color: var(--blue); font-size: 15px; }
 @media (max-width: 560px) { .step-list, .step-link { margin-left: 0; } }
+
+/* Text to paste into an AI, and screenshots inside the help drawer */
+.prompt-box { position: relative; margin: -4px 0 16px 42px; border: 1px solid var(--line); border-left: 3px solid var(--accent); background: var(--soft); }
+.prompt-box pre { margin: 0; padding: 14px 16px 54px; white-space: pre-wrap; font-family: "Courier New", monospace; font-size: 15px; line-height: 1.55; color: var(--paper); }
+.copy-prompt { position: absolute; right: 10px; bottom: 10px; min-height: 36px; padding: 6px 14px; border: 0; border-radius: 6px; background: var(--accent); color: var(--on-yellow); font-weight: 700; cursor: pointer; }
+.copy-prompt:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.guide-figure { margin: 14px 0 4px; }
+.guide-figure img { display: block; max-width: 100%; max-height: 520px; height: auto; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+.guide-figure figcaption { margin-top: 6px; color: var(--paper); font-size: 14px; }
+.intro-image { margin: 0 0 28px; }
+.intro-image .guide-figure img { max-height: 560px; margin: 0 auto; }
+.project-nav button.bank { color: var(--muted); font-style: italic; }
+.project-nav button.bank span { font-size: 10px; letter-spacing: .1em; }
+@media (max-width: 560px) { .prompt-box { margin-left: 0; } }
 .group-project .level-body label { color: var(--paper); font-size: 17px; line-height: 1.6; }
 .group-project .hint-toggle { width: auto; min-width: 54px; min-height: 44px; border-radius: 6px; padding: 6px; font-size: 14px; }
 .group-project .hint { font-size: 16px; line-height: 1.6; }
