@@ -219,22 +219,22 @@ export const defaultProjects: Project[] = [
         { text: "Finndu plakatið þitt úr Verk 10 sem PNG-mynd. Misstirðu af tímanum? Þá máttu finna mynd af plakati á netinu og nota hana.", hint: "Plakatið heitir líklega 10-plakat-nafn.png. Áttu bara SVG? Opnaðu hana í Inkscape og ýttu á Ctrl + Shift + E → Page → PNG → Export. Áttu bara PDF? Opnaðu hana og taktu skjámynd með Windows + Shift + S. Plakat af netinu: leitaðu t.d. að „tónleikaplakat“ og vistaðu myndina.", images: [
           { src: "guides/verk11/daemi-plakat.png", alt: "Dæmi um plakat: SPILAKVÖLD, teningur, 16. október kl. 18, Salur 2.", caption: "Dæmi um plakat sem PNG-mynd." },
         ] },
-        { text: "Opnaðu Copilot í Outlook með skólareikningnum og veldu Think deeper.", link: { label: "Opna Outlook (sama og Vefpóstur á tskoli.is)", url: "https://www.outlook.com/tskoli.is" }, hint: "Smelltu á Copilot-merkið vinstra megin. Smelltu svo á Auto efst hægra megin og veldu Think deeper. Þetta er eins og í Verk 8.", images: [
+        { text: "Opnaðu Copilot í Outlook með skólareikningnum og veldu Think deeper.", link: { label: "Opna Outlook (sama og Vefpóstur á tskoli.is)", url: "https://www.outlook.com/tskoli.is" }, hint: "Smelltu á Copilot-merkið vinstra megin. Smelltu svo á Auto efst hægra megin og veldu Think deeper. Þetta er eins og í Verk 8. Á íslensku heitir þetta Sjálfvirk stilling og Djúphugsun.", images: [
           { src: "guides/verk11/copilot-1-takn.png", alt: "Outlook: Copilot-merkið vinstra megin, innan rauða ferningsins.", caption: "1. Smelltu á Copilot-merkið." },
           { src: "guides/verk11/copilot-2-auto.jpg", alt: "Copilot: Auto-valmyndin efst hægra megin.", caption: "2. Smelltu á Auto." },
           { src: "guides/verk11/copilot-3-think-deeper.jpg", alt: "Opna valmyndin: Think deeper fyrir neðan Quick response.", caption: "3. Veldu Think deeper." },
           { src: "guides/verk11/copilot-4-tilbuid.jpg", alt: "Tilbúið: Think deeper sést efst og Message Copilot er reiturinn fyrir fyrirmæli.", caption: "4. Tilbúið. Hér skrifarðu til Copilot." },
         ] },
-        { text: "Smelltu á + í Copilot-reitnum og hengdu plakatmyndina við.", hint: "Veldu að hlaða upp skrá úr tölvunni og finndu PNG-myndina. Bíddu þar til myndin sést í reitnum.", images: [
-          { src: "guides/verk11/copilot-5-vidhengi.png", alt: "Copilot: plúsinn neðst í reitnum til að hengja mynd við.", caption: "Smelltu á + og hladdu upp myndinni." },
+        { text: "Smelltu á + í Copilot-reitnum og hengdu plakatmyndina við.", hint: "Veldu Upload images and files og finndu PNG-myndina. Bíddu þar til myndin sést í reitnum.", images: [
+          { src: "guides/verk11/copilot-5-vidhengi.png", alt: "Copilot: plúsinn neðst í reitnum er opinn og sýnir Add work content og Upload images and files.", caption: "Smelltu á + og veldu Upload images and files." },
         ] },
         { text: "Afritaðu textann, límdu hann í Copilot og ýttu á Enter.", prompt: "Ég hengdi við mynd af plakati. Búðu til vefsíðu úr því.\n- Sami texti, sömu litir og svipað útlit og á plakatinu.\n- Síðan á að líta vel út í síma og líka í tölvu.\n- Teiknaðu myndir og form með HTML og CSS eða notaðu emoji. Engar myndaskrár.\n- Allur texti á íslensku.\n- Settu allt í eina index.html skrá.\nSýndu mér svo í stuttum skrefum hvernig ég vista skrána og opna hana í vafra." },
-        { text: "Vistaðu kóðann sem index.html í nýrri möppu, t.d. plakat-vefur.", hint: "Smelltu á Copy efst á kóðanum. Opnaðu Notepad og límdu (Ctrl + V). Veldu File → Save as. Skráarheiti: index.html. Save as type: All files. Encoding: UTF-8.", images: [
-          { src: "guides/verk11/copilot-6-kodi.png", alt: "Svar frá Copilot með kóða. Copy-hnappurinn er efst á kóðanum.", caption: "1. Smelltu á Copy." },
-          { src: "guides/verk11/notepad-vista.png", alt: "Notepad: Save as með index.html, All files og UTF-8.", caption: "2. Vistaðu sem index.html með All files og UTF-8." },
+        { text: "Vistaðu kóðann sem index.html í nýrri möppu, t.d. plakat-vefur.", hint: "Smelltu á Copy code-táknið efst á kóðanum. Viðvörun um „Code preview“ skiptir ekki máli. Opnaðu Notepad og límdu (Ctrl + V). Veldu File → Save as. Skráarheiti: index.html. Save as type: All files. Encoding: UTF-8.", images: [
+          { src: "guides/verk11/copilot-6-kodi.png", alt: "Svar frá Copilot með kóða. Copy code-táknið er efst á kóðanum.", caption: "1. Smelltu á Copy code efst á kóðanum." },
+          { src: "guides/verk11/notepad-vista.png", alt: "Notepad: Save as með index.html, All files og UTF-8.", caption: "2. Vistaðu sem index.html með All files og UTF-8. Teiknað sýnidæmi." },
         ] },
         { text: "Tvísmelltu á index.html til að opna hana í vafra. Skoðaðu hana í símastærð.", hint: "Ýttu á F12 og svo Ctrl + Shift + M. Veldu síma efst, t.d. iPhone. F12 lokar aftur. Er eitthvað skakkt? Segðu Copilot nákvæmlega hvað er að, t.d. „Fyrirsögnin fer út fyrir skjáinn í síma. Lagaðu það og sýndu mér alla skrána aftur.“", images: [
-          { src: "guides/verk11/simastaerd.png", alt: "Chrome með símasýn: tækjastikan opin og sími valinn efst.", caption: "F12 og svo Ctrl + Shift + M." },
+          { src: "guides/verk11/simastaerd.png", alt: "Chrome með símasýn: listinn Dimensions opinn og sími valinn.", caption: "F12 og svo Ctrl + Shift + M. Veldu síma í Dimensions. Mynd: Kayce Basques og Sofia Emelianova, Chrome DevTools-leiðbeiningar, CC BY 4.0. Myndin er af Mac en virkar eins í Windows." },
           { src: "guides/verk11/daemi-vefur-simi.png", alt: "Dæmi um útkomu: plakatið sem vefsíða í símastærð.", caption: "Dæmi um útkomu í símastærð." },
         ] },
         { text: "Lestu textann yfir. Eru dagsetning, tími og staður eins og á plakatinu?", hint: "AI getur breytt eða sleppt texta án þess að segja frá því. Þú berð ábyrgð á því sem stendur á síðunni." },
@@ -252,10 +252,10 @@ export const defaultProjects: Project[] = [
           { src: "guides/verk11/netlify-1-drop.png", alt: "Netlify Drop: mappan dregin inn á svæðið.", caption: "Dragðu möppuna inn á svæðið." },
         ], hint: "Opnaðu möppuna í File Explorer við hliðina á vafranum og dragðu hana yfir." },
         { text: "Búðu til ókeypis aðgang með skólanetfanginu svo síðan verði opin öllum.", hint: "Án aðgangs er síðan læst með lykilorði og henni er eytt. Netlify á ekki að biðja um greiðslukort. Ef það gerist skaltu hætta og tala við kennara. Ertu þegar með aðgang að GitHub Pages, Vercel eða annarri hýsingu? Þá máttu nota hana í staðinn.", images: [
-          { src: "guides/verk11/netlify-2-claim.png", alt: "Netlify eftir upphal: hnappurinn til að vista síðuna.", caption: "Vistaðu síðuna með ókeypis aðgangi." },
+          { src: "guides/verk11/netlify-2-claim.png", alt: "Netlify eftir upphal: hlekkur á síðuna og hnappurinn Sign up for free.", caption: "Eldra útlit. Hnappurinn getur heitið Sign up for free eða Claim." },
         ] },
-        { text: "Afritaðu hlekkinn á síðuna (t.d. …netlify.app), sendu þér hann og opnaðu í símanum.", hint: "Sendu þér tölvupóst úr Outlook með hlekknum eða skrifaðu hann inn í símann. Bættirðu við Deila-takka í Hluta 2? Prófaðu hann núna.", images: [
-          { src: "guides/verk11/netlify-3-hlekkur.png", alt: "Netlify: tilbúin síða og hlekkurinn sem endar á netlify.app.", caption: "Hlekkurinn á síðuna þína." },
+        { text: "Afritaðu hlekkinn á síðuna (t.d. …netlify.app), sendu þér hann og opnaðu í símanum.", hint: "Sendu þér tölvupóst úr Outlook með hlekknum eða skrifaðu hann inn í símann. Biður síðan um innskráningu eða lykilorð? Þá er hún stillt á Private. Opnaðu Project configuration í Netlify, gerðu hana Public og prófaðu aftur. Spurðu kennara ef þú finnur það ekki. Bættirðu við Deila-takka í Hluta 2? Prófaðu hann núna.", images: [
+          { src: "guides/verk11/netlify-3-hlekkur.png", alt: "Netlify Project overview: hlekkurinn sem endar á netlify.app er afmarkaður.", caption: "Hlekkurinn á síðuna þína er undir heiti verkefnisins." },
         ] },
         "Taktu skjámynd í símanum þar sem síðan sést.",
       ], deliverable: "Hlekkurinn í athugasemd og skjámynd úr símanum." },

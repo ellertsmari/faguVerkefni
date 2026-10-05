@@ -46,9 +46,12 @@ the "Deploy to GitHub Pages" action runs the type check, lint and tests, then
 publishes. Allow a minute or two before reloading the site. Students on an
 already-open page see the change on their next page load.
 
-Verk 11 screenshots are in `public/guides/verk11/`. Files whose image says
-"SKJÁMYND VANTAR" are placeholders: replace the file with a real screenshot
-under the same name.
+Verk 11 screenshots are in `public/guides/verk11/`. The Copilot shots are
+real captures, cropped so no account details show. `notepad-vista.png` is a
+drawn example and is labelled as such. `simastaerd.png` comes from Google's
+Chrome DevTools docs (CC BY 4.0, credited in its caption). `netlify-2-claim.png`
+and `netlify-3-hlekkur.png` come from Netlify's own docs, and the claim
+screenshot shows an older layout, which its caption says.
 
 The profile-photo guide texts and screenshots are in `src/photo-guide.tsx` and
 `public/guides/`. Identifying details in the screenshots were permanently
