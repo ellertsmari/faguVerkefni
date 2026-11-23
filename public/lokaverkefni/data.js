@@ -1,6 +1,7 @@
 // Lokaverkefni · Heildarlausn fyrir íbúð 7. All text for the overview and the four day pages.
 // Edit the text here; lok.js draws the pages. Dates must agree with Canvas assignment 24144.
-// A step is { t, hint?, prompt?, in3? }. `in3` says who takes a "Tilboð og samskipti" step in a group of three.
+// A step is { t, hint?, prompt?, in3? }. `in3` says who takes a "Tilboð og samskipti" step in a group of three:
+// the fourth role is shared out evenly (teikn 4 steps, reikn 5, oryggi 4 over the four days).
 window.LOK = {
   canvas: "https://canvas.tskoli.is/courses/1907/assignments/24144",
   kynning: "https://canvas.tskoli.is/courses/1907/assignments/24145",
@@ -26,6 +27,12 @@ window.LOK = {
     ["Tilbod/", "Tilbod_v1, Tilbod_v2 og Svar_til_vidskiptavinar"],
     ["Afhending/", "Tilboðið sem PDF og AI_yfirlysing"],
   ],
+  // What each of the three takes over from "Tilboð og samskipti" in a group of three.
+  share3: {
+    teikn: "mappan, verðin í tilboðið og PDF-skjalið",
+    reikn: "setur tilboðið upp og uppfærir það",
+    oryggi: "forsendur og svarið til viðskiptavinar",
+  },
   journal: "[dagsetning] · [hlutverk]: Í dag gerði ég ___. Næst ætla ég að ___. AI: ég notaði Copilot í ___ og athugaði það með því að ___.",
   days: [
     {
@@ -46,7 +53,7 @@ window.LOK = {
             { t: "<strong>Mappa hópsins.</strong> Einn býr til möppu í OneDrive sem heitir <code>Ibud7_Hopur[númer]</code> og deilir henni með hinum. Búið til fimm undirmöppur: <code>Teikning</code>, <code>Verd</code>, <code>Heimildir</code>, <code>Tilbod</code> og <code>Afhending</code>.",
               hint: "OneDrive → <strong>Nýtt</strong> → <strong>Mappa</strong>. Til að deila: hægrismelltu á möppuna → <strong>Deila</strong> → skrifaðu skólanetföng hinna → veldu <strong>Getur breytt</strong>. Eigið þið möppu síðan í gær? Notið hana og bætið við því sem vantar." },
             { t: "<strong>Dagbókin.</strong> Búið til Word-skjal í möppunni sem heitir <code>Dagbok_Hopur[númer]</code>. Skrifið efst hver er með hvaða hlutverk.",
-              hint: "Hlutverkin eru fjögur: Teiknari, Reiknari, Öryggi og heimildir, Tilboð og samskipti. Eruð þið þrjú? Þá tekur Öryggi og heimildir líka tilboðið. Veldu hópstærð og hlutverk efst á síðunni, þá sérðu þín verk." },
+              hint: "Hlutverkin eru fjögur: Teiknari, Reiknari, Öryggi og heimildir, Tilboð og samskipti. Eruð þið þrjú? Þá skiptist fjórða hlutverkið, Tilboð og samskipti, jafnt á milli ykkar þriggja. Veldu hópstærð og hlutverk efst á síðunni, þá sérðu þín verk." },
             { t: "<strong>Lausnarlistinn.</strong> Búið til skjal í möppunni <code>Verd</code> sem heitir <code>Lausn_og_magn</code>. Ákveðið saman hvað á að gera í <strong>alrýminu</strong> og <strong>vinnuherberginu</strong>. Ein lína fyrir hvert atriði: <em>Rými · Hvað · Magn · Eining</em>.",
               hint: "Dæmi um línu (þið ákveðið ykkar eigin): <em>Vinnuherbergi · LED-loftljós · 2 · stk.</em> Einingin er stk., m eða m². Viðskiptavinurinn vill fjögur atriði: betri <strong>lýsingu</strong>, <strong>rafmagnsöryggi</strong>, <strong>geymslu</strong> og <strong>vinnuaðstöðu</strong>. Hafið að minnsta kosti eina línu fyrir hvert." },
             { t: "Teljið línurnar. Þær eiga að vera <strong>6 til 10</strong>. Sniðmátin fyrir verð og tilboð hafa pláss fyrir 10 línur." },
@@ -85,9 +92,9 @@ window.LOK = {
         {
           who: "tilbod", title: "Tilboð og samskipti", time: "um 45 mínútur",
           steps: [
-            { in3: "oryggi", t: "Sæktu <strong>Tilboðssniðmát</strong> (hlekkur neðst á síðunni). Vistaðu afrit í möppuna <code>Tilbod</code> sem <code>Tilbod_v1</code>.",
+            { in3: "reikn", t: "Sæktu <strong>Tilboðssniðmát</strong> (hlekkur neðst á síðunni). Vistaðu afrit í möppuna <code>Tilbod</code> sem <code>Tilbod_v1</code>.",
               hint: "Skjalið er Excel-skjal. Þú notar flipann <strong>Tilboð</strong>. Þið þurfið ekki flipann Tímaskrá." },
-            { in3: "oryggi", t: "Fylltu í bláu reitina efst: <em>Fyrirtæki</em> (nafn sem hópurinn velur), <em>Viðskiptavinur</em> (Eigandi íbúðar 7), <em>Verkstaður</em> (Íbúð 7) og <em>Dagsetning</em>." },
+            { in3: "reikn", t: "Fylltu í bláu reitina efst: <em>Fyrirtæki</em> (nafn sem hópurinn velur), <em>Viðskiptavinur</em> (Eigandi íbúðar 7), <em>Verkstaður</em> (Íbúð 7) og <em>Dagsetning</em>." },
             { in3: "oryggi", t: "Þegar lausnarlistinn er tilbúinn: skrifaðu línurnar í dálkana <em>Lýsing</em>, <em>Eining</em> og <em>Magn</em>. Engin verð ennþá." },
             { in3: "teikn", t: "<strong>Mappan:</strong> er hver skrá dagsins í réttri undirmöppu og með skýrt heiti? Lagaðu það sem er á röngum stað." },
           ],
@@ -156,7 +163,7 @@ window.LOK = {
           who: "tilbod", title: "Tilboð og samskipti", time: "um 60 mínútur",
           steps: [
             { in3: "teikn", t: "Opnaðu <code>Tilbod_v1</code>. Fáðu tölurnar hjá reiknaranum og skrifaðu <em>Einingarverð</em> í hverja línu." },
-            { in3: "teikn", t: "Skrifaðu <strong>vinnuna í krónum</strong> í dálkinn <em>Vinna</em>: vinnustundir × 9.000 kr.",
+            { in3: "reikn", t: "Skrifaðu <strong>vinnuna í krónum</strong> í dálkinn <em>Vinna</em>: vinnustundir × 9.000 kr.",
               hint: "Tímagjaldið í þessu verkefni er <strong>9.000 kr. á klukkustund án VSK</strong>. Dæmi: 4 vinnustundir × 9.000 = 36.000 kr. Græni reiturinn <em>Tilboð samtals</em> neðst reiknar efni, vinnu og VSK saman." },
             { in3: "oryggi", t: "Skrifaðu <strong>forsendur</strong> neðst í tilboðið: hvað er innifalið, hvað er ekki innifalið og tvö til þrjú atriði sem þarf að staðfesta við viðskiptavininn." },
             { in3: "teikn", t: "<strong>Mappan:</strong> er hver skrá í réttri undirmöppu og með skýrt heiti?" },
@@ -226,7 +233,7 @@ window.LOK = {
         {
           who: "tilbod", title: "Tilboð og samskipti", time: "um 30 mínútur",
           steps: [
-            { in3: "oryggi", t: "Breyttu <code>Tilbod_v2</code> með nýju tölunum frá reiknaranum. Er græni reiturinn <em>Tilboð samtals</em> innan nýja hámarksins?" },
+            { in3: "reikn", t: "Breyttu <code>Tilbod_v2</code> með nýju tölunum úr Kostnadur_v2. Er græni reiturinn <em>Tilboð samtals</em> innan nýja hámarksins?" },
             { in3: "oryggi", t: "Skrifaðu <strong>svar til viðskiptavinar</strong> efst í <code>Svar_til_vidskiptavinar</code>, þrjár til fimm setningar: þakkaðu fyrir skilaboðin, segðu hvað breytist, hvað helst, nýja heildarverðið og hvað gerist næst.",
               hint: "Skrifaðu kurteislega og skýrt, eins og í Verk 9. Engin slanguryrði og engar afsakanir. Viðskiptavinurinn á að skilja svarið án þess að opna önnur skjöl." },
           ],
@@ -243,7 +250,7 @@ window.LOK = {
     {
       n: 5, date: "2026-12-07", label: "mán. 7. des.", short: "Frágangur og skil",
       title: "Tilboð, frágangur og skil",
-      goal: "Í dag klárið þið og skilið. Á morgun, þriðjudaginn 8. desember, kynnið þið lausnina á þremur mínútum.",
+      goal: "Í dag klárið þið og skilið. Á morgun, þriðjudaginn 8. desember, kynnið þið lausnina. Hver hópur fær 10 mínútur.",
       done: [
         "Tilboðið er til sem PDF og opnast",
         "AI-yfirlýsing hópsins er skrifuð",
@@ -254,8 +261,8 @@ window.LOK = {
         {
           who: "tilbod", title: "Tilboð og samskipti", time: "um 25 mínútur",
           steps: [
-            { in3: "oryggi", t: "Opnaðu <code>Tilbod_v2</code>. Lestu hverja línu: stemma tölurnar við <code>Kostnadur_v2</code>? Eru forsendurnar neðst enn réttar?" },
-            { in3: "oryggi", t: "Vistaðu tilboðið sem PDF í möppuna <code>Afhending</code>: <code>Tilbod_Ibud7_Hopur[númer].pdf</code>.",
+            { in3: "reikn", t: "Opnaðu <code>Tilbod_v2</code>. Lestu hverja línu: stemma tölurnar við <code>Kostnadur_v2</code>? Eru forsendurnar neðst enn réttar?" },
+            { in3: "teikn", t: "Vistaðu tilboðið sem PDF í möppuna <code>Afhending</code>: <code>Tilbod_Ibud7_Hopur[númer].pdf</code>.",
               hint: "Í Excel: <strong>Skrá → Flytja út → Sækja sem PDF</strong> (eða Prenta → Vista sem PDF). Veldu bara flipann Tilboð." },
             { in3: "oryggi", t: "Opnaðu PDF-skjalið. Sést allt tilboðið á einni síðu? Er heildarverðið rétt?" },
           ],
@@ -292,7 +299,7 @@ window.LOK = {
             { t: "<strong>Búið til ZIP-skrá.</strong> Sækið alla möppuna úr OneDrive. Skráin á að heita <code>Ibud7_Hopur[númer].zip</code>.",
               hint: "Í OneDrive á vefnum: merktu við möppuna → <strong>Sækja</strong>. OneDrive býr sjálft til ZIP-skrá sem lendir í Downloads. Endurnefndu hana ef hún heitir annað." },
             { t: "<strong>Einn úr hópnum skilar í Canvas:</strong> ZIP-skránni og PDF-tilboðinu, í einni skilatilraun. Hinir horfa á og staðfesta að báðar skrárnar séu komnar inn." },
-            { t: "<strong>Kynningin á morgun:</strong> þið hafið þrjár mínútur. Ákveðið hver segir hvað: vandinn, lausnin, verðið og breytingin." },
+            { t: "<strong>Kynningin á morgun:</strong> hver hópur fær 10 mínútur, fyrir kynningu og spurningar. Ákveðið hver segir hvað: vandinn, lausnin, verðið og breytingin." },
           ],
         },
       ],

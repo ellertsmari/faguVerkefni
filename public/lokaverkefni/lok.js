@@ -11,7 +11,7 @@
   if (size === 3 && role === "tilbod") role = "oryggi";
   const params = new URLSearchParams(location.search);
   const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
-  const roleName = (k) => (k === "oryggi" && size === 3 ? "Öryggi, heimildir og tilboð" : L.roles[k].name);
+  const roleName = (k) => L.roles[k].name;
   const today = new Date().toISOString().slice(0, 10);
 
   function nav() {
@@ -43,7 +43,7 @@
       row2.append(b);
     });
     box.append(row1, row2);
-    if (size === 3) box.append(el("p", "note", "Í þriggja manna hópi tekur <strong>Öryggi og heimildir</strong> líka tilboðið. <strong>Teiknarinn</strong> hjálpar: sér um möppuna og slær verðin inn í tilboðið á degi 3."));
+    if (size === 3) box.append(el("p", "note", `Í þriggja manna hópi skiptist fjórða hlutverkið, <strong>Tilboð og samskipti</strong>, jafnt á milli ykkar. <strong>Teiknari:</strong> ${L.share3.teikn}. <strong>Reiknari:</strong> ${L.share3.reikn}. <strong>Öryggi og heimildir:</strong> ${L.share3.oryggi}.`));
     return box;
   }
 
@@ -70,7 +70,7 @@
   function journal() {
     const s = el("section", "journal");
     s.append(el("h2", "", "📓 Dagbókin: þrjár setningar í lok dags"));
-    s.append(el("p", "", "Hver og einn skrifar sína færslu í <code>Dagbok_Hopur[númer]</code>. Dagbókin er grunnurinn að einstaklingseinkunninni."));
+    s.append(el("p", "", "Hver og einn skrifar sína færslu í <code>Dagbok_Hopur[númer]</code>. Kennarar lesa dagbókina þegar þeir meta framlag þitt."));
     const q = el("blockquote", "", L.journal.replace(/^(\[.*?\]:)/, "<strong>$1</strong>"));
     const b = el("button", "copy", "Afrita"); b.type = "button";
     b.onclick = () => navigator.clipboard.writeText(L.journal).then(() => { b.textContent = "Afritað ✓"; setTimeout(() => (b.textContent = "Afrita"), 1500); });
@@ -146,7 +146,7 @@
       // steps that came from the tilboð section keep their own ids
       const byOrigin = s.steps.map((x) => ({ ...x, si: x.si ?? s.si }));
       const ol = el("ol", "steps");
-      byOrigin.forEach((x) => { const one = stepList(day, x.si, [x], "Tilboð"); ol.append(one.firstChild); });
+      byOrigin.forEach((x) => { const one = stepList(day, x.si, [x], "Úr tilboðshlutverkinu"); ol.append(one.firstChild); });
       b.append(ol);
       return b;
     };
@@ -195,7 +195,7 @@
     const grid = el("div", "daygrid");
     grid.append(el("div", "daycard past", "<b>Dagur 1</b><span>mán. 23. nóv.</span><strong>Verkbeiðni og verkáætlun</strong><em>Búið: Lokaverkefni A</em>"));
     L.days.forEach((d) => { const a = el("a", "daycard" + (d.date === today ? " today" : ""), `<b>Dagur ${d.n}</b><span>${d.label}</span><strong>${d.short}</strong><em>${d.date === today ? "Í dag: opna síðuna →" : "Opna síðuna →"}</em>`); a.href = `dagur${d.n}.html`; grid.append(a); });
-    const k = el("a", "daycard", "<b>Kynning</b><span>þri. 8. des.</span><strong>Þriggja mínútna afhending</strong><em>Lokaverkefni C í Canvas →</em>"); k.href = L.kynning; k.target = "_blank"; k.rel = "noopener"; grid.append(k);
+    const k = el("a", "daycard", "<b>Kynning</b><span>þri. 8. des.</span><strong>10 mínútur á hóp</strong><em>Lokaverkefni C í Canvas →</em>"); k.href = L.kynning; k.target = "_blank"; k.rel = "noopener"; grid.append(k);
     days.append(grid); root.append(days);
 
     root.append(picker(() => overview(root)));
@@ -204,7 +204,7 @@
     const t = el("table"); t.innerHTML = "<thead><tr><th>Hlutverk</th><th>Ber ábyrgð á</th></tr></thead>";
     const tb = el("tbody");
     Object.keys(L.roles).filter((r) => size === 4 || r !== "tilbod").forEach((r) => {
-      const does = size === 3 && r === "oryggi" ? `${L.roles.oryggi.does}. Líka: tilboðið og svarið til viðskiptavinar` : size === 3 && r === "teikn" ? `${L.roles.teikn.does}. Líka: mappan` : L.roles[r].does;
+      const does = size === 3 ? `${L.roles[r].does}. Úr tilboðshlutverkinu: ${L.share3[r]}` : L.roles[r].does;
       tb.append(el("tr", r === role ? "mine" : "", `<td>${L.roles[r].icon} <strong>${roleName(r)}</strong></td><td>${does}</td>`));
     });
     t.append(tb); roles.append(t); root.append(roles);
