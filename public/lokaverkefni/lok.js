@@ -6,10 +6,12 @@
     get(k, d) { try { const v = localStorage.getItem("lok-" + k); return v === null ? d : v; } catch { return d; } },
     set(k, v) { try { localStorage.setItem("lok-" + k, v); } catch { /* private window */ } },
   };
+  const params = new URLSearchParams(location.search);
   let size = store.get("size", "4") === "3" ? 3 : 4;
   let role = store.get("role", "");
   if (size === 3 && role === "tilbod") role = "oryggi";
-  const params = new URLSearchParams(location.search);
+  if (L.roles[params.get("hlutverk")]) role = params.get("hlutverk");
+  if (params.get("hopur") === "3" || params.get("hopur") === "4") size = Number(params.get("hopur"));
   const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
   const roleName = (k) => L.roles[k].name;
   const today = new Date().toISOString().slice(0, 10);
@@ -108,78 +110,137 @@
   }
   let count = () => {};
 
+  // A day is a short guided sequence: video, group, the day's work, journal, and everything else last.
+  // One stage is on screen at a time, and the stepper lets you jump to any of them.
   function dayPage(root, day) {
-    root.innerHTML = "";
     const idx = L.days.indexOf(day);
-    const hero = el("header", "hero");
-    hero.append(el("p", "kicker", `LOKAVERKEFNI · DAGUR ${day.n} AF 5 · ${day.label.toUpperCase()}`), el("h1", "", day.title), el("p", "goal", day.goal));
-    root.append(nav(), hero, video(`dagur${day.n}`, `Myndband: dagur ${day.n}`));
-
-    if (day.message) {
-      const open = Date.now() >= Date.parse(day.message.opens) || params.get("syna") === "1";
-      root.append(el("section", "message" + (open ? "" : " locked"), open
-        ? `<h2>🚨 Ný skilaboð frá viðskiptavini</h2><blockquote>${day.message.text}</blockquote>`
-        : `<h2>🔒 Ný skilaboð frá viðskiptavini</h2><p>${day.message.locked}</p>`));
-    }
-    root.append(brief(day.n === 2), picker(() => dayPage(root, day)));
-
-    const done = el("section", "done-box");
-    done.append(el("h2", "", "✅ Í lok dags er hópurinn búinn með"));
-    const ul = el("ul"); day.done.forEach((d) => ul.append(el("li", "", d))); done.append(ul);
-    root.append(done);
-
     // In a group of three the tilboð steps move to the role named in `in3`.
-    const secs = day.sections.map((sec, si) => ({ sec, si, steps: sec.steps.map((step, i) => ({ step, i })) }));
+    const secs = day.sections.map((sec, si) => ({ sec, si, steps: sec.steps.map((step, i) => ({ step, i, si })) }));
     if (size === 3) {
       const t = secs.find((s) => s.sec.who === "tilbod");
-      if (t) t.steps.forEach((x) => { const to = secs.find((s) => s.sec.who === (x.step.in3 || "oryggi")); to.steps.push({ ...x, si: t.si, extra: true }); });
+      if (t) t.steps.forEach((x) => secs.find((s) => s.sec.who === (x.step.in3 || "oryggi")).steps.push({ ...x, extra: true }));
     }
     const shown = secs.filter((s) => !(size === 3 && s.sec.who === "tilbod"));
-    const isRole = (s) => L.roles[s.sec.who];
-    const mine = shown.filter((s) => isRole(s) && s.sec.who === role);
+    const isRole = (s) => Boolean(L.roles[s.sec.who]);
+    const mine = shown.find((s) => isRole(s) && s.sec.who === role);
     const others = shown.filter((s) => isRole(s) && s.sec.who !== role);
+    const lok = shown.find((s) => s.sec.who === "lok");
+    const ids = (s) => (s ? s.steps.map((x) => `d${day.n}-${x.si}-${x.i}`) : []);
+    const ticked = (list) => list.filter((id) => store.get(id, "") === "1").length;
+    const list = (s) => { const ol = el("ol", "steps"); s.steps.forEach((x) => ol.append(stepList(day, x.si, [x], "Úr tilboðshlutverkinu").firstChild)); return ol; };
 
-    const block = (s, cls) => {
-      const b = el("section", "sec " + cls), who = s.sec.who;
-      const title = L.roles[who] ? `${L.roles[who].icon} ${roleName(who)}` : s.sec.title;
-      b.append(el("h2", "", `${title} <span class="time">${s.sec.time}</span>`));
-      // steps that came from the tilboð section keep their own ids
-      const byOrigin = s.steps.map((x) => ({ ...x, si: x.si ?? s.si }));
-      const ol = el("ol", "steps");
-      byOrigin.forEach((x) => { const one = stepList(day, x.si, [x], "Úr tilboðshlutverkinu"); ol.append(one.firstChild); });
-      b.append(ol);
-      return b;
-    };
-    let roleDone = false;
+    const stages = [{ key: "video", label: "Myndband", title: "Horfðu á myndband dagsins", ids: [] }, { key: "hopur", label: "Hópurinn", title: "Hópurinn þinn og hlutverkið þitt", ids: [] }];
+    let roleStage = false;
     shown.forEach((s) => {
-      if (!isRole(s)) { root.append(block(s, "together")); return; }
-      if (roleDone) return;
-      roleDone = true;
-      if (!role) {
-        root.append(el("p", "choose", "👆 Veldu hlutverkið þitt efst á síðunni. Þá sérðu þín verk fyrst."));
-        others.forEach((o) => root.append(block(o, "role")));
-      } else {
-        mine.forEach((m) => { const b = block(m, "role mine"); b.prepend(el("p", "kicker", "ÞITT HLUTVERK Í DAG")); root.append(b); });
-        const d = el("details", "others"); d.append(el("summary", "", "Hvað gera hinir í hópnum í dag?"));
-        others.forEach((o) => d.append(block(o, "role"))); root.append(d);
-      }
+      if (s.sec.who === "lok") return;
+      if (!isRole(s)) stages.push({ key: "saman", label: "Saman", title: s.sec.title, time: s.sec.time, sec: s, ids: ids(s) });
+      else if (!roleStage) { roleStage = true; stages.push({ key: "mitt", label: "Þitt hlutverk", title: mine ? `${L.roles[role].icon} ${roleName(role)}` : "Þitt hlutverk", time: mine?.sec.time, ids: ids(mine) }); }
     });
+    stages.push({ key: "dagbok", label: "Dagbók", title: lok ? lok.sec.title : "Áður en þið farið", time: lok?.sec.time, ids: ids(lok) });
+    stages.push({ key: "meira", label: "Meira", title: "Allt hitt", ids: [] });
 
-    root.append(journal());
-    root.append(el("section", "stuck", "<h2>Föst eða fastur?</h2><p>1. Lestu <strong>Hjálp</strong> undir skrefinu. 2. Spurðu hópinn. 3. Réttu upp hönd.</p><p>Vantar einhvern í hópinn í dag? Hópurinn heldur áfram. Skiptið verkum þess sem vantar á milli ykkar.</p>"));
-    root.append(links());
-    const foot = el("nav", "prevnext");
-    const prev = L.days[idx - 1], next = L.days[idx + 1];
-    foot.innerHTML = (prev ? `<a href="dagur${prev.n}.html">← Dagur ${prev.n}</a>` : `<a href="./">← Yfirlit</a>`) + (next ? `<a href="dagur${next.n}.html">Dagur ${next.n} →</a>` : `<a href="${L.kynning}" target="_blank" rel="noopener">Kynningin 8. des. →</a>`);
-    root.append(foot);
+    const stageKey = `d${day.n}-stage`;
+    // ?skref=3 opens a given stage (for the teacher's projector); ?hlutverk= and ?hopur= preset the group.
+    let at = Math.min(Math.max((parseInt(params.get("skref") ?? "", 10) - 1) || parseInt(store.get(stageKey, "0"), 10) || 0, 0), stages.length - 1);
+    const isDone = (st, i) => (st.ids.length ? ticked(st.ids) === st.ids.length : st.key === "hopur" ? Boolean(role) : st.key === "video" ? at > i : false);
+    const go = (i, focus = true) => { at = i; store.set(stageKey, String(i)); draw(); if (focus) { window.scrollTo(0, 0); root.querySelector(".stage h2")?.focus(); } };
 
-    const bar = el("div", "progress"); bar.setAttribute("role", "status"); document.querySelector(".progress")?.remove(); document.body.append(bar);
-    count = () => {
-      const all = root.querySelectorAll(".sec.together input, .sec.mine input"), n = [...all].filter((c) => c.checked).length;
-      bar.textContent = role ? `Dagur ${day.n}: ${n} af ${all.length} skrefum hjá þér` : `Dagur ${day.n}: veldu hlutverk til að sjá þín skref`;
-      bar.classList.toggle("all", all.length > 0 && n === all.length);
-    };
-    count();
+    function briefDialog() {
+      let dlg = document.getElementById("brief-dialog");
+      if (!dlg) {
+        dlg = el("dialog"); dlg.id = "brief-dialog";
+        const x = el("button", "close", "Loka ✕"); x.type = "button"; x.onclick = () => dlg.close();
+        const b = brief(true); b.querySelector("summary").remove();
+        dlg.append(el("h2", "", "🏠 Verkbeiðnin og grunnmyndin"), b.querySelector(".brief-body"), x);
+        dlg.onclick = (e) => { if (e.target === dlg) dlg.close(); };
+        document.body.append(dlg);
+      }
+      dlg.showModal();
+    }
+
+    function body(st) {
+      const f = document.createDocumentFragment();
+      if (st.key === "video") {
+        f.append(el("p", "lead", day.goal));
+        const v = video(`dagur${day.n}`, `Myndband: dagur ${day.n}`); v.querySelector("h2").remove(); f.append(v);
+      } else if (st.key === "hopur") {
+        f.append(el("p", "lead", "Veldu hvað þið eruð mörg og hvaða hlutverk þú ert með. Þá sérðu bara þín verk."));
+        const pk = picker(() => draw()); pk.querySelector("h2").remove(); pk.className = "picker bare"; f.append(pk);
+        f.append(el("p", "small", "Ertu ekki komin(n) með hlutverk? Ákveðið það saman núna. Valið er bara vistað í þessum vafra."));
+      } else if (st.key === "saman") {
+        f.append(el("p", "lead", "Þetta gerið þið öll saman."));
+        if (day.message) {
+          const open = Date.now() >= Date.parse(day.message.opens) || params.get("syna") === "1";
+          f.append(el("div", "message" + (open ? "" : " locked"), open
+            ? `<h3>🚨 Ný skilaboð frá viðskiptavini</h3><blockquote>${day.message.text}</blockquote>`
+            : `<h3>🔒 Ný skilaboð frá viðskiptavini</h3><p>${day.message.locked}</p>`));
+        }
+        f.append(list(st.sec));
+      } else if (st.key === "mitt") {
+        if (!mine) {
+          f.append(el("p", "lead", "Veldu fyrst hlutverkið þitt. Þá birtast verkin þín hér."));
+          const b = el("button", "next", "Velja hlutverk"); b.type = "button"; b.onclick = () => go(1); f.append(b);
+        } else {
+          f.append(el("p", "lead", "Þetta eru þín verk í dag. Hjálpaðu hinum þegar þú ert búin(n)."), list(mine));
+        }
+      } else if (st.key === "dagbok") {
+        if (lok) f.append(list(lok));
+        const j = journal(); j.className = "journal bare"; f.append(j);
+        const d = el("div", "done-box"); d.append(el("h3", "", "✅ Í lok dags er hópurinn búinn með"));
+        const ul = el("ul"); day.done.forEach((x) => ul.append(el("li", "", x))); d.append(ul); f.append(d);
+      } else {
+        f.append(el("p", "lead", "Hér er allt sem þú gætir þurft að fletta upp."));
+        f.append(brief(false));
+        if (others.length) {
+          const d = el("details", "brief"); d.append(el("summary", "", "👥 Hvað gera hinir í hópnum í dag?"));
+          others.forEach((o) => { const w = el("div", "other"); w.append(el("h3", "", `${L.roles[o.sec.who].icon} ${roleName(o.sec.who)}`), list(o)); d.append(w); });
+          f.append(d);
+        }
+        const h = el("details", "brief"); h.append(el("summary", "", "🙋 Föst eða fastur?"), el("div", "brief-body", "<p>1. Lestu <strong>Hjálp</strong> undir skrefinu. 2. Spurðu hópinn. 3. Réttu upp hönd.</p><p>Vantar einhvern í hópinn í dag? Hópurinn heldur áfram. Skiptið verkum þess sem vantar á milli ykkar.</p>"));
+        f.append(h, el("h3", "", "Aðrir dagar"), nav());
+      }
+      return f;
+    }
+
+    function draw() {
+      root.innerHTML = "";
+      const top = el("header", "top");
+      top.append(el("p", "kicker", `<a href="./">← Yfirlit</a> · DAGUR ${day.n} AF 5 · ${day.label.toUpperCase()}`), el("h1", "", day.title));
+      const stepper = el("ol", "stepper"); stepper.setAttribute("aria-label", "Skref dagsins");
+      stages.forEach((st, i) => {
+        const done = i !== at && isDone(st, i);
+        const b = el("button", (i === at ? "on " : "") + (done ? "done" : ""), `<i>${done ? "✓" : i + 1}</i><span>${st.label}</span>`); b.type = "button";
+        if (i === at) b.setAttribute("aria-current", "step");
+        b.onclick = () => go(i);
+        const li = el("li"); li.append(b); stepper.append(li);
+      });
+      const st = stages[at], card = el("section", "stage");
+      const h = el("h2", "", st.title); h.tabIndex = -1;
+      card.append(el("p", "count", `Skref ${at + 1} af ${stages.length}`), h, body(st));
+      const foot = el("div", "stage-nav");
+      if (at > 0) { const b = el("button", "back", "← Til baka"); b.type = "button"; b.onclick = () => go(at - 1); foot.append(b); } else foot.append(el("span"));
+      if (at < stages.length - 1) {
+        const b = el("button", "next", `Áfram: ${stages[at + 1].label} →`); b.type = "button";
+        if (st.key === "hopur" && !role) { b.disabled = true; b.textContent = "Veldu hlutverk fyrst"; }
+        b.onclick = () => go(at + 1); foot.append(b);
+      } else {
+        const next = L.days[idx + 1];
+        foot.append(el("span", "", next ? `<a class="next" href="dagur${next.n}.html">Dagur ${next.n} →</a>` : `<a class="next" href="${L.kynning}" target="_blank" rel="noopener">Kynningin 8. des. →</a>`));
+      }
+      card.append(foot);
+      const quick = el("footer", "quick");
+      const bb = el("button", "", "🏠 Verkbeiðni og grunnmynd"); bb.type = "button"; bb.onclick = briefDialog;
+      quick.append(bb, el("span", "", `<a href="${L.files.kostnadur}" target="_blank" rel="noopener">📊 Kostnaðaráætlun</a><a href="${L.files.tilbod}" target="_blank" rel="noopener">📄 Tilboðssniðmát</a><a href="${L.canvas}" target="_blank" rel="noopener">Canvas: matskvarði og skil</a>`));
+      root.append(top, stepper, card, quick);
+      count = () => {
+        const n = ticked(st.ids), c = card.querySelector(".count");
+        c.textContent = `Skref ${at + 1} af ${stages.length}` + (st.time ? ` · ${st.time}` : "") + (st.ids.length ? ` · ${n} af ${st.ids.length} búin` : "");
+        c.classList.toggle("all", st.ids.length > 0 && n === st.ids.length);
+      };
+      count();
+    }
+    document.querySelector(".progress")?.remove();
+    draw();
   }
 
   // ---- overview

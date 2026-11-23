@@ -49,11 +49,11 @@ window.LOK = {
         {
           who: "allir", title: "Byrjið saman", time: "um 30 mínútur",
           steps: [
-            { t: "Setjist saman. Lesið <strong>verkbeiðnina</strong> og skoðið <strong>grunnmyndina</strong>. Hvort tveggja er efst á þessari síðu." },
+            { t: "Setjist saman. Lesið <strong>verkbeiðnina</strong> og skoðið <strong>grunnmyndina</strong>. Ýttu á <strong>Verkbeiðni og grunnmynd</strong> neðst á síðunni." },
             { t: "<strong>Mappa hópsins.</strong> Einn býr til möppu í OneDrive sem heitir <code>Ibud7_Hopur[númer]</code> og deilir henni með hinum. Búið til fimm undirmöppur: <code>Teikning</code>, <code>Verd</code>, <code>Heimildir</code>, <code>Tilbod</code> og <code>Afhending</code>.",
               hint: "OneDrive → <strong>Nýtt</strong> → <strong>Mappa</strong>. Til að deila: hægrismelltu á möppuna → <strong>Deila</strong> → skrifaðu skólanetföng hinna → veldu <strong>Getur breytt</strong>. Eigið þið möppu síðan í gær? Notið hana og bætið við því sem vantar." },
             { t: "<strong>Dagbókin.</strong> Búið til Word-skjal í möppunni sem heitir <code>Dagbok_Hopur[númer]</code>. Skrifið efst hver er með hvaða hlutverk.",
-              hint: "Hlutverkin eru fjögur: Teiknari, Reiknari, Öryggi og heimildir, Tilboð og samskipti. Eruð þið þrjú? Þá skiptist fjórða hlutverkið, Tilboð og samskipti, jafnt á milli ykkar þriggja. Veldu hópstærð og hlutverk efst á síðunni, þá sérðu þín verk." },
+              hint: "Hlutverkin eru fjögur: Teiknari, Reiknari, Öryggi og heimildir, Tilboð og samskipti. Eruð þið þrjú? Þá skiptist fjórða hlutverkið, Tilboð og samskipti, jafnt á milli ykkar þriggja. Veldu hópstærð og hlutverk í skrefi 2 á þessari síðu, þá sérðu þín verk." },
             { t: "<strong>Lausnarlistinn.</strong> Búið til skjal í möppunni <code>Verd</code> sem heitir <code>Lausn_og_magn</code>. Ákveðið saman hvað á að gera í <strong>alrýminu</strong> og <strong>vinnuherberginu</strong>. Ein lína fyrir hvert atriði: <em>Rými · Hvað · Magn · Eining</em>.",
               hint: "Dæmi um línu (þið ákveðið ykkar eigin): <em>Vinnuherbergi · LED-loftljós · 2 · stk.</em> Einingin er stk., m eða m². Viðskiptavinurinn vill fjögur atriði: betri <strong>lýsingu</strong>, <strong>rafmagnsöryggi</strong>, <strong>geymslu</strong> og <strong>vinnuaðstöðu</strong>. Hafið að minnsta kosti eina línu fyrir hvert." },
             { t: "Teljið línurnar. Þær eiga að vera <strong>6 til 10</strong>. Sniðmátin fyrir verð og tilboð hafa pláss fyrir 10 línur." },
