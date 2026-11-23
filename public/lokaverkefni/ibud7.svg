@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 800" role="img" aria-labelledby="t d">
+<title id="t">Grunnmynd íbúðar 7 með málum</title>
+<desc id="d">Íbúðin er 10 metrar á lengd og 6,5 metrar á breidd, alls 65 fermetrar. Hægra megin er alrými, 4 sinnum 6,5 metrar. Vinstra megin eru svefnherbergi efst, 6 sinnum 3,7 metrar, og vinnuherbergi neðst, 6 sinnum 2,8 metrar.</desc>
+<rect width="1180" height="800" fill="#ffffff"/>
+<g fill="#eaf3fb"><rect x="690" y="90" width="400" height="650"/><rect x="90" y="460" width="600" height="280"/></g>
+<rect x="90" y="90" width="600" height="370" fill="#f1f3f5"/>
+<g stroke="#1f2937" stroke-width="12" fill="none" stroke-linecap="square">
+<rect x="90" y="90" width="1000" height="650"/>
+<path d="M690 90v290M690 500v240M90 460h390"/>
+</g>
+<g stroke="#2563eb" stroke-width="4" fill="none"><path d="M690 380h-90a90 90 0 0 0 90 90"/><path d="M480 460v-90a90 90 0 0 0-90 90"/></g>
+<g font-family="Arial,Helvetica,sans-serif" fill="#111827" text-anchor="middle">
+<text x="890" y="390" font-size="38" font-weight="bold">Alrými</text>
+<text x="890" y="435" font-size="28">4,0 × 6,5 m · 26 m²</text>
+<text x="330" y="600" font-size="38" font-weight="bold">Vinnuherbergi</text>
+<text x="330" y="645" font-size="28">6,0 × 2,8 m · 16,8 m²</text>
+<text x="330" y="240" font-size="32" font-weight="bold" fill="#4b5563">Svefnherbergi</text>
+<text x="330" y="282" font-size="26" fill="#4b5563">6,0 × 3,7 m · ekki hluti af verkinu</text>
+</g>
+<g stroke="#b45309" stroke-width="3" fill="none"><path d="M90 50h1000M90 38v24M1090 38v24M690 38v24M1140 90v650M1128 90h24M1128 740h24M40 90v650M28 90h24M28 460h24M28 740h24"/></g>
+<g font-family="Arial,Helvetica,sans-serif" fill="#b45309" font-size="26" font-weight="bold" text-anchor="middle">
+<text x="390" y="34">6,0 m</text><text x="890" y="34">4,0 m</text>
+<text transform="translate(1156 415) rotate(90)">6,5 m</text>
+<text transform="translate(26 275) rotate(-90)">3,7 m</text><text transform="translate(26 600) rotate(-90)">2,8 m</text>
+</g>
+<text x="590" y="785" font-family="Arial,Helvetica,sans-serif" font-size="22" fill="#4b5563" text-anchor="middle">Íbúð 7 · 10,0 × 6,5 m · 65 m² · lofthæð 2,5 m · æfingagögn, ekki byggingarteikning</text>
+</svg>

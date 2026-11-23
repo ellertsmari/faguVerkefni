@@ -126,3 +126,19 @@ test("the page offers a light theme and applies it before the first paint", asyn
   assert.match(html, /localStorage\.getItem\("fagu-theme"\)/);
   assert.match(page, /className="theme-toggle"/);
 });
+
+test("lokaverkefni has an overview and one page per remaining day, with the Canvas dates", async () => {
+  const data = await read("public/lokaverkefni/data.js");
+  for (const [n, date] of [[2, "2026-11-24"], [3, "2026-11-30"], [4, "2026-12-01"], [5, "2026-12-07"]]) {
+    assert.match(data, new RegExp(`n: ${n}, date: "${date}"`));
+    const html = await read(`dist/lokaverkefni/dagur${n}.html`);
+    assert.match(html, new RegExp(`window\\.DAGUR = ${n};`));
+    await readFile(new URL(`dist/lokaverkefni/video/dagur${n}.mp4`, root));
+  }
+  await read("dist/lokaverkefni/index.html");
+  await readFile(new URL("dist/lokaverkefni/video/yfirlit.mp4", root));
+  // The customer's change is a surprise: the new budget is only in the day 4 message, which opens with the class.
+  assert.equal((data.match(/1\.350\.000/g) ?? []).length, 1);
+  assert.match(data, /opens: "2026-12-01T10:25:00Z"/);
+  assert.match(data, /canvas: "https:\/\/canvas\.tskoli\.is\/courses\/1907\/assignments\/24144"/);
+});

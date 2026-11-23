@@ -122,6 +122,30 @@ The group screenshot is an existing Canvas course file and is embedded only
 inside the Canvas assignment. Never copy student names, group screenshots,
 or assessment responses into this public repository or its assets.
 
+## Lokaverkefni: one page per day
+
+The final group project (Canvas assignment 24144, "Heildarlausn fyrir íbúð 7") has its own
+static pages under `public/lokaverkefni/`, outside the React board:
+
+```
+https://ellertsmari.github.io/faguVerkefni/lokaverkefni/             overview
+https://ellertsmari.github.io/faguVerkefni/lokaverkefni/dagur2.html  … dagur5.html
+```
+
+All text is in `public/lokaverkefni/data.js`; `lok.js` draws the pages and `lok.css` styles them.
+Each day has a goal, an "end of day" list, a section the group does together and one section per
+role. A student picks the group size (3 or 4) and a role; the page then shows that role's steps
+first. In a group of three there is no separate "Tilboð og samskipti" role: each of its steps
+names who takes it (`in3`). Group size, role and tick marks stay in the browser.
+
+The customer's change on day 4 is a surprise. Its text is in `data.js` (`message`) and the page
+shows it from `message.opens` (1 December 10:25); add `?syna=1` to preview it earlier. Do not
+repeat the new budget anywhere else on the site or in Canvas.
+
+`ibud7.svg` is the dimensioned floor plan. The videos in `video/` are built in the course-material
+folder (`namsefni/fagu/lokaverkefni-myndbond`) and copied here as web-sized MP4s with a poster
+image each. Dates on the pages must agree with Canvas.
+
 ## Theme
 
 The board follows the system colour scheme and has a sun/moon toggle in the
