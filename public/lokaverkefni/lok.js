@@ -112,7 +112,7 @@
 
   // A day is a short guided sequence: video, group, the day's work, journal, and everything else last.
   // One stage is on screen at a time, and the stepper lets you jump to any of them.
-  function dayPage(root, day) {
+  function dayPage(root, day, startAt) {
     const idx = L.days.indexOf(day);
     // In a group of three the tilboð steps move to the role named in `in3`.
     const secs = day.sections.map((sec, si) => ({ sec, si, steps: sec.steps.map((step, i) => ({ step, i, si })) }));
@@ -141,7 +141,7 @@
 
     const stageKey = `d${day.n}-stage`;
     // ?skref=3 opens a given stage (for the teacher's projector); ?hlutverk= and ?hopur= preset the group.
-    let at = Math.min(Math.max((parseInt(params.get("skref") ?? "", 10) - 1) || parseInt(store.get(stageKey, "0"), 10) || 0, 0), stages.length - 1);
+    let at = Math.min(Math.max(startAt ?? ((parseInt(params.get("skref") ?? "", 10) - 1) || parseInt(store.get(stageKey, "0"), 10) || 0), 0), stages.length - 1);
     const isDone = (st, i) => (st.ids.length ? ticked(st.ids) === st.ids.length : st.key === "hopur" ? Boolean(role) : st.key === "video" ? at > i : false);
     const go = (i, focus = true) => { at = i; store.set(stageKey, String(i)); draw(); if (focus) { window.scrollTo(0, 0); root.querySelector(".stage h2")?.focus(); } };
 
@@ -165,7 +165,8 @@
         const v = video(`dagur${day.n}`, `Myndband: dagur ${day.n}`); v.querySelector("h2").remove(); f.append(v);
       } else if (st.key === "hopur") {
         f.append(el("p", "lead", "Veldu hvað þið eruð mörg og hvaða hlutverk þú ert með. Þá sérðu bara þín verk."));
-        const pk = picker(() => draw()); pk.querySelector("h2").remove(); pk.className = "picker bare"; f.append(pk);
+        // role and size decide which steps exist, so a choice rebuilds the whole day
+        const pk = picker(() => dayPage(root, day, at)); pk.querySelector("h2").remove(); pk.className = "picker bare"; f.append(pk);
         f.append(el("p", "small", "Ertu ekki komin(n) með hlutverk? Ákveðið það saman núna. Valið er bara vistað í þessum vafra."));
       } else if (st.key === "saman") {
         f.append(el("p", "lead", "Þetta gerið þið öll saman."));
